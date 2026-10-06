@@ -91,7 +91,7 @@ if(typeof document!=='undefined'&&!document.getElementById('ascensions-styles'))
     ['giantKiller','巨人杀手','强敌愈勇',['对生命不低于 70% 的敌人，直接生命伤害 +12%、架势伤害 +15%。','对高生命敌人的生命伤害 +18%、架势伤害 +24%；对精英和 BOSS 再各提高 10%。','对高生命敌人的生命伤害 +25%、架势伤害 +34%；对精英和 BOSS 再分别提高 18% 与 20%；攻击精英/BOSS 有 10% 基础概率使其短暂僵直，普通/完美格挡时分别为 14%/26%。']],
     ['giant','巨兽','身若山岳',['最大生命 +22、直接攻击伤害 +12%、攻击距离 +10%；普通攻击速度 -4%。','最大生命总计 +42、直接攻击伤害 +23%、攻击距离 +18%；普通攻击速度 -8%；第四击再增加 22% 伤害。','最大生命总计 +65、直接攻击伤害 +34%、攻击距离 +27%；普通攻击速度 -12%；第四击再增加 34% 伤害，并击飞小型敌人。']],
     ['swallowReturn','燕返','来矢皆返',['普通格挡即可反弹敌方投射物，反弹伤害提高。','反弹投射物会分裂为多枚散射弹。','反弹投射物命中后爆炸，对周围敌人造成额外生命与架势伤害。']],
-    ['breathing','吐纳','纳息养命',['最大生命提高；升级时额外恢复生命。','每次升级额外获得最大生命，经验获取与升级治疗提高。','升级时获得更多最大生命，并立即把全部灰血转回真实生命，同时免费释放一次战意爆发。']],
+    ['breathing','吐纳','纳息养命',['最大生命提高；升级时额外恢复生命。','每次升级额外获得最大生命，经验获取与升级治疗提高。','升级时获得更多最大生命，并立即把50%灰血转回真实生命，同时免费释放一次战意爆发。']],
     ['illusion','幻象','心魔侵袭',["每 6 秒对 520 范围内各敌人判定 12% 基础概率；命中后每秒造成 4 伤害、持续 2.5 秒，并使非 BOSS 恐惧 2 秒。", "每 5 秒判定一次，概率提高至 18%；幻象每秒造成 6 伤害、持续 3.5 秒，非 BOSS 恐惧 3 秒。", "每 4 秒判定一次，概率提高至 25%；幻象每秒造成 8 伤害、持续 4.5 秒，非 BOSS 恐惧 4 秒；另有 3% 基础概率使非 BOSS 永久恐惧。"]],
     ['airSupport','飞龙幼崽','幼龙巡空',['获得一只高空小火龙伙伴，周期喷射火球攻击敌人。','小火龙同时获得短程喷火攻击。','火球命中会爆炸，并周期释放火焰龙卷。']],
     ['bloodSword','饮血剑','重刃饮血',['重击范围 +10%；重击击杀敌人恢复 6 生命。','重击范围 +20%、伤害 +18%；重击击杀恢复 9 生命，并把 9 灰血转回生命。','重击范围 +30%、伤害 +32%；重击击杀恢复 13 生命、转化 14 灰血；命中有 22% 基础概率恢复 4 生命并转化 4 灰血，治疗上限额外提高 25% 最大生命值。']],
@@ -195,7 +195,7 @@ if(typeof document!=='undefined'&&!document.getElementById('ascensions-styles'))
     breathing:[
       '最大生命立刻 +18；每次升级恢复 8 生命。',
       '最大生命立刻总计 +28；此后每次升级额外 +3 最大生命、恢复 13 生命，击杀经验 +10%。',
-      '最大生命立刻总计 +40；此后每次升级额外 +6 最大生命、恢复 20 生命，击杀经验 +18%；升级时还会转化全部灰血并免费释放一次战意爆发。'
+      '最大生命立刻总计 +40；此后每次升级额外 +6 最大生命、恢复 20 生命，击杀经验 +18%；升级时还会转化50%灰血并免费释放一次战意爆发。'
     ],
     bloodthirst:[
       '总生命低于 50% 时，移动速度 +10%、攻击速度 +8%。',
@@ -2337,7 +2337,7 @@ if(typeof document!=='undefined'&&!document.getElementById('ascensions-styles'))
     onRecoverGray({amount}){if(this.rank('tenacity')===3&&amount>0)this.run.gainMomentum(amount*.22,'tenacityGray');}
     onRecoverableDamage(e){if(this.rank('revenge')===3&&e.amount>0&&['guard','clash'].includes(e.source))this.revengeHit(e,true);}
     applyBreathingLevelGrowth(burst=true){
-      const br=this.rank('breathing'),p=this.game.p;if(br){const extraMax=br===2?5:br===3?10:0;if(extraMax){p.maxHp+=extraMax;p.hp+=extraMax;}this.game.heal([0,10,15,20][br],{source:'breathing'});if(br===3){this.restoreGray(p.grayHp);if(burst)this.run.castMomentumBurst({free:true,source:'breathing'});}}
+      const br=this.rank('breathing'),p=this.game.p;if(br){const extraMax=br===2?5:br===3?10:0;if(extraMax){p.maxHp+=extraMax;p.hp+=extraMax;}this.game.heal([0,10,15,20][br],{source:'breathing'});if(br===3){this.restoreGray(p.grayHp*.50);if(burst)this.run.castMomentumBurst({free:true,source:'breathing'});}}
     }
     onLevelUp(){
       this.applyBreathingLevelGrowth();
@@ -3539,7 +3539,7 @@ if(typeof document!=='undefined'&&!document.getElementById('ascensions-styles'))
   "breathing": [
     "最大生命 +40，每次升级恢复 10 生命。",
     "最大生命 +50，此后每次升级再增加 5 最大生命、恢复 15 生命，击杀经验 +5%。",
-    "最大生命 +60，此后每次升级再增加 10 最大生命、恢复 20 生命，击杀经验 +10%。升级时恢复全部生命损伤，并免费释放一次战意爆发。"
+    "最大生命 +60，此后每次升级再增加 10 最大生命、恢复 20 生命，击杀经验 +10%。升级时恢复50%生命损伤，并免费释放一次战意爆发。"
   ],
   "illusion": [
     "每 6 秒，附近每个敌人均有 12% 概率受到幻象侵袭 2.5 秒，持续侵蚀生命与架势，并恐惧逃离。",

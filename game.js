@@ -1451,7 +1451,7 @@ function initializeGame(){
       if(e.type==='block'){const col=AshCombatFX.resonanceColor('#bdc6ba',e.resonanceStacks??run?.effects?.resonance.stacks??0);sound('hit');shake=3;burst(e.x,e.y,13,col,160,e.z);ring(e.x,e.y,col,48,e.z);label(e.x,e.y-e.z-25,e.momentumCost?'气 御':'格 挡',e.momentumCost?'#e5cc92':'#a8b9b0',13);}
       if(e.type==='guardCollapse'){sound('hurt');shake=18;screenFlash=-.22;burst(e.x,e.y,35,'#c9829f',300,e.z);}
       if(e.type==='shieldBlock'){sound('parry');burst(e.x,e.y,10,'#c4b390',150,50);}
-      if(e.type==='chargeReady'){sound('parry');ring(e.x,e.y,'#efcd8e',55,(e.z||0)+45);burst(e.x,e.y,10,'#efcd8e',100,(e.z||0)+50);}
+      if(e.type==='chargeReady'&&!run?.hasDual('chargeAccel','peakTiming')){sound('parry');ring(e.x,e.y,'#efcd8e',55,(e.z||0)+45);burst(e.x,e.y,10,'#efcd8e',100,(e.z||0)+50);}
       if(e.type==='thrustStart')sound('dash');
       if(e.type==='spawn')ring(e.x,e.y,'#b89d7b',35);
       if(e.type==='ammoEmpty')label(e.x,e.y-112,'箭尽 · 换短刀','#a3b2a4',11);
