@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="zh-CN">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>火焰与血清 · 四组特效试映</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#101310;color:#e1e7db;font:14px system-ui,'Microsoft YaHei',sans-serif}main{max-width:1280px;margin:30px auto;padding:0 24px}header{display:flex;justify-content:space-between;align-items:center}small{color:#9eb68a;letter-spacing:3px}h1{font-size:28px;font-weight:500;margin:9px 0}p{margin:0;color:#94a28b;line-height:1.8}.badge{border:1px solid #435039;padding:8px 14px;border-radius:24px;font-size:12px;color:#b0c59c}nav{display:flex;gap:9px;flex-wrap:wrap;margin:24px 0 17px}button,select{font:inherit;background:#20271c;border:1px solid #3d4c32;border-radius:6px;color:#c9d6bd;padding:10px 14px;cursor:pointer}button:hover,button.active{background:#35452c;border-color:#859b6f;color:#f4f8eb}.stage{border:1px solid #3a4830;border-radius:10px;overflow:hidden;background:#141a12}.captions{display:grid;grid-template-columns:repeat(2,1fr);border-bottom:1px solid #34412d}.captions>div{padding:12px 20px}.captions>div+div{border-left:1px solid #34412d}.captions span{display:block;color:#819773;font-size:11px;margin-top:4px}canvas{display:block;width:100%;aspect-ratio:1200/430}.controls{display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin:18px 0}label{display:flex;align-items:center;gap:7px;color:#adbda0}input{accent-color:#bad49e}#scrub{flex:1;min-width:120px}#clock{width:62px;color:#dce8d0;font-variant-numeric:tabular-nums}.notes{display:grid;grid-template-columns:1.25fr 1fr;gap:25px;border-top:1px solid #333d2c;padding-top:20px;margin-top:22px}.notes b{font-weight:500}.notes p{font-size:12px;margin-top:6px}footer{font-size:12px;color:#74816a;margin:22px 0}.hidden{display:none}@media(max-width:700px){main{padding:0 12px;margin:18px auto}h1{font-size:23px}.badge{display:none}.notes{grid-template-columns:1fr}nav button{padding:9px 11px}.captions>div{padding:10px;font-size:12px}.captions span{font-size:10px}select{padding:8px}}
+</style>
+<main><header><div><small>COMBAT VFX / STUDY 005</small><h1>火焰与血清的四种表达</h1><p id="description"></p></div><span class="badge">火球／熔渣试映 · 其余已实装</span></header>
+<nav aria-label="特效分组"><button class="active" data-group="projectile">01 火球 / 熔渣</button><button data-group="poison">02 毒焰炼锋</button><button data-group="serum">03 血清衍生爆破</button><button data-group="spread">04 余火 / 烈焰扩散</button></nav>
+<div class="stage"><div class="captions" id="captions"></div><canvas id="scene" width="1200" height="430" aria-label="按实际尺寸比较不同技能特效"></canvas></div>
+<div class="controls"><button id="replay">重新触发</button><button id="pause">暂停</button><button id="step">前进一帧</button><label id="rank-control">飞龙等级 <select id="rank"><option value="1">LV 1</option><option value="2">LV 2</option><option value="3" selected>LV 3</option></select></label><label>播放速度 <select id="speed"><option value="0.25">0.25×</option><option value="0.5">0.5×</option><option value="1" selected>1×</option></select></label><label><input id="loop" type="checkbox" checked>循环</label><label><input id="range" type="checkbox" checked>范围参考</label><label><input id="actors" type="checkbox" checked>角色比例</label></div>
+<div class="controls"><span>时间轴</span><input id="scrub" aria-label="动画时间" type="range" min="0" max="2.5" step="0.0166667" value="0"><span id="clock">0.00 s</span></div>
+<div class="notes"><div><b id="intent"></b><p id="recipe"></p></div><div><b>尺寸与对照</b><p id="sizing"></p></div></div>
+<footer>火球／熔渣的低焰飞星候选仅供试映，其余三组已接入游戏。范围为基础范围；不含元素亲和等组合加成。虚线表示范围参考，角色仅作比例示意，不结算伤害。</footer></main>
+<script src="../combat_fx.js?v=fx-merged-20261005-1"></script>
+
+<script src="fire-families-art.js?v=5"></script>
+<script src="fire-families-preview.js?v=5"></script>
+</html>

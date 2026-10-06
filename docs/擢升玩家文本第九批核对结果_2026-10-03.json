@@ -1,0 +1,32 @@
+{
+  "date": "2026-10-03",
+  "status": "applied_and_verified",
+  "counts": {
+    "base": 142,
+    "dual": 311,
+    "cards": 453,
+    "levelTexts": 426
+  },
+  "approvedBaseCount": 142,
+  "approvedDualCount": 311,
+  "pendingCount": 0,
+  "regressionSuites": 14,
+  "batchNineChecks": 18,
+  "javascriptSyntaxFiles": 12,
+  "manualGameplayChecked": false,
+  "sourceHashes": {
+    "ascensions.js": "af8235bfb276d7fd91e11b1b861be11c93d454b675982943df004824221f276c",
+    "boss.js": "bfe86cb06fd1bbf0dbcc6ef174a07b69dbc6c64a68385ce5752921a904eb0e3c",
+    "combat.js": "05225378b19fbff8eaf1fd3c077ada2303a2e84706eed163cb9dd422e6b87194",
+    "combat_fx.js": "d96bcd63d4adabcaa00f96565c7953304461bb3756a7a1681182a6f3e06bfea9",
+    "enemy_art.js": "e5e7559eaac3d0211108b5f08968c9502063e0cbc9cc38dbcb332c66a9eadbfc",
+    "enemy_catalog.js": "2d9eb7841ef0f3cfe091eae1d48f12ed809aa6cb0209e959b1cc9bd29a0dc0aa",
+    "game.js": "b2bd357683aa8f6c604011c0b991c4272ba07c457fbbbf0a9e4398cfccabf51c",
+    "motion.js": "eed0be43968274c16b2f5b952f7799fe209ccd6ceffa9edd6f597df66e861d5e",
+    "music.js": "2da7a15d9ccf12cb7180d3bb26ff540f7b17747a871ba382a90bf04f9d216439",
+    "survival.js": "b16deae2ded9b835fcce22fde15d0ccc2b65e08d5249ec63247be1c6f5cefc1c",
+    "systems.js": "7f48ea3721ce68cbe49539c8ffd925400f148bb0042b0d9e57dd5e825574ba50",
+    "wind_death.js": "fc898279dcadbed792523f5ca62731c1603b452c7fecf232fdb1ecfa2b0011f7"
+  },
+  "sourceSnapshotSha256": "39de4940bbdc90b1bc94bde970498317313e73a597cc0682f4c6657f2c497c51"
+}

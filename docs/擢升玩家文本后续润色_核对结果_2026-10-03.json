@@ -1,0 +1,79 @@
+{
+  "date": "2026-10-03",
+  "status": "candidate_revision_not_applied",
+  "counts": {
+    "baseCards": 48,
+    "baseLevelTexts": 144,
+    "dualCards": 306,
+    "playerTexts": 450
+  },
+  "approvedCopyPreserved": {
+    "baseCards": 94,
+    "dualCards": 5
+  },
+  "gameSourceFilesWrittenByThisTask": [],
+  "sourceFilesChangedDuringWork": [
+    "ascensions.js",
+    "boss.js",
+    "combat_fx.js",
+    "game.js"
+  ],
+  "gameFileSha256AtTaskStart": {
+    "ascensions.css": "344dcaba07c450e77a5abb0f0fcf500819cde2f1c4f36e05564e315d04dca606",
+    "ascensions.js": "afc3b9d293d7783c295b43e3421d63976e7f7b20711d4a16fcf40c336f7727d7",
+    "boss.js": "f1b4367d3293044872dce6888aa80dc4ff4eadb55ef4776c99b5a0a405e942c8",
+    "combat.js": "4da99eaa0a130398ec95908b5a99433d705f0789ea1db5fe3d920e096d185d3c",
+    "combat_fx.js": "b307df7791a53a92b1221becabe495cd90ebac96cf6cc2ab4fadf52f6000d988",
+    "enemy_art.js": "2bbf01948d9901f1dd8cbd7c20c45ae3e089e59c27117a898942ad9fefe0785f",
+    "enemy_catalog.js": "5797c147499966d9829dc866064e373e6389386b9d9433971de20988cd54af17",
+    "game.js": "9d7fc9b02669daddb49643cf109873dcdf81a451cdb06af5bd9e56a9d2b02ac9",
+    "index.html": "ecf41516720577cd1a877664b684c30edce2e9eadc05036fa8868d646def28ee",
+    "motion.js": "d0069ba4d20765bd53579e6e1a1db460d09a7f0e8c4fe606174a8ded8b7adddd",
+    "style.css": "d42b630b956b7074424260bdb3e107d988ea055d0eb450faff954e2ad5f493ac",
+    "survival.css": "a61678e7f2b917834740359b956f53fc1a5a806d51afbce768469315086a0ec3",
+    "survival.js": "2f5c5fe0949896bdec2bc2f17cd033543ae25f3e0f3620ffc1c6a0552340b63c",
+    "systems.js": "7f48ea3721ce68cbe49539c8ffd925400f148bb0042b0d9e57dd5e825574ba50",
+    "victory.css": "1c6c0950dd80c9bbeedc38881c197f784c3ff46fb17e7b686e8b5e70a1837bff",
+    ".art-review/enemy-renderer-source.js": "3c8b4ec3dab0d13f80d72c476cace47a7d17263968d4da4d5b71013a57a21f48",
+    ".art-review/execution-death-demo.css": "3f1f85def3c7e5f74a5dac87b88f86058f6bf6a632425bca7602d45d96b84b6d",
+    ".art-review/execution-death-demo.html": "5e9b99b4210ade09f9b292ad1a40f4a64c4daceb0c79e6d959b3bff137ea0418",
+    ".art-review/execution-death-demo.js": "956e279d769b49e7e5df1187f97b1858916ead00acd0be2684968b5723766b1c",
+    ".art-review/void-projectile-20261002.html": "8841fac26091b9ca407b892c061e5478e88022a273a1d602bfd49c965ab88219"
+  },
+  "reviewedGameFileSha256": {
+    "ascensions.css": "344dcaba07c450e77a5abb0f0fcf500819cde2f1c4f36e05564e315d04dca606",
+    "ascensions.js": "1b8a700089ad44e4f6fb32c3c4b8878dfb918ccdbcb7ca9810d0986101c3fa3a",
+    "boss.js": "f39502bcbb40d39349828859fc2206b87c728d83fb80e7b6a432252e38cc14eb",
+    "combat.js": "4da99eaa0a130398ec95908b5a99433d705f0789ea1db5fe3d920e096d185d3c",
+    "combat_fx.js": "f8b45044624f2cb220cbfda18505604e9afd37375264b4a81ccdc4799f4cccd5",
+    "enemy_art.js": "2bbf01948d9901f1dd8cbd7c20c45ae3e089e59c27117a898942ad9fefe0785f",
+    "enemy_catalog.js": "5797c147499966d9829dc866064e373e6389386b9d9433971de20988cd54af17",
+    "game.js": "7dabd8b34c3203158a95d1898977f595b76ff931b02a615412b4d7b2760f05e2",
+    "index.html": "ecf41516720577cd1a877664b684c30edce2e9eadc05036fa8868d646def28ee",
+    "motion.js": "d0069ba4d20765bd53579e6e1a1db460d09a7f0e8c4fe606174a8ded8b7adddd",
+    "style.css": "d42b630b956b7074424260bdb3e107d988ea055d0eb450faff954e2ad5f493ac",
+    "survival.css": "a61678e7f2b917834740359b956f53fc1a5a806d51afbce768469315086a0ec3",
+    "survival.js": "2f5c5fe0949896bdec2bc2f17cd033543ae25f3e0f3620ffc1c6a0552340b63c",
+    "systems.js": "7f48ea3721ce68cbe49539c8ffd925400f148bb0042b0d9e57dd5e825574ba50",
+    "victory.css": "1c6c0950dd80c9bbeedc38881c197f784c3ff46fb17e7b686e8b5e70a1837bff",
+    ".art-review/enemy-renderer-source.js": "3c8b4ec3dab0d13f80d72c476cace47a7d17263968d4da4d5b71013a57a21f48",
+    ".art-review/execution-death-demo.css": "3f1f85def3c7e5f74a5dac87b88f86058f6bf6a632425bca7602d45d96b84b6d",
+    ".art-review/execution-death-demo.html": "5e9b99b4210ade09f9b292ad1a40f4a64c4daceb0c79e6d959b3bff137ea0418",
+    ".art-review/execution-death-demo.js": "956e279d769b49e7e5df1187f97b1858916ead00acd0be2684968b5723766b1c",
+    ".art-review/void-projectile-20261002.html": "8841fac26091b9ca407b892c061e5478e88022a273a1d602bfd49c965ab88219"
+  },
+  "runtimeRegistryMatchesSnapshot": true,
+  "checkedGameFileCount": 20,
+  "documents": [
+    "后续擢升与双重擢升_玩家文本候选_2026-10-03.md",
+    "擢升与双重擢升_玩家文本候选_2026-10-02.md",
+    "擢升与双重擢升_玩家文本候选_2026-10-02.json",
+    "擢升玩家文本后续润色_代码核对记录_2026-10-03.md"
+  ],
+  "runtimeProbes": [
+    "d67 permanent-fear branch",
+    "d122 orb damage / player speed / summon count",
+    "d152 actual first / fifth plunge thresholds",
+    "d153 health growth and cap"
+  ]
+}

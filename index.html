@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101519">
+  <title>擢升之刃</title>
+  <script src="game.js?v=merged-20261006-2"></script>
+</head>
+<body>
+  <main id="app">
+    <header class="masthead"><a class="brand" href="#" aria-label="擢升之刃">擢升<span>之刃</span></a><div class="chapter"><b>01</b><span>雨夜 · 山门</span><em>THE ASHEN GATE</em></div><div class="audio-controls"><button id="sound" class="top-button" aria-label="切换特效音效（N）" title="特效音效 · N" aria-keyshortcuts="N" aria-pressed="false">音效 <span>开</span></button><button id="music-toggle" class="top-button" aria-label="切换背景音乐（M）" title="背景音乐 · M" aria-keyshortcuts="M" aria-pressed="true">音乐 <span>开</span></button><label class="music-volume" for="music-volume"><span>音量</span><input id="music-volume" type="range" min="0" max="100" step="1" value="20" aria-label="音乐音量"><output id="music-volume-value" for="music-volume">20%</output></label><div class="language-switch" data-language-switch role="group" aria-label="语言 / Language"><button type="button" data-language="zh" class="active" lang="zh-CN" aria-label="切换中文" aria-pressed="true">中文</button><span aria-hidden="true">/</span><button type="button" data-language="en" lang="en" aria-label="Switch to English" aria-pressed="false">ENG</button></div></div></header>
+    <section class="game-frame" aria-label="火柴人格斗游戏">
+      <canvas id="game" width="1440" height="810" tabindex="0" aria-label="游戏画面，WASD移动，空格跳跃，Shift冲刺，J攻击，K格挡，Q处决，R战意爆发，E打开擢升"></canvas>
+      <div id="title-screen" class="overlay title-screen">
+        <div class="title-copy"><h1 class="blade-title"><span class="blade-main">擢升之刃</span><span class="blade-tagline">利刃在手，<br>制裁八方</span></h1><div class="start-actions"><button id="start" class="primary">迎战敌潮 <span>↗</span></button><button id="challenge" class="secondary">BOSS RUSH</button><button id="training" class="secondary" hidden>稻草人试炼场</button></div><div class="start-hint">ENTER 开始</div></div>
+        <div class="title-stamp"><span>二 十 分 钟 · 一 刃 生 还</span><b id="arena-name">烬途</b><i>120类来敌 / 四重生态</i></div>
+      </div>
+      <div id="pause-screen" class="overlay center-screen hidden"><div class="panel"><h2>歇刃片刻</h2><button id="resume" class="primary">继续战斗 <span>↗</span></button><button id="restart-pause" class="secondary">重新开始本局</button><button id="pause-title" class="secondary">返回标题</button></div></div>
+      <div id="upgrade-screen" class="overlay center-screen hidden"><div class="upgrade-panel"><div class="eyebrow">ASCEND / THE BLADE GROWS</div><h2>擢 升</h2><p id="upgrade-summary">选择一项修习，带着新的力量回到战场。</p><div id="upgrade-choices" class="upgrade-choices"></div><div class="small">1 / 2 / 3 / 4 / 5 选择</div></div></div>
+      <div id="codex-screen" class="overlay center-screen hidden"><div class="codex-panel"><div class="codex-heading"><div><div class="eyebrow">ASCENSIONS</div><h2>修习录</h2></div><button id="close-codex" class="secondary">返回 · TAB / ESC</button></div><div id="codex-list" class="codex-list"></div></div></div>
+      <div id="end-screen" class="overlay center-screen hidden"><div id="victory-cg" class="victory-cg hidden"><div class="victory-cg-grid"><canvas width="1120" height="600"></canvas><canvas width="1120" height="600"></canvas><canvas width="1120" height="600"></canvas><canvas width="1120" height="600"></canvas></div></div><div id="end-panel" class="panel"><div class="eyebrow hidden" id="end-eyebrow"></div><h2 id="end-title">战败</h2><p id="end-text" class="hidden"></p><div id="end-stats" class="end-stats"></div><button id="retry" class="primary">再战一次 <span>↗</span></button><button id="back-title" class="secondary">返回标题</button></div></div>
+      <button id="manual-open" class="canvas-manual" aria-label="操作与机制帮助">帮助 H</button><div id="manual-screen" class="overlay center-screen hidden"><div class="panel manual-panel"><button id="manual-close" class="secondary">返回 · H / ESC</button><h2>战斗手册</h2><div id="manual-content"></div></div></div><button id="pause" class="canvas-pause hidden" aria-label="暂停">Ⅱ <span>ESC</span></button>
+    </section>
+    <footer class="control-strip"><div class="control"><div><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd></div><span>移动</span></div><div class="control"><kbd>SPACE</kbd><span>二段跳</span></div><div class="control"><kbd>SHIFT</kbd><span>无敌冲刺</span></div><div class="control"><kbd>J</kbd><span>短按连斩</span></div><div class="control"><kbd>长按 J</kbd><span>移动蓄力</span></div><div class="control"><kbd>⇧ + J</kbd><span>突刺</span></div><div class="control"><kbd>K</kbd><span>格挡</span></div><div class="control"><kbd>S + J</kbd><span>空中下劈</span></div><div class="control execution-control"><kbd>Q</kbd><span>处决</span></div><div class="control execution-control"><kbd>R</kbd><span>战意爆发</span></div><div class="control"><kbd>E</kbd><span>打开擢升</span></div></footer>
+    <div class="underbar"><button id="help-toggle">战斗手册 <span>＋</span></button></div>
+    <section id="help" class="help hidden"><article><h3>基础操作</h3><p>WASD移动，空格跳跃，可二段跳。短按J攻击，长按J蓄力重击。K格挡，恰当时机使用可完美格挡。Shift冲刺，Shift+J突刺攻击。Q对架势破坏的敌人处决。R战意爆发（需消耗80战意）。</p></article><article><h3>战斗系统</h3><p>K格挡，完美格挡敌人的攻击不会受到伤害，对敌人造成架势伤害，且能弹回投射物。未能完美格挡会导致生命受到损伤，损伤的生命会在不受击时回复。当敌人架势归0时，会被击晕一段时间，并允许Q处决。Shift冲刺允许冲过敌人和闪开攻击，但需要冷却。R战意爆发可以轰开投射物和周围小型敌人，并对更大的敌人造成硬直，以提供喘息机会。在空中进行S+J下劈，击中敌人可刷新冲刺与二段跳。</p></article><article><h3>擢升</h3><p>击杀敌人获取经验以升级技艺。升级时除基础属性增加，还可获得擢升机会，按E暂停游戏并从3项擢升中选择一项。擢升最高可升级至等级3。TAB查看已有擢升，不同擢升间可形成连锁反应以极大增强你的实力。</p></article><article><h3>首领</h3><p>强大的首领敌人会随着时间推进出现试图碾碎你，他们更加坚韧和危险，大概难以被迅速杀死。击杀首领可获得大量经验值——以及从擢升中获取额外的猎杀奖励。在BOSS RUSH中，需要连续进行不受打扰的首领战斗，每击杀一个首领可获得3次擢升机会。</p></article></section>
+  </main>
+  <script src="motion.js?v=poison-maggot-20261004-1"></script>
+  <script src="boss.js?v=merged-20261006-1"></script>
+  <script src="enemy.js?v=merged-20261006-1"></script>
+  <script src="combat.js?v=merged-20261006-2"></script>
+  <script src="ascensions.js?v=merged-20261006-2"></script>
+  <script src="combat_fx.js?v=merged-20261006-1"></script>
+  <script src="music.js"></script>
+  <script src="i18n-en.js?v=dual-rework-20261006-1"></script>
+  <script src="i18n.js?v=merged-20261006-2"></script>
+</body>
+</html>

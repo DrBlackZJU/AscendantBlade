@@ -1,0 +1,24 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>裂地与血爆 · 游戏内验收</title><style>body{margin:0;background:#101813;color:#e6e4d6;font:14px system-ui}header{padding:15px 20px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}h1{font-size:18px;margin:0 8px 0 0;font-weight:500}button,select{background:#2c3d2d;border:1px solid #617254;color:#e6e4d6;padding:8px;font:inherit;border-radius:4px}iframe{display:block;width:100%;height:800px;border:0}output{color:#cbbc8e;font-size:12px}p{margin:0 20px 14px;font-size:12px;color:#9fad97}a{color:#cfc49d}</style></head><body>
+<header><h1>游戏内特效验收</h1><select id="effect" aria-label="验收特效"><option value="aftershock">余震</option><option value="rock">岩石突刺</option><option value="stone">普通震踏</option><option value="greatStomp">大震踏</option><option value="finale">盛大谢幕</option><option value="execution">浴血盛宴</option><option value="corpse">尸爆术 · 原特效</option><option value="tide">血潮绘制 · 原特效</option></select><select id="face" aria-label="方向"><option value="1">向右</option><option value="-1">向左</option></select><button id="trigger" disabled>触发</button><output id="status" role="status">正在加载游戏…</output></header>
+<p>使用真实游戏入口、事件处理与绘制循环。每次触发会重置试炼场；血潮选项只用于验证原有通用血色绘制，不增加技能触发。<a href="earth-blood-preview.html">美术对照页</a></p><iframe id="game-frame" src="../index.html" title="真实游戏试炼场"></iframe>
+<script>
+'use strict';
+const frame=document.getElementById('game-frame'),status=document.getElementById('status');
+let pending=0;
+function trigger(){clearTimeout(pending);const w=frame.contentWindow,a=w.AshGame;if(!a){status.textContent='游戏未加载';return;}try{
+ const kind=document.getElementById('effect').value,face=Number(document.getElementById('face').value);a.start(0,false,true);const run=a.run,g=a.game,f=run.effects;
+ g.enemies=[];g.p.x=700;g.p.y=550;g.p.face=face;
+ for(const dx of [55,150,350,480]){const e=g.spawn('sword',700+face*dx,550);Object.assign(e,{hp:10000,maxHp:10000,posture:10000,maxPosture:10000,spawnDelay:0,dummy:true,dummyMode:'idle',homeX:e.x,homeY:e.y});}
+ const enemy=g.enemies[0];
+ if(kind==='aftershock'){a.test.pick('d78');g.p.fullCharge=g.p.rockThrustFull=true;g.p.attackSerial++;g.trigger('onAttackHit',{enemy,tags:['thrust','rockThrust','heavy','fullCharge'],damage:100,posture:60});}
+ else if(kind==='rock'){a.test.pick('rockThrust');g.p.state='charge';g.p.charge=g.p.chargeMax;g.startThrust({});}
+ else if(kind==='stone'||kind==='greatStomp'){a.test.pick('quakeStomp');f.quake.bigCd=kind==='greatStomp'?0:8;g.trigger('onDownStrikeLand',{});}
+ else if(kind==='finale'){a.test.pick('d179');for(let i=0;i<3;i++)g.trigger('onExecutionHit',{enemy});g.p.state='idle';}
+ else if(kind==='execution'){a.test.pick('d30');g.trigger('onExecutionHit',{enemy});}
+ else if(kind==='corpse'){a.test.pick('corpseBomb');f.v11.corpseBomb.push({x:enemy.x,y:enemy.y,t:0,rank:3});}
+ else g.emit('bloodTide',{x:g.p.x,y:g.p.y,radius:225});
+ status.textContent='已触发，检查真实绘制循环…';pending=setTimeout(()=>{status.textContent=w.AshLastError?'失败：'+w.AshLastError.message:'通过：真实事件处理与绘制无运行错误';},1600);
+ }catch(error){status.textContent='失败：'+error.message;}
+}
+frame.addEventListener('load',()=>{document.getElementById('trigger').disabled=false;trigger();});document.getElementById('trigger').onclick=trigger;
+</script></body></html>
