@@ -13,7 +13,7 @@
   const {EventBus,DEFAULT_RULES,tagPrefix,tagsFor}=Systems;
   const GUARD={startup:DEFAULT_RULES.guardStartup,window:DEFAULT_RULES.guardWindow,recovery:DEFAULT_RULES.guardRecovery,perfect:DEFAULT_RULES.perfectWindow};
   const guardEnd=GUARD.startup+GUARD.window,guardTotal=guardEnd+GUARD.recovery;
-  const isBoss=e=>!!TYPES[e.type]?.boss;
+  const isBoss=e=>!!TYPES[e?.type]?.boss;
   const bossGeometry=typeof module==='object'&&module.exports?require('./boss.js'):globalThis.AshBoss;
   const CHAPTERS=[
     {name:'雨夜 · 山门',short:'山门',en:'THE ASHEN GATE',theme:'rain',boss:'boss',areas:['外庭','长阶','山门'],hint:'辨清起手，破开山门'},
@@ -433,6 +433,7 @@
       this.p.guardCd=0;this.p.guardBuffer=0;this.p.counter=.5;return result;
     }
     receiveHit(damage,e,arrow) {
+      if(e?.pressureWeakUntil>this.time)damage*=1-(e.pressureWeakness||0);
       if(this.p.state==='thrust'&&this.thrustInvulnerable?.())return 'immune';
       const p=this.p;if(p.hp<=0||p.state==='execute'&&p.invuln>0&&!this.guardActive())return 'immune';
       if(p.hunterMarkT>0)damage*=1.2;
@@ -456,9 +457,9 @@
       p.grayHp-=grayLost;const spill=Math.max(0,damage-p.hp);p.hp=Math.max(0,p.hp-damage);p.grayHp=Math.max(0,p.grayHp-spill);
       p.lastRealDamage=this.time;p.invuln=Math.max(0,this.hooks.modify('hitInvuln',.58,{enemy:e,arrow,rawDamage,damage}));p.hurt=.3;
       const chargeArmor=p.state==='charge'&&(p.steadfastRank||0)>0;
-      if(p.superArmor>0||chargeArmor){p.hurt=.16;p.knock=0;}
+      if(p.superArmor>0||chargeArmor||intercept.superArmor){p.hurt=.16;p.knock=0;}
       else{if(p.state==='execute'){p.execTarget=null;p.execQueue=[];p.execSoulLinkTargets=new Set();p.execGuardT=null;}p.state='hurt';p.t=0;p.combo=0;p.attackBuffer=0;p.vx=p.vy=0;const chargeHit=e?.attack?.lunge>0&&!arrow;p.knock=(chargeHit?e.face:(e?Math.sign(p.x-e.x)||e.face:-(Math.sign(arrow?.vx)||p.face)))*(chargeHit?150:190);}
-      this.trigger('onRealDamageTaken',{amount:damage,rawDamage,grayLost,enemy:e,arrow,superArmor:p.superArmor>0});
+      this.trigger('onRealDamageTaken',{amount:damage,rawDamage,grayLost,enemy:e,arrow,superArmor:p.superArmor>0||!!intercept.superArmor});
       this.stats.damageTaken+=damage;this.hitChain=0;this.chainTimer=0;
       this.emit('playerHit',{x:p.x,y:p.y,z:p.z+44,damage});this.hitstop(.08);
       if(p.hp<=0){const death=this.trigger('beforeDeath',{enemy:e,arrow,damage,preHitGray,prevent:false});if(!death.prevent){this.status='dead';this.emit('defeat');}}
@@ -538,7 +539,7 @@
         e.knockX+=this.p.face*(tags.includes('comboFinisher')?70:28);
       }
       if(direct){
-        this.trigger('onAttackHit',{...attackContext,enemy:e,damage,posture,actualPosture,tags});
+        this.trigger('onAttackHit',{...attackContext,enemy:e,damage,actualDamage:Math.min(preHp,damage),posture,actualPosture,tags});
         // The execution animation dispatches its completed hit with boss context below.
         for(const tag of tags)if(tagPrefix[tag]&&!(tag==='execution'&&options.executionAnimation))this.trigger('on'+tagPrefix[tag]+'Hit',{enemy:e,damage,tags});
       }else if(secondary)this.trigger('onEffectHit',{enemy:e,damage,posture,tags});
@@ -558,6 +559,7 @@
         const h=this.deathBlackHole?.(),stone=base.bodyPlan==='statue'&&['petrifying','dormant'].includes(e.state);
         const flavorTags=this.deathDamageTags?.(tags,e)||tags,has=(...names)=>flavorTags.some(t=>names.includes(t));
         if(e.medusaGold||e.medusaUntil>this.time)e.deathFlavor=e.medusaGold?'goldStone':'stone';
+        else if(has('unloadSlash'))e.deathFlavor='shadowSever';
         else if(has('mindFrostDeath'))e.deathFlavor='ice';
         else if(has('consecration','holy','holyStrike','newSunAnnihilation','endEyeAnnihilation'))e.deathFlavor='annihilation';
         else if(h&&h.life>0&&distance(h,e)<=h.radius){e.deathFlavor='blackHole';e.deathSink=h;if(stone)e.statueCollapse=true;}
@@ -718,6 +720,7 @@
         }
         const linkRecovery=(p.state==='attack'&&p.attackIndex<3&&p.attackBuffer>0)?a.recovery*.68:a.recovery;
         if(p.t>=a.wind+a.active+linkRecovery){
+          this.trigger('onAttackComplete',{serial:p.attackSerial,index:p.attackIndex,state:p.state});
           p.combo=p.state==='attack'?(p.attackIndex+1)%4:0;p.comboGrace=.7;if(p.state==='thrust'){p.rockThrustActive=false;p.rockThrustFull=false;}p.state='idle';p.swingSound=false;
           if(p.attackBuffer>0)this.startAttack();
         }

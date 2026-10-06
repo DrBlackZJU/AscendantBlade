@@ -199,7 +199,7 @@ function getSurvival(){
     gainMomentum(amount,reason){
       amount*=this.momentumGainScale(reason);
       amount=Math.max(0,this.game.hooks.modify('momentumGain',amount*this.momentumMultiplier,{reason}));
-      const before=this.momentum;this.momentum=clamp(this.momentum+amount,this.effects?.momentumFloor()||0,this.game.rules.momentumMax);
+      const before=this.momentum;this.momentum=clamp(this.momentum+amount,this.effects?.momentumMinimum()||0,this.game.rules.momentumMax);
       this.syncTemporaryMomentum();this.lastMomentum=this.time;this.game.trigger('onGainMomentum',{amount:this.momentum-before,reason,run:this});
     }
     syncTemporaryMomentum(){
@@ -207,13 +207,15 @@ function getSurvival(){
       if(u)u.momentum=u.remaining>0&&this.hasDual('ultimateForm','bloodGuard')?clamp(u.momentum||0,0,Math.max(0,this.game.rules.momentumMax-this.momentum)):0;
     }
     get temporaryMomentum(){this.syncTemporaryMomentum();return this.effects?.ultimate.momentum||0;}
-    spendMomentum(amount,reason='extension',{temporaryOnly=false}={}){
+    spendMomentum(amount,reason='extension',{temporaryOnly=false,allowOverdraft=false}={}){
       amount=Math.max(0,this.game.hooks.modify('momentumCost',amount,{reason}));
       const temporary=reason==='momentumBurst'?0:this.temporaryMomentum;
-      if((temporaryOnly?temporary:this.momentum+temporary)<amount)return false;
+      const overdraw=!temporaryOnly&&reason==='momentumBurst'&&this.momentum<amount&&allowOverdraft&&this.effects?.canOverdraw();
+      if((temporaryOnly?temporary:this.momentum+temporary)<amount&&!overdraw)return false;
       const spentTemporary=Math.min(temporary,amount);
       if(spentTemporary)this.effects.ultimate.momentum-=spentTemporary;
-      this.momentum=Math.max(this.effects?.momentumFloor()||0,this.momentum-(amount-spentTemporary));
+      this.momentum=overdraw&&!this.hasDual('hotBlood','maniac')?this.momentum-amount:Math.max(this.effects?.momentumMinimum()||0,this.momentum-(amount-spentTemporary));
+      if(overdraw)this.effects.startOverdraft();
       this.syncTemporaryMomentum();this.game.trigger('onSpendMomentum',{amount,reason,temporary:spentTemporary,run:this});return true;
     }
     getMomentumBurstConfig(){
@@ -238,10 +240,10 @@ function getSurvival(){
     }
     castMomentumBurst(options={}){
       const g=this.game,p=g.p,cfg=this.getMomentumBurstConfig(),free=!!options.free;
-      if(g.status!=='playing'||this.offers.length||(!free&&this.momentum<cfg.cost)||p.state==='execute'||p.state==='hurt')return false;
+      if(g.status!=='playing'||this.offers.length||(!free&&this.momentum<cfg.cost&&!this.effects.canOverdraw())||p.state==='execute'||p.state==='hurt')return false;
       const beforeBurstMomentum=this.momentum;
-      if(!free&&!this.spendMomentum(cfg.cost,'momentumBurst'))return false;
-      const paidCost=free?0:beforeBurstMomentum-this.momentum;
+      if(!free&&!this.spendMomentum(cfg.cost,'momentumBurst',{allowOverdraft:true}))return false;
+      const paidCost=free?0:Math.max(0,beforeBurstMomentum-this.momentum);
       if(free)g.emit('freeBurst',{x:p.x,y:p.y,z:p.z,source:options.source||'free'});
 
       let shattered=0,parried=0,blasted=0;
@@ -420,14 +422,18 @@ function getSurvival(){
     }
     gainLevel(source='level'){
         this.level++;this.nextXP=XP_FOR_LEVEL(this.level);this.pendingLevels++;this.ascensionCredits++;this.creditSources.push(source);
+        const growth=this.applyLevelGrowth();
+        this.game.trigger('onLevelUp',{level:this.level,run:this,source,...growth});
+    }
+    applyLevelGrowth(source='levelVitality'){
         const p=this.game.p,oldMax=p.maxHp;
         p.maxHp+=6;
         // Level vitality is filled immediately instead of merely raising an empty ceiling.
         p.hp=Math.min(p.maxHp*(1+(p.healCapBonus||0)),p.hp+(p.maxHp-oldMax));
         // A meaningful burst early on that also keeps pace with late-game max-health builds.
-        this.game.heal(Math.max(10,p.maxHp*.08),{source:'levelVitality'});
+        this.game.heal(Math.max(10,p.maxHp*.08),{source});
         p.damageMultiplier+=.025;p.postureMultiplier+=.01;p.guardPostureMultiplier=(p.guardPostureMultiplier||1)+.025;
-        this.game.trigger('onLevelUp',{level:this.level,run:this,source,maxHpGain:p.maxHp-oldMax,damageGain:.025,guardPostureGain:.025});
+        return {maxHpGain:p.maxHp-oldMax,damageGain:.025,guardPostureGain:.025};
     }
     grantLevels(count,source='level'){
       for(let i=0;i<count;i++)this.gainLevel(source);
@@ -487,14 +493,14 @@ function getSurvival(){
       let rapidUsed=false;
       this.offers=selected.map((a,slot)=>{
         if(a.parents)return {...a,dual:true,offerType:'dual',nextLevel:null,grantTo:null,description:a.description};
-        const current=this.upgrades[a.id]||0;let grantTo=current+1,rapidBoost=false;
+        const current=this.upgrades[a.id]||0;let grantTo=current+1,rapidBoost=false,rapidGrowthReward=false;
         if(earlyFresh){grantTo=1;}
         else if(fatePage){grantTo=3;rapidBoost=true;}
-        else if(firstbornPage&&current===0){grantTo=3;rapidBoost=true;}
-        else if(forceFresh&&current===0){grantTo=3;rapidBoost=true;}
-        else if(!rapidUsed&&rapid>=1&&current===1&&this.game.random()<(.03+(slot===0&&this.hasDual('choice','rapidGrowth')?.05:0))){grantTo=3;rapidBoost=true;rapidUsed=true;}
-        else if(!rapidUsed&&rapid>=2&&current===0&&this.game.random()<(.04+(slot===0&&this.hasDual('choice','rapidGrowth')?.05:0))){grantTo=2;rapidBoost=true;rapidUsed=true;}
-        return {...a,offerType:current?'upgrade':'fresh',nextLevel:grantTo,grantTo,rapidBoost,description:a.levels?.[Math.min(2,grantTo-1)]||a.description};
+        else if(firstbornPage&&current===0){grantTo=3;rapidBoost=true;rapidGrowthReward=true;}
+        else if(forceFresh&&current===0){grantTo=3;rapidBoost=true;rapidGrowthReward=true;}
+        else if(!rapidUsed&&rapid>=1&&current===1&&this.game.random()<(.03+(slot===0&&this.hasDual('choice','rapidGrowth')?.05:0))){grantTo=3;rapidBoost=true;rapidGrowthReward=true;rapidUsed=true;}
+        else if(!rapidUsed&&rapid>=2&&current===0&&this.game.random()<(.04+(slot===0&&this.hasDual('choice','rapidGrowth')?.05:0))){grantTo=2;rapidBoost=true;rapidGrowthReward=true;rapidUsed=true;}
+        return {...a,offerType:current?'upgrade':'fresh',nextLevel:grantTo,grantTo,rapidBoost,rapidGrowthReward,description:a.levels?.[Math.min(2,grantTo-1)]||a.description};
       });
       if(!this.offers.length)this.offers=[{id:'reserve-growth',name:'百炼',subtitle:'诸艺已臻化境',description:'所有合法擢升已获得，本次改为永久提高 8% 攻击伤害。',nextLevel:null,fallback:true,apply(run){run.game.p.damageMultiplier+=.08;}}];
       if(notify)this.game.emit('upgrade',{level:this.level,credits:this.pendingLevels});
@@ -509,7 +515,7 @@ function getSurvival(){
       if(!offer)return false;
       if(offer.dual){if(this.duals[offer.id]||!offer.parents.every(id=>(this.upgrades[id]||0)>=3))return false;this.duals[offer.id]=true;this.effects?.onDualAcquired?.(offer);this.game.trigger('onDualAscensionChosen',{id:offer.id,parents:offer.parents,run:this});return true;}
       if(!offer.fallback){let rank=this.upgrades[offer.id]||0;if(rank>=(offer.maxLevel||3))return false;const target=Math.min(offer.maxLevel||3,offer.grantTo||rank+1);while(rank<target){rank++;this.upgrades[offer.id]=rank;offer.apply(this,rank);}}else if(!free)offer.apply(this);else return false;
-      this.game.trigger('onAscensionChosen',{id:offer.id,rank:this.upgrades[offer.id]||null,run:this,free,rapidBoost:!!offer.rapidBoost});return true;
+      this.game.trigger('onAscensionChosen',{id:offer.id,rank:this.upgrades[offer.id]||null,run:this,free,rapidBoost:!!offer.rapidBoost,rapidGrowthReward:!!offer.rapidGrowthReward});return true;
     }
     chooseAscension(id){
       if(this.training)return this.trainingPick(id);
@@ -550,7 +556,7 @@ function getSurvival(){
       }
       this.updateLoopWorld();const before=g.time;g.step(dt,input,pressed);this.wrapLoopWorld();
       if(g.time>before&&g.status==='playing')this.effects.update(g.time-before);
-      if(this.training){for(const e of g.enemies)if(e.dummy&&e.dead&&e.deathT>=1.15)this.resetTrainingDummy(e);g.heal(35*dt,{source:'training',quiet:true});this.momentum=clamp(this.momentum+35*dt,0,g.rules.momentumMax);this.syncTemporaryMomentum();this.trainingHits=this.trainingHits.filter(h=>this.time-h.time<5);this.pendingLevels=0;this.creditSources=[];this.xp=0;}
+      if(this.training){for(const e of g.enemies)if(e.dummy&&e.dead&&e.deathT>=1.15)this.resetTrainingDummy(e);g.heal(35*dt,{source:'training',quiet:true});this.momentum=clamp(this.momentum+35*dt,this.effects.momentumMinimum(),g.rules.momentumMax);this.effects.updateOverdraft();this.syncTemporaryMomentum();this.trainingHits=this.trainingHits.filter(h=>this.time-h.time<5);this.pendingLevels=0;this.creditSources=[];this.xp=0;}
       g.enemies=g.enemies.filter(e=>e.dummy||!e.dead||e.rushCorpseUntil>this.time||this.finalPhase==='ending'&&this.finalIds.has(e.id)||(!e.furnaceConsumed&&e.deathT<1.2));
       if(g.status==='playing'&&!this.training)this.processLevelUps();
       if(!this.training)this.updateAscensionSafety(dt);
@@ -726,7 +732,7 @@ const AshBattleArt=(()=>{
     const core=c.createLinearGradient(x,y,x,y-height*.63);core.addColorStop(0,pale+'99');core.addColorStop(.4,pale+'88');core.addColorStop(1,pale+'00');c.beginPath();c.moveTo(x-w*.35,y);c.bezierCurveTo(x-w*.8,y-height*.3,x+sway*.6,y-height*.3,x+sway*.8,y-height*.69);c.quadraticCurveTo(x+w*.3,y-height*.27,x+w*.4,y);c.fillStyle=core;c.fill();
     const ember=(time*1.8+noise(seed))%1;c.globalAlpha*=.9;stroke(c,[[x+sway*ember,y-height*ember],[x+sway*ember+2,y-height*ember-3]],pale,1);c.globalAlpha/=.9;
   }
-  const IMPACTS={frostExplosion:'ice',giantImpact:'stone',probeConsume:'probe',finalHoly:'holy',holyStrike:'holy',bountyClaim:'bounty',enemyExplosion:'fire',quake:'stone',shockwave:'airPressure',rockShockwave:'airPressure',twinShock:'goldFissure',burstEcho:'burst',peakShock:'airPressure',dualHeavyShock:'smallRecoil',bullImpact:'bull',posturePulse:'bladeShock',corpseBomb:'blood',overkill:'overkillRupture',bloodTide:'blood',flyingKickExplosion:'goldShrapnel',heatBurst:'fire',projectileFireBurst:'projectileFire',frictionBurst:'frictionHeat',poisonFlameBlast:'poisonFlame',serumReactionBurst:'serumReaction',emberSpreadBurst:'flameSpread',heavyRecoil:'heavyRecoil',ignite:'fire',meteorImpact:'meteor',fireTouch:'fire',acidBlood:'acidBlood',plague:'poison',iceBarrierBreak:'iceArmor',freeze:'ice',consecrationEnd:'holy',furnace:'fire',timeReturn:'void'};
+  const IMPACTS={frostExplosion:'ice',giantImpact:'stone',probeConsume:'probe',finalHoly:'holy',holyStrike:'holy',bountyClaim:'bounty',enemyExplosion:'fire',quake:'stone',shockwave:'airPressure',chargePeak:'airPressure',rockShockwave:'airPressure',twinShock:'goldFissure',burstEcho:'burst',peakShock:'airPressure',dualHeavyShock:'smallRecoil',bullImpact:'bull',posturePulse:'bladeShock',corpseBomb:'blood',overkill:'overkillRupture',bloodTide:'blood',flyingKickExplosion:'goldShrapnel',heatBurst:'fire',projectileFireBurst:'projectileFire',frictionBurst:'frictionHeat',poisonFlameBlast:'poisonFlame',serumReactionBurst:'serumReaction',emberSpreadBurst:'flameSpread',heavyRecoil:'heavyRecoil',ignite:'fire',meteorImpact:'meteor',fireTouch:'fire',acidBlood:'acidBlood',plague:'poison',iceBarrierBreak:'iceArmor',freeze:'ice',consecrationEnd:'holy',furnace:'fire',timeReturn:'void'};
   class Effects{
     constructor(){this.items=[];}
     clear(){this.items=[];}
@@ -1352,7 +1358,7 @@ function initializeGame(){
       if(e.type==='echoArmed'){ring(e.x,e.y,'#c9e7dc',74,e.z+18);label(e.x,e.y-e.z-108,'回 响','#d7efe5',11);}
       if(e.type==='burstEcho'){shake=Math.max(shake,e.order===2?6:3);ring(e.x,e.y,e.order===2?'#d5e7cf':'#a9c8bf',e.radius||240,10);burst(e.x,e.y,e.order===2?22:12,'#c8ded4',190,18);}
       if(e.type==='peakTiming'){ring(e.x,e.y,'#ffe09a',72,e.z+42);burst(e.x,e.y,14,'#f6d98a',160,e.z+44);label(e.x,e.y-e.z-118,'恰 至 巅 峰','#ffe7a9',14);}
-      if(e.type==='chargePeak'){sound('parry');ring(e.x,e.y,'#ffe2a0',110,24);ring(e.x,e.y,'#c9eef0',72,42);burst(e.x,e.y,18,'#f4dda2',190,46);label(e.x,e.y-game.p.z-122,'满 弦 一 震','#fff0bc',14);}
+      if(e.type==='chargePeak'){sound('parry');label(e.x,e.y-game.p.z-122,'满 弦 一 震','#fff0bc',14);}
       if(e.type==='armorRend'){burst(e.x,e.y,6,'#e3b475',110,e.z*.45);}
       if(e.type==='twinShock'){shake=Math.max(shake,e.blood?8:5);if(e.blood)label(e.x,e.y-104,'余 锋 · 藏 杀','#ff9aaa',13);}
       if(e.type==='corpseBomb'){corpseBombFX.push({x:e.x,y:e.y,radius:e.radius||120,strong:!!e.strong,t:0,life:.72,seed:Math.random()*TAU});shake=Math.max(shake,e.strong?11:7);ring(e.x,e.y,e.strong?'#d84b60':'#b73548',e.radius||120,10);burst(e.x,e.y,e.strong?32:22,e.strong?'#ee6978':'#c84455',e.strong?300:230,24);}
@@ -2358,7 +2364,7 @@ function initializeGame(){
     if(!isPlayer&&(wt==='axe'||wt==='hammer')){const mount=wt==='axe'?{along:-7,across:2,turn:-.08}:{along:3,across:-1,turn:.06},ca=Math.cos(p.angle),sa=Math.sin(p.angle);weaponX+=ca*mount.along-sa*mount.across;weaponY+=sa*mount.along+ca*mount.across;weaponAngle+=mount.turn;}
     if(['towerShield','spikeShield','shield'].includes(wt)){weaponX=j.hand[0]+9;weaponY=j.hand[1]+4;weaponAngle=-((p.rotation||0)+(e.state==='knockdown'?face*.82:0)+cq*TAU*2);}
     if(isPlayer&&!ghost&&!e.dead&&wt==='sword'&&['attack','heavy','thrust','plunge'].includes(e.state))AshCombatFX.swiftEchoes(ctx,weaponX,weaponY,weaponAngle,run?.effects?.swiftStacks()||0,run?.effects?.swiftMax()||6,e.t/Math.max(.01,e.attack?.active||.3));
-    weapon(weaponX,weaponY,weaponAngle,wt==='dual'?'sword':wt,isPlayer?color:visual?.detail||color,(boss?.84:e.type==='duelist'?1.1:1)*reachScale,p.bowPull);
+    weapon(weaponX,weaponY,weaponAngle,wt==='dual'?'sword':wt,isPlayer?color:visual?.detail||color,(boss?.84:e.type==='duelist'?1.1:1)*reachScale*(isPlayer?e.swordScale||1:1),p.bowPull);
     if(isPlayer&&!ghost&&!e.dead&&wt==='sword')drawHiddenEdgeSword(weaponX,weaponY,weaponAngle,run?.effects?.v11?.hiddenEdge?.charges||0);
     if(isPlayer&&wt==='sword'&&run?.upgrades?.peakTiming&&e.state==='charge'&&e.chargeReady){const window=[0,.15,.2,.25][run.upgrades.peakTiming],age=game.time-(e.chargeReadyAt??-Infinity);if(age>=0&&age<=window){const pulse=.78+.22*Math.sin(realTime*30);ctx.save();ctx.translate(weaponX,weaponY);ctx.rotate(weaponAngle);ctx.globalCompositeOperation='lighter';ctx.globalAlpha=pulse;ctx.shadowColor='#ffd347';ctx.shadowBlur=18;line(9,0,76,0,'#ffe177',5);line(14,-2,72,-2,'#fff2ad',2);for(let i=0;i<5;i++){const xx=24+i*11,yy=Math.sin(realTime*18+i*2.4)*5;circle(xx,yy,2+i%2,'#ffe485');}ctx.restore();}}
     if(!isPlayer&&e.type==='immortal_shield'){
@@ -2382,6 +2388,10 @@ function initializeGame(){
     if(!isPlayer&&!ghost&&!e.dead&&(e.bossThrowWarning||e.bossThrown)){const pulse=.72+.20*Math.sin(realTime*12+(e.id||0));ctx.save();ctx.globalCompositeOperation='lighter';ctx.globalAlpha=(e.bossThrown?.78:.62)*pulse;fog(x,y-z-44*s,39*s,61*s,'#ff30305c');ctx.strokeStyle='#ff544a';ctx.shadowColor='#ff3028';ctx.shadowBlur=18;ctx.lineWidth=2.2;ctx.beginPath();ctx.ellipse(x,y-z-43*s,31*s,55*s,0,0,TAU);ctx.stroke();ctx.restore();}
     if(!isPlayer&&!ghost&&!e.dead&&!e.woundSnapshot)drawEnemyAttackVisual(e,j,visual,x,y,z,s,face);
     if(ghost||e.dead||e.groundDrag||e.woundSnapshot)return;
+    if(!isPlayer&&e.pressureWeakUntil>game.time){
+      ctx.save();ctx.strokeStyle='#929699';ctx.lineWidth=1.8;ctx.lineCap='round';
+      for(let i=0;i<5;i++){const drift=(realTime*30+i*17)%62,bx=x+(i-2)*15*s,by=y-z-(92-drift)*s;ctx.globalAlpha=.35+.35*Math.sin(Math.PI*drift/62);ctx.beginPath();for(let j=0;j<=8;j++){const xx=bx+Math.sin(j*.7+realTime*3+i)*3*s,yy=by+j*3*s;if(j===0)ctx.moveTo(xx,yy);else ctx.lineTo(xx,yy);}ctx.stroke();}ctx.restore();
+    }
     if(e.effects?.iceFlame||e.effects?.burn||e.effects?.tarBurn){const cold=!!e.effects?.iceFlame;fog(x,y-z-43*s,isPlayer?43*s:29*s,isPlayer?62*s:49*s,cold?'#73caff3d':isPlayer?'#df383854':'#eb81303d');for(let i=0;i<(isPlayer?7:4);i++){const xx=x+(i-3)*8*s+Math.sin(realTime*7+i)*4*s,yy=y-z-10*s-(i%3)*17*s;AshBattleArt.flame(ctx,xx,yy,(isPlayer?26:19)*s,i,realTime,cold?'#8bdcff':isPlayer?'#e95738':'#e9a64c');}}
 
     if(e.effects?.poison){const pulse=.55+.2*Math.sin(realTime*7+e.id);fog(x,y-38*s,34*s,44*s,'rgba(117,174,75,'+(0.10+pulse*.08)+')');for(let i=0;i<5;i++){const a=realTime*(1.1+i*.08)+i*1.6,rr=13+7*(i%2);circle(x+Math.cos(a)*rr*s,y-28*s+Math.sin(a*1.4)*22*s-(realTime*11+i*5)%12,2.2+(i%2),'rgba(173,220,112,.55)');}ctx.save();ctx.globalAlpha=.25+pulse*.12;ctx.strokeStyle='#9bc66b';ctx.lineWidth=1.3;ctx.beginPath();ctx.ellipse(x,y-43*s,25*s,37*s,0,0,TAU);ctx.stroke();ctx.restore();}
@@ -2737,11 +2747,11 @@ function initializeGame(){
       ctx.fillStyle='#9cbaa1';ctx.fillRect(barX,61,barW*run.xp/run.nextXP,4);
       text(Math.floor(run.xp)+' / '+run.nextXP,barX+barW,80,9,'#8b9d91','right','mono');
     }
-    const burstCost=run.getMomentumBurstConfig().cost,burstReady=run.momentum>=burstCost,burstRatio=burstCost/game.rules.momentumMax;
-    text('战意',0,102,10,burstReady?'#f1d099':'#c2ac86');ctx.fillStyle='#403b2e';ctx.fillRect(barX,94,barW,5);
-    ctx.fillStyle=burstReady?'#e2bd76':'#d5b273';ctx.fillRect(barX,94,barW*run.momentum/game.rules.momentumMax,5);
+    const burstCost=run.getMomentumBurstConfig().cost,canOverdraw=run.effects.canOverdraw(),burstReady=run.momentum>=burstCost||canOverdraw,burstRatio=burstCost/game.rules.momentumMax,momentumRatio=clamp(run.momentum/game.rules.momentumMax,0,1);
+    text('战意',0,102,10,burstReady?'#f1d099':'#c2ac86');ctx.fillStyle=run.hasDual('maniac','roar')&&!canOverdraw?'#55585d':'#403b2e';ctx.fillRect(barX,94,barW,5);
+    ctx.fillStyle=burstReady?'#e2bd76':'#d5b273';ctx.fillRect(barX,94,barW*momentumRatio,5);
     const temporaryMomentum=run.temporaryMomentum;
-    if(temporaryMomentum>0){ctx.fillStyle='#a9dedb';ctx.fillRect(barX+barW*run.momentum/game.rules.momentumMax,94,barW*temporaryMomentum/game.rules.momentumMax,5);}
+    if(temporaryMomentum>0){ctx.fillStyle='#a9dedb';ctx.fillRect(barX+barW*momentumRatio,94,barW*Math.min(temporaryMomentum/game.rules.momentumMax,1-momentumRatio),5);}
     line(barX+barW*burstRatio,91,barX+barW*burstRatio,102,burstReady?'#f6dda9':'#88765a',1);
 
     text(Math.floor(run.momentum)+(temporaryMomentum>0?' + '+Math.floor(temporaryMomentum):'')+' / '+game.rules.momentumMax,barX+barW,116,9,burstReady?'#d9bd86':'#a59675','right','mono');

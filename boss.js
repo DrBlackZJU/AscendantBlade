@@ -340,7 +340,7 @@ const Encounters=(function(){
  wrap('resolveEnemyMoveSpecial',function(old,e,a,result){old.call(this,e,a,result);if(result==='hit'&&a.flags?.includes('bossHook')&&e&&!e.dead){this.p.x=e.x+e.face*65;this.p.y=e.y;}});
  wrap('kill',function(old,e,tags='normal'){
   if(e.bossProxy)return this.kill(e.bossProxy,tags);
-  const k=kind(e),s=k?init(e):null;if(k==='champion'&&!s.revived){s.revived=true;s.reviveUntil=s.clock+1.15;e.revived=true;e.hp=e.maxHp*.4;e.posture=e.maxPosture;e.enraged=true;e.rageSpeed=1.5;e.state='recovery';e.t=1.15;e.queue=[];e.attack=null;e.pendingStun=false;this.emit('enemyRevive',{x:e.x,y:e.y,type:e.type});return;}
+  const k=kind(e),s=k?init(e):null;if(k==='champion'&&!s.revived){s.revived=true;s.reviveUntil=s.clock+1.15;e.revived=true;e.hp=e.maxHp*(e.antiRegen?.10:.40);e.posture=e.maxPosture;e.enraged=true;e.rageSpeed=1.5;e.state='recovery';e.t=1.15;e.queue=[];e.attack=null;e.pendingStun=false;this.emit('enemyRevive',{x:e.x,y:e.y,type:e.type});return;}
   const was=e.dead,result=old.call(this,e,tags);if(!was&&e.dead){if(k||TYPES[e.type]?.final){e.bossDeathAt=this.time;e.attack=null;e.walking=e.moving=false;}if(s){const throwTarget=this.enemies.find(o=>o.id===s.throwTargetId);if(throwTarget&&!throwTarget.bossThrown)throwTarget.bossThrowWarning=false;s.throwTargetId=null;s.hunting=false;s.air=0;s.vacuum=0;for(const c of s.proxies||[]){c.dead=true;c.state='dead';c.deathT=0;c.bossDeathAt=this.time;c.attack=null;c.bossDeath='moths';}e.bossDeath=TYPES[e.type].deathStyle;}e.bossFinalDeath=TYPES[e.type]?.final?true:undefined;}return result;
  });
  wrap('damageEnemy',function(old,e,damage,posture,tags='normal',options={}){

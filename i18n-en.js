@@ -635,7 +635,7 @@ Object.assign(AshEnglish.duals, {
   d62: ['Boiling Blood','Taking damage below 50% total health restores 4 health per second for 3 seconds. Further damage refreshes the duration.'],
   d63: ['Death Gate','For 6 seconds after revival, gain maximum Bloodthirst bonuses and extra wounded health from attacks. Each kill shortens revival cooldown by 2 seconds.'],
   d64: ['Undying Star Body','Revive with 80% maximum health and immediately gain 2.2 seconds of starlight invulnerability and super armor.'],
-  d65: ['Charge the Hidden Edge','Longer charges increase Hidden Edge extra damage and kill threshold.'],
+  d65: ['Charged Hidden Edge','Longer charges increase Hidden Edge extra damage and kill threshold.'],
   d66: ['One Blade, Two Cuts','After Borrowed Force, the next charged heavy grants Twin Cleave +80% health and posture damage and +20% range. Full-charge shocks have a 25% posture-break chance.'],
   d67: ['Devastation','Executioner fear has a 20% chance to become permanent.'],
   d68: ['Final Reckoning','Posture breaks detonate accumulated hidden wounds on every nearby enemy, with +10% effect.'],
@@ -1011,6 +1011,15 @@ Object.assign(AshEnglish.duals,{
   d331:['Haunting Shadows','Evading an attack inflicts Illusion on the attacker for 1 second, with a 4% chance to permanently break its mind.'],
   d332:['Returning Force','Recoverable health converted by Inner Force starts recovering immediately.'],
   d333:['Ironwall Edge','Blocking no longer interrupts heavy attack charging. Each successful block adds 10% heavy attack posture damage, doubled for perfect blocks.'],
-  d334:['Transcendent Grimoire','Attacking also fires a magic bolt. Dismantle on the ascension screen to forgo one ascension opportunity and permanently add 20 health and 5 posture damage to the bolt.'],
-  d335:['Advanced Summoning','Each other summon grants your Dragon Hatchling 20% more damage and 8% faster cooldown recovery.']
+  d334:['Transcendent Grimoire','Attacking also fires a magic bolt. Dismantle on the ascension screen to forgo one ascension opportunity and permanently add 25 health and 10 posture damage to the bolt.'],
+  d335:['Advanced Summoning','Each other summon grants your Dragon Hatchling 20% more damage and 8% faster cooldown recovery.'],
+  d336:['Deflecting Cleave','After a perfect block, your next charged heavy attack always carries Return Blade, gains 50% attack range, and has a 20% chance to break posture. It instantly slays posture-broken targets.'],
+  d337:['Cornered Fury','Below 25% health, enemies above 40% health cannot interrupt you. Against enemies below 40% health, gain 20% more attack damage and heal for 5% of actual attack damage, up to 20 per hit.'],
+  d338:['Power Leveling','Whenever Rapid Growth grants an ascension rank bonus, gain the healing and base stat growth of leveling up twice.'],
+  d339:['Dragon Slayer','Your sword grows larger and gains 30% attack range. Its heavy edge launches small enemies, staggers elites more strongly, and deals 20% more health and posture damage to bosses.'],
+  d340:['Tuning Fork','Resonance stacks without limit, but each stack beyond 4 grants only 5% perfect-block posture damage. Attacking consumes all stacks beyond 4 at once, dealing 24 posture damage per stack to nearby enemies.'],
+  d341:['Shredder','Bleeding instantly kills enemies below 5% health and grants 5 recoverable health.'],
+  d342:['Suppression','The first strike empowered by First Strike consumes its own Probe effect to gain its bonus, and reduces the target\'s damage by 80% for 4 seconds. Bosses are weakened by only 20%.'],
+  d343:['Overdraft','Momentum Burst can be used without enough momentum, turning the deficit into negative momentum. After overdrawing, momentum must recover to at least 0 for 10 seconds before you can overdraw again.'],
+  d344:['Spearhead','If a Hidden Edge attack is the first combo strike, it gains super armor and briefly evades enemy attacks during its forward step. For 0.8 seconds after the attack finishes, automatically block incoming enemy attacks.']
 });
