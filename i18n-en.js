@@ -674,7 +674,7 @@ Object.assign(AshEnglish.duals, {
   d259: ['Enslavement','Mind-controlled enemies gain your attack speed and attack damage bonuses.'],
   d260: ['Healthy Living','All healing effects +20%. Healing can exceed maximum health by 25%.'],
   d261: ['Serrated Skirt','Ring Blade gains extra attack damage and blade growth bonuses. A stronger blade makes sharper rings.'],
-  d262: ['Super Saw Storm','Double saw count to 64. Faster, longer-lasting saws form two counter-rotating storms.'],
+  d262: ['Saw Vortex','Double saw count to 64. Faster, longer-lasting saws form two counter-rotating storms.'],
   d263: ['Precise Blade Ring','When Ring Blade hits at most 3 enemies: health damage +30%, posture damage +18%, plus damage equal to 1.8% of target maximum health.'],
   d264: ['Chain Blade Shadows','Dashes release 3 ring blades along the path at 60% effectiveness.'],
   d265: ['Nail Return Slash','Downward hits release an extra Ring Blade at the impact point.'],
@@ -693,7 +693,7 @@ Object.assign(AshEnglish.duals, {
   d278: ['Electrodynamics','Activating a lightning orb detonates all lightning marks on the battlefield.'],
   d279: ['Proxy Execution','Ghost Hand quickly executes suppressed posture-broken targets, shocks nearby posture, and restores spirit.'],
   d280: ['Black Hole Gauntlet','Approaching a black hole center extends its duration by 0.85 seconds and makes it follow you.'],
-  d281: ['Armor-splitting Stone Nail','Stone Thrust hits leave stone nails. Armor-rending attacks or posture breaks detonate them for 52 plus 10% maximum posture damage, with 55% effect on nearby enemies.'],
+  d281: ['Armor-splitting Stone Nail','Stone Thrust hits leave stone nails. Armor-rending attacks or posture breaks detonate them for an extra 52 health damage and 52 plus 10% maximum posture damage, with 55% effect on nearby enemies.'],
   d282: ['Bell Shock','At full Resonance, perfect blocks have a 15% chance to toll a small bell; boss executions always trigger it. Restore 7 health and damage all enemies, with greater damage nearby.'],
   d283: ['Wind-chasing Second Form','First combo hits preserve wind. Second hits spend it for a rapid advance with larger range and briefly evade attacks.'],
   d284: ['Triple Return Blade','Return Blade bonuses after perfect block last for 3 attacks.'],
@@ -959,7 +959,7 @@ Object.assign(AshEnglish.duals, {
   d141: ['Meteor Shower','Spirit Burst calls 3–4 small meteors, each dealing 60 health and 45 posture damage and igniting for 4 seconds.'],
   d142: ['Larger Furnace','Consume up to 3 small enemies at once. Each restores 6 extra health.'],
   d143: ['Blood-shadow Strike','Alpha Strike path damage +60% and inflicts bleeding for 15 damage per second for 5 seconds.'],
-  d144: ['Unfading Aftershocks','Additional shocks from Burst Echo and Twin Cleave no longer weaken.'],
+  d144: ['Triple Cleave','Charged hits are followed by a second and third shock. The third shock has the same effects as the second.'],
   d145: ['Spinning Sword Spirit','Every 6 seconds, Sword Spirit rushes an enemy and sweeps nearby foes for 58 health and 36 posture damage, benefiting from your damage bonuses.'],
   d146: ['Eye of Death','Against bounty targets: critical chance gains an extra 20%, critical multiplier +0.5.'],
   d147: ['Drain on Impact','Being hit while charging immediately drains 20 health and 10 posture from each nearby enemy. Store health drained as extra damage for this heavy, up to +150.'],
@@ -997,4 +997,20 @@ Object.assign(AshEnglish.duals,{
   d28:['Triple Dash','Maximum dash charges become 3. Dash cooldown starts recovering as soon as you press dash.'],
   d158:['Frightful Thrust','Thrusts mark enemies. Their next attack triggers lightning for 64 health and 16 posture damage and interrupts the attack. Boss attacks are only interrupted when their posture is depleted.'],
   d322:['Peashooter','Summon a peashooter companion that fires a pea every 1.4 seconds for 30 health and 20 posture damage. Collect food to nourish it and charge Chlorophyll.']
+});
+
+AshEnglish.duals.d323=['Throat Cut','After blocking an enemy projectile, your next attack also launches a shadow slash, dealing an extra 67 health damage and 37 posture damage to that enemy, with a 30% chance to break posture.'];
+Object.assign(AshEnglish.duals,{
+  d324:['Recycling','Dismantle on the ascension screen to forgo one ascension opportunity and gain 50% of the experience required for your current level. Gain an extra 25% experience for each dual ascension offered.'],
+  d325:['Terminal Illness','Wounds never expire. Wounded enemies take 20% more poison health and posture damage.'],
+  d326:['Frostburst','Reaching maximum Frost Trace stacks also triggers a frostburst for 28 health and 90 posture damage, inflicting frostbite and leaving slowing ground.'],
+  d327:['Shed Shell','Taking damage from a boss immediately refreshes your dash and knocks away nearby enemies for 30 health and 50 posture damage.'],
+  d328:['Scorched Dragon Breath','Just before Dragon Breath takes effect, randomly create 3–5 tar patches on the battlefield.'],
+  d329:['Gladiator','Perfect blocks deal 30% more posture damage to elites and bosses. Elites also lose 15% of maximum posture.'],
+  d330:['Fleet Footwork','Thrust attacks refund 30% of the remaining dodge cooldown. You cannot be hit during thrust attacks.'],
+  d331:['Haunting Shadows','Evading an attack inflicts Illusion on the attacker for 1 second, with a 4% chance to permanently break its mind.'],
+  d332:['Returning Force','Recoverable health converted by Inner Force starts recovering immediately.'],
+  d333:['Ironwall Edge','Blocking no longer interrupts heavy attack charging. Each successful block adds 10% heavy attack posture damage, doubled for perfect blocks.'],
+  d334:['Transcendent Grimoire','Attacking also fires a magic bolt. Dismantle on the ascension screen to forgo one ascension opportunity and permanently add 20 health and 5 posture damage to the bolt.'],
+  d335:['Advanced Summoning','Each other summon grants your Dragon Hatchling 20% more damage and 8% faster cooldown recovery.']
 });

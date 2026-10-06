@@ -346,7 +346,21 @@ if(t>.49){const u=clamp((t-.49)/.29);c.save();c.translate(...end);c.globalAlpha=
  if(t<.62){const wave=impactEase(t/.42),fade=1-clamp((t-.08)/.54),rim=r-Math.min(18,r*.15);for(let i=0;i<18;i++){const a=i*TAU/18,rr=rim*wave,xx=Math.cos(a)*rr,yy=Math.sin(a)*rr*.36;c.globalAlpha=1;impactFlame(c,xx,yy,20+artNoise(i)*40*(1-wave),Math.min(7+artNoise(i)*4,r*.045),t,i,fade*.98);c.globalAlpha=fade*.9;impactEllipse(c,0,-8,rr,rr*.36,'#ffbf69',3,a,a+.19);c.globalAlpha=fade*.8;impactEllipse(c,0,-8,rr,rr*.36,'#fff0ba',1.2,a,a+.16);}}
  c.globalCompositeOperation='lighter';for(let i=0;i<32+rank*7;i++){const n=artNoise(i+4),a=i*2.399,life=.25+n*.55;if(t>life)continue;const q=t/life,d=r*(.45+n*.5)*impactEase(t/.5),xx=Math.cos(a)*d,yy=-48+Math.sin(a)*d*.36-Math.sin(q*Math.PI)*(10+n*25);c.globalAlpha=(1-q)*.98;line(c,[[xx-Math.cos(a)*Math.min(4+n*10,r*.1)*(1-q),yy-Math.sin(a)*6],[xx,yy]],i%5?'#ffc16d':'#fff8dd',1.3+n);}
  c.restore();}
- root.AshCombatFX={heavyRecoilImpact,frictionHeatBurst,acidBloodImpact,iceArmorBreak,bountySeal,bountyImpact,woundAsset,drawWound,woundImpact,ring,ribbon,slash,holy,electricity,illusionCloud,fearCrown,permanentFear,bullImpact,space,glow,visible,segmentVisible,resonanceColor,probeGeometry,probeStyle,probeRing,probeBreak,executionParticles,deadDoorFlames,swiftEchoes,rockNails,rockBurst,touchIgnition,soulBlade,soulImpact,hiddenEdgeParticles,flamePalette,page,cacheSizes:()=>({ribbon:ribbonCache.size,flameColors:flameColors.size,page:pageCache.size})};
+ function shadowSlash(c,fx,camera=0){
+  const t=fx.t;if(t<0||t>=.20)return;
+  const scale=Math.max(.8,Math.min(1.6,fx.scale||1)),x=fx.x-camera,y=fx.y-(fx.z||48);
+  if(!visible(c,x,y,125*scale,30*scale))return;
+  c.save();c.globalCompositeOperation='source-over';c.shadowBlur=0;c.translate(x,y);
+  // A straight black blade flashes past the hit, tapered at both ends.
+  if(t<.12){
+   const progress=clamp(t/.035),half=(70+45*progress)*scale,width=5*scale;
+   c.save();c.rotate(-.16*(fx.face||1));c.translate((fx.face||1)*(t/.12-.5)*28,0);
+   c.globalAlpha=1-smooth((t-.045)/.075);poly(c,[[-half,0],[-8,-width],[half,0],[8,width]],'#020204');c.restore();
+  }
+  c.globalAlpha=1-smooth((t-.08)/.12);c.strokeStyle='#020204';c.lineWidth=2*scale;
+  c.beginPath();c.arc(0,0,5*scale,0,TAU);c.stroke();c.restore();
+ }
+ root.AshCombatFX={shadowSlash,heavyRecoilImpact,frictionHeatBurst,acidBloodImpact,iceArmorBreak,bountySeal,bountyImpact,woundAsset,drawWound,woundImpact,ring,ribbon,slash,holy,electricity,illusionCloud,fearCrown,permanentFear,bullImpact,space,glow,visible,segmentVisible,resonanceColor,probeGeometry,probeStyle,probeRing,probeBreak,executionParticles,deadDoorFlames,swiftEchoes,rockNails,rockBurst,touchIgnition,soulBlade,soulImpact,hiddenEdgeParticles,flamePalette,page,cacheSizes:()=>({ribbon:ribbonCache.size,flameColors:flameColors.size,page:pageCache.size})};
 })(globalThis);
 
 /* ===== Fire families: poison, serum and flame spread ===== */

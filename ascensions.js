@@ -829,7 +829,7 @@ if(typeof document!=='undefined'&&!document.getElementById('ascensions-styles'))
 
   DUAL_ASCENSIONS.push(...[
     {id:'d261',name:'锯齿裙',parents:['ringBlade','forgedBlade'],parentNames:['环刃','淬炼刀刃'],description:'环刃继承一部分普通攻击与淬炼刀刃成长加成。'},
-    {id:'d262',name:'超级锯片风暴',parents:['ringBlade','sawStorm'],parentNames:['环刃','锯片风暴'],description:'锯片数量翻倍，并沿两条银河旋臂更快地回旋发射。'},
+    {id:'d262',name:'锯刃漩涡',parents:['ringBlade','sawStorm'],parentNames:['环刃','锯片风暴'],description:'锯片数量翻倍，并沿两条银河旋臂更快地回旋发射。'},
     {id:'d263',name:'孤锋回环',parents:['ringBlade','dexterity'],parentNames:['环刃','灵巧'],description:'环刃命中少量敌人时可触发灵巧的伤害加成。'},
     {id:'d264',name:'刃影连环',parents:['ringBlade','sharpShadow'],parentNames:['环刃','锋利之影'],description:'冲刺路径中会按移动距离连续释放较弱环刃。'},
     {id:'d265',name:'骨钉回斩',parents:['ringBlade','paleNail'],parentNames:['环刃','苍白骨钉'],description:'下劈命中敌人时，以命中点为中心额外释放环刃。'},
@@ -1028,7 +1028,7 @@ if(typeof document!=='undefined'&&!document.getElementById('ascensions-styles'))
   "d273": "进入隐身时，现有幽影停止吸引仇恨并以 980 横向/620 纵向速度追击 760 范围目标；命中造成 48 生命/32 架势后消失。",
   "d277": "完美格挡被灵魂链接的目标时，所有同组链接目标额外受到架势伤害：20＋其最大架势×3.5%，BOSS 为 20＋最大架势×1.2%。",
   "d280": "玩家距离黑洞中心 <62 时，黑洞立即延长 0.85 秒，并在剩余时间以 7/秒指数跟随玩家；每个黑洞只能触发一次。",
-  "d281": "岩石突刺命中留下岩钉；后续第四击、重击或该目标破势时引爆。主目标受 14 生命＋52 架势＋最大架势百分比（普通/精英 10%，BOSS 3.5%）；185 范围其他敌人受 8 生命＋38 架势＋最大架势百分比（普通/精英 5.5%，BOSS 1.8%）。",
+  "d281": "岩石突刺命中留下岩钉；后续第四击、重击或该目标破势时引爆。主目标受 52 生命＋52 架势＋最大架势百分比（普通/精英 10%，BOSS 3.5%）；185 范围其他敌人承受主目标生命与架势伤害的 55%。",
   "d282": "满层共振时，完美格挡有 15% 概率触发小敲钟；处决 BOSS 必定触发。小钟对 235 范围敌人造成 10 生命/38 架势，范围外场上敌人 4 生命/14 架势，并恢复 7 生命。",
   "d283": "第一击不消耗风势；第二击风势 ≥1.35 时消耗 min(1.65, 当前风势)，向前突进最多 155，攻击前摇 ×0.48、主动帧 ×0.82、范围 +85，并获得 0.12 秒无敌。",
   "d285": "每次升级时，对每名屏幕内敌人独立进行 76% 基础概率判定；成功则施加厄运：延迟 1.35 秒，斩杀概率 8%。",
@@ -1190,12 +1190,12 @@ if(typeof document!=='undefined'&&!document.getElementById('ascensions-styles'))
     // Resolve flight at arrival, so follower fireballs have a real, readable travel time.
     f.updateAirSupport=function(dt){
       const r=f.rank('airSupport');if(!r)return;const origin={x:p.x-68,y:p.y},frenzy=(s.dragonFrenzy||0)>0?2.1:1;s.dragonFrenzy=Math.max(0,(s.dragonFrenzy||0)-dt);
-      for(const k of ['fireball','flame','tornado'])f.airSupport[k]-=dt*frenzy;
+      for(const k of ['fireball','flame','tornado'])f.airSupport[k]-=dt*frenzy*f.dragonSummonRecovery();
       const pool=near(p,650*(pair('elementAffinity','synergy')?1.2:1)).filter(e=>!(e.mindControlT>0));if(!pool.length){if(s.dragonBreath){s.dragonBreath.life-=dt;if(s.dragonBreath.life<=0)s.dragonBreath=null;}return;}const e=pool.sort((a,b)=>dist(p,a)-dist(p,b))[0];
       if(f.airSupport.fireball<=0){f.airSupport.fireball=f.cooldown((r===1?2.4:2)/f.v11SummonCooldown());shot(e,[0,22,28,34][r]*f.v11SummonDamage(),8,'dragon',r===3?105:0);}
       if(r>=2&&f.airSupport.flame<=0&&pool.some(e=>(e.x-origin.x)*p.face>0&&(e.x-origin.x)*p.face<310&&Math.abs(e.y-origin.y)<85)){f.airSupport.flame=f.cooldown(4.2/f.v11SummonCooldown());s.dragonBreath={life:1.1,tick:0,face:p.face};}
-      if(r===3&&f.airSupport.tornado<=0){f.airSupport.tornado=f.cooldown(9/f.v11SummonCooldown());const empowered=!!pair('airSupport','tornado'),radius=empowered?285:190;f.v11.tornadoes.push({x:origin.x,y:origin.y,vx:p.face*90,vy:0,life:4.5,tick:0,rank:3,fire:true,hits:new Map(),mergeCd:0,radius,dragonEmpowered:empowered,damageMult:empowered?1.7:1,burnDps:empowered?13:8});g.emit('fireTornado',{x:origin.x,y:origin.y,rank:3,radius,empowered});}
-      const b=s.dragonBreath;if(b){b.life-=dt;b.tick-=dt;if(b.tick<=0){b.tick=.16;for(const o of pool){const dx=(o.x-origin.x)*b.face;if(dx>0&&dx<310&&Math.abs(o.y-origin.y)<25+dx*.28){hit(o,5*f.v11SummonDamage(),3,['airSupport','fire']);burn(o,10,3);}}}if(b.life<=0)s.dragonBreath=null;}
+      if(r===3&&f.airSupport.tornado<=0){f.airSupport.tornado=f.cooldown(9/f.v11SummonCooldown());const empowered=!!pair('airSupport','tornado'),radius=empowered?285:190;f.v11.tornadoes.push({x:origin.x,y:origin.y,vx:p.face*90,vy:0,life:4.5,tick:0,rank:3,fire:true,airSupport:true,hits:new Map(),mergeCd:0,radius,dragonEmpowered:empowered,damageMult:empowered?1.7:1,burnDps:empowered?13:8});g.emit('fireTornado',{x:origin.x,y:origin.y,rank:3,radius,empowered});}
+      const b=s.dragonBreath;if(b){b.life-=dt;b.tick-=dt;if(b.tick<=0){b.tick=.16;for(const o of pool){const dx=(o.x-origin.x)*b.face;if(dx>0&&dx<310&&Math.abs(o.y-origin.y)<25+dx*.28){hit(o,5*f.v11SummonDamage(),3,['airSupport','fire']);f.addStatus(o,'burn',10,3,['composition','airSupport','fire']);}}}if(b.life<=0)s.dragonBreath=null;}
     };
     f.updateFurnaceV16=function(dt){const r=f.rank('furnace');if(!r)return;const state=f.v11.furnace;state.cd-=dt;
       for(const c of s.captures){c.t+=dt;if(c.enemy.dead)continue;c.enemy.furnaceCapture={q:Math.min(1,c.t/.8),x:c.x,y:c.y,toX:p.x-48,toY:p.y-42};if(c.t<.8)continue;const e=c.enemy;e.furnaceCapture=null;e.furnaceConsumed=true;e.suppressDeathrattle=true;f.slay(e,'furnace');if(pair('furnace','devourer'))g.heal(6,{source:'devouringFurnace'});for(let i=0;i<(r===3?2:1);i++){const roll=g.random();if(pair('luck','furnace')){f.luckyFurnaceReward(roll,r);continue;}if(roll<.28)g.heal(r===1?5:8,{source:'furnace'});else if(roll<.51)f.v11.foodBuffs.speed=6;else if(roll<.72)f.v11.foodBuffs.evasion=6;else if(roll<.96){run.xp+=r===1?10:18;run.totalXP+=r===1?10:18;}else if(g.random()<.12+(r-1)*.04)run.grantAscensionCredit('furnace');}if(pair('fieldRations','furnace'))food(p);if(pair('furnace','corpseBomb'))shot(near(p,1000)[0],128,88,'slag',165);g.emit('furnace',{x:p.x-48,y:p.y-42,rank:r});}
@@ -1299,7 +1299,7 @@ if(typeof document!=='undefined'&&!document.getElementById('ascensions-styles'))
       if(pair('bullRush','windBlade'))f.v11.bull.charge=Math.min(1,f.v11.bull.charge+dt*(Math.abs(p.vx)>100?.5:0));
       // Bound Spirit haste advances its own clock in updateLightningSpirit.
       if(s.windVisual){s.windVisual.life-=dt;if(s.windVisual.life<=0)s.windVisual=null;}
-      for(const q of s.shots){q.t+=dt;q.tx=q.target.dead?q.tx:q.target.x;q.ty=q.target.dead?q.ty:q.target.y-35;const a=Math.min(1,q.t/q.life);q.x=q.startX+(q.tx-q.startX)*a;q.y=q.startY+(q.ty-q.startY)*a-Math.sin(a*Math.PI)*38;if(a>=1){const c={x:q.tx,y:q.ty+35};if(q.type==='slag'){for(const e of near(c,q.radius)){hit(e,q.damage,q.posture,e===q.target?['airSupport','fire']:['fire']);burn(e,12,6);}}else{if(!q.target.dead&&!(q.target.mindControlT>0)&&!(q.target.timeSealT>0))hit(q.target,q.damage,q.posture,['airSupport','fire']);for(const e of q.radius?near(c,q.radius):[]){if(e!==q.target)hit(e,q.damage*.55,q.posture*.6,['fire']);burn(e,10,4);}if(!q.target.dead&&!(q.target.mindControlT>0)&&!(q.target.timeSealT>0))burn(q.target,7,3);}g.emit('projectileFireBurst',{x:c.x,y:c.y,radius:q.radius||50,rank:3,source:q.type});}}
+      for(const q of s.shots){q.t+=dt;q.tx=q.target.dead?q.tx:q.target.x;q.ty=q.target.dead?q.ty:q.target.y-35;const a=Math.min(1,q.t/q.life);q.x=q.startX+(q.tx-q.startX)*a;q.y=q.startY+(q.ty-q.startY)*a-Math.sin(a*Math.PI)*38;if(a>=1){const c={x:q.tx,y:q.ty+35};if(q.type==='slag'){for(const e of near(c,q.radius)){hit(e,q.damage,q.posture,e===q.target?['airSupport','fire']:['fire']);burn(e,12,6);}}else{if(!q.target.dead&&!(q.target.mindControlT>0)&&!(q.target.timeSealT>0))hit(q.target,q.damage,q.posture,['airSupport','fire']);for(const e of q.radius?near(c,q.radius):[]){if(e!==q.target)hit(e,q.damage*.55,q.posture*.6,['airSupport','fire']);f.addStatus(e,'burn',10,4,['composition','airSupport','fire']);}if(!q.target.dead&&!(q.target.mindControlT>0)&&!(q.target.timeSealT>0))f.addStatus(q.target,'burn',7,3,['composition','airSupport','fire']);}g.emit('projectileFireBurst',{x:c.x,y:c.y,radius:q.radius||50,rank:3,source:q.type});}}
       s.shots=s.shots.filter(q=>q.t<q.life);
       for(const b of s.beams){b.t+=dt;if(b.t>=b.warn){const inside=e=>Math.pow((e.x-b.x)/b.rx,2)+Math.pow((e.y-b.y)/b.ry,2)<=1;for(const e of g.enemies)if(!e.dead&&!e.furnaceCapture&&!b.hit.has(e.id)&&inside(e)){b.hit.add(e.id);hit(e,110*(b.blue?1.6:1),50*(b.blue?1.6:1),['dragonRoar','fire']);burn(e,15*(b.blue?1.6:1),5);}b.tick-=dt;if(b.tick<=0){b.tick=.3;for(const e of near(b,b.rx))if(inside(e))hit(e,3*(b.blue?1.6:1),0,['dragonGround','fire']);}}}s.beams=s.beams.filter(b=>b.t<b.life);
       if(s.wasExecuting&&p.state!=='execute'){if(pair('alpha','bloodExecution')){for(const e of near(p,240))hit(e,35+s.executionCount*10,28,['blood']);g.emit('alphaBloodFeast',{x:p.x,y:p.y,z:p.z,radius:240,count:s.executionCount});g.heal(Math.min(12,s.executionCount*2),{source:'alphaBlood'});}if(pair('alpha','executioner')){const e=near(p,700)[0];if(e)hit(e,50+f.executioner.stacks*15,45,['executioner']);}for(const b of f.v11.soulBlades)b.v16Held=false;s.wasExecuting=false;s.executionCount=0;}
@@ -1455,14 +1455,124 @@ if(typeof document!=='undefined'&&!document.getElementById('ascensions-styles'))
       g.hooks.on('onEnemyDamageResolved',e=>this.medusaResolvedHit(e));
       g.hooks.on('onAttackKill',({enemy})=>{this.medusaKillShock(enemy);if(this.isPetrified(enemy)&&this.pair('medusaEye','outnumbered')){this.medusa.armorUntil=g.time+2;g.p.superArmor=Math.max(g.p.superArmor,2);}});
       CompositionEffects.install(this);
+      this.installNewDuals();
+      this.shadowSlash={markedId:null,serial:-1,targetId:null,contact:false};
+      g.hooks.on('onProjectileReflect',e=>this.markShadowSlash(e));
+      g.hooks.on('onBlock',e=>this.markShadowSlash(e));
+      g.hooks.on('onPerfectBlock',e=>this.markShadowSlash(e));
+      g.hooks.on('onAttackStart',e=>this.armShadowSlash(e.serial));
+      g.hooks.on('onHeavyRelease',e=>this.armShadowSlash(e.serial));
+      g.hooks.on('modify:playerAttackReach',e=>{if(this.isShadowSlashTarget(e.enemy))e.value=true;});
+      // Add the fixed bonus after the normal attack and critical modifiers.
+      g.hooks.on('beforeAttackDamage',e=>{
+        if(!this.isJ(e.tags)||!this.isShadowSlashTarget(e.enemy)||this.shadowSlash.contact)return;
+        this.shadowSlash.contact=true;e.shadowSlash=true;e.contactBonusDamage=(e.contactBonusDamage||0)+67;e.contactBonusPosture=(e.contactBonusPosture||0)+37;
+        g.emit('shadowSlash',{x:e.enemy.x,y:e.enemy.y,z:(e.enemy.z||0)+48*e.enemy.scale,scale:e.enemy.scale,face:g.p.face});
+      });
+      g.hooks.on('onAttackHit',e=>{
+        if(!this.isJ(e.tags)||!this.isShadowSlashTarget(e.enemy)||!this.shadowSlash.contact)return;
+        this.shadowSlash.targetId=null;
+        if(!e.enemy.dead&&g.random()<this.chance(.30,'shadowSlashBreak'))this.postureBreak(e.enemy,'shadowSlash');
+      });
       g.healingBonus=()=>{
         let bonus=this.pair('nature','innerForce')?.20:0;
         if(this.pair('bloodthirst','nature')&&(g.p.hp+g.p.grayHp)<g.p.maxHp*.25)bonus+=.20;
         return bonus;
       };
     }
+    installNewDuals(){
+      const g=this.game,p=g.p;
+      this.enchant={levels:0,shots:[],serial:-1};this.frostGround=[];
+      this.wallEdge={stacks:0,serial:-1,bonus:0};
+      g.chargeGuardEnabled=()=>this.pair('steadfast','armorRend');
+      g.thrustInvulnerable=()=>this.pair('slideStrike','emergencyDodge');
+      const attack=({serial,index,rockThrust=false})=>{
+        if(this.pair('choice','pageStorm')&&this.enchant.serial!==serial){
+          this.enchant.serial=serial;const range=(g.viewBounds?g.viewBounds.right-g.viewBounds.left:1440)*.4;
+          this.enchant.shots.push({x:p.x+p.face*28,y:p.y,z:p.z+48,face:p.face,remaining:range,damage:40+20*this.enchant.levels,posture:10+5*this.enchant.levels});
+        }
+        if(this.pair('slideStrike','emergencyDodge')&&(index==='thrust'||index==='rockThrust'||rockThrust)&&this.wallEdge.thrustSerial!==serial){
+          this.wallEdge.thrustSerial=serial;p.dashRegen*=.70;p.dashCd=p.dashRegen;
+        }
+      };
+      g.hooks.on('onAttackStart',attack);g.hooks.on('onHeavyRelease',attack);
+      g.hooks.on('onHeavyRelease',({serial})=>{if(this.pair('steadfast','armorRend')){this.wallEdge.serial=serial;this.wallEdge.bonus=this.wallEdge.stacks*.10;this.wallEdge.stacks=0;}});
+      const block=perfect=>{if(this.pair('steadfast','armorRend'))this.wallEdge.stacks+=perfect?2:1;};
+      g.hooks.on('onBlock',()=>block(false));g.hooks.on('onPerfectBlock',()=>block(true));
+      g.hooks.on('beforeAttackDamage',e=>{if(this.pair('steadfast','armorRend')&&e.tags.includes('heavy')&&p.attackSerial===this.wallEdge.serial)e.posture*=1+this.wallEdge.bonus;});
+      g.hooks.on('modify:perfectPosture',e=>{if(this.pair('giantKiller','heavyRecoil')&&this.isElite(e.enemy)){e.value*=1.30;if(!isBoss(e.enemy))e.value+=e.enemy.maxPosture*.15;}});
+      g.hooks.on('beforeEnemyDamage',e=>{
+        const tags=e.tags||[];
+        if(this.pair('poisonBlade','antiRegen')&&e.enemy.antiRegen&&tags.some(t=>t==='poison'||t==='virulentPoison')){this.multiplyEnemyDamage(e,1.20,'vulnerability');e.posture*=1.20;}
+        if(this.pair('airSupport','synergy')&&tags.includes('airSupport'))this.multiplyEnemyDamage(e,this.dragonSummonDamage());
+      });
+      g.hooks.on('onEvasion',({enemy})=>{
+        if(!this.pair('illusion','ghost')||!enemy||enemy.dead||enemy.furnaceCapture)return;
+        const permanent=!isBoss(enemy)&&g.random()<this.chance(.04,'ghostIllusionPermanent');
+        enemy.illusionFear=true;this.addStatus(enemy,'illusion',16,permanent?Infinity:1,['illusion'],{infinite:permanent,forecastDuration:1,postureDps:20});
+        this.fearEnemy(enemy,1,{permanent});g.emit('illusion',{x:enemy.x,y:enemy.y,z:55*enemy.scale,rank:3});
+      });
+      g.hooks.on('onRealDamageTaken',e=>this.shedShell(e));
+      g.hooks.on('onRecoverableDamageTaken',e=>this.shedShell(e));
+      g.hooks.on('onDualAscensionChosen',({id})=>{if(id==='d325')for(const e of g.enemies){const status=e.effects?.serum;if(status){status.infinite=true;status.remaining=Infinity;status.forecastDuration=6;}}});
+    }
+    dragonSummonOthers(){return Math.max(0,this.v11SummonCount()-1);}
+    dragonSummonDamage(){return this.pair('airSupport','synergy')?1+.20*this.dragonSummonOthers():1;}
+    dragonSummonRecovery(){return this.pair('airSupport','synergy')?1+.08*this.dragonSummonOthers():1;}
+    shedShell({enemy,amount=0}={}){
+      if(amount<=0||!isBoss(enemy)||!this.pair('guardVitality','heavyRecoil'))return;
+      const g=this.game,p=g.p,radius=210;g.resetDashes();
+      for(const e of this.near(p,radius)){
+        this.secondary(e,30,50,['shedShell']);if(e.dead||e.furnaceCapture)continue;
+        if(isBoss(e)){if(e.state!=='stunned'){e.state='flinch';e.t=.18;e.queue=[];}}
+        else g.launchEnemy(e,p.x,p.y,{force:650,lift:260,duration:.6,allowElite:true,eliteForceScale:.20,source:'shedShell'});
+      }
+      g.emit('heavyRecoil',{x:p.x,y:p.y,radius,rank:3});
+    }
+    frostExplosion(center){
+      const radius=190,g=this.game;
+      for(const e of this.near(center,radius)){this.secondary(e,28,90,['frostExplosion','ice','elemental']);this.addStatus(e,'frostbite',24,4,['frostTrace','ice']);}
+      this.frostGround.push({x:center.x,y:center.y,radius:100,life:5});
+      g.emit('frostExplosion',{x:center.x,y:center.y,radius});
+    }
+    spawnDragonTar(){
+      if(!this.pair('dragonRoar','pollutedBlood'))return;
+      const g=this.game,view=g.viewBounds||{left:g.p.x-720,right:g.p.x+720},count=3+Math.floor(g.random()*3);
+      for(let i=0;i<count;i++){
+        const f={x:view.left+120+g.random()*Math.max(0,view.right-view.left-240),y:420+g.random()*260,radius:120,baseRadius:120,life:9,maxLife:9,burning:false,rank:3,tick:0};
+        this.v12.tar.push(f);g.emit('tarSpawn',{x:f.x,y:f.y,radius:f.radius,rank:3});
+      }
+    }
+    updateNewDuals(dt){
+      const g=this.game,p=g.p;
+      for(const f of this.frostGround){const active=Math.min(dt,f.life);f.life-=dt;if(active>0)for(const e of this.near(f,f.radius)){e.tarSlow=Math.min(e.tarSlow||1,.70);e.tarT=Math.max(e.tarT||0,.15);}}
+      this.frostGround=this.frostGround.filter(f=>f.life>0);
+      for(const shot of this.enchant.shots){
+        const travel=Math.min(shot.remaining,950*dt),x=shot.x;shot.x+=shot.face*travel;shot.remaining-=travel;
+        const hits=this.v11Alive().filter(e=>!(e.mindControlT>0)&&!(e.timeSealT>0)&&shot.z<(e.z||0)+100*e.scale&&shot.z>(e.z||0)-10&&g.segmentContact(x,shot.y,shot.x,shot.y,e,20*e.scale,22*e.scale)).sort((a,b)=>Math.abs(a.x-x)-Math.abs(b.x-x));
+        if(hits.length){const target=hits[0],radius=65;shot.remaining=0;for(const e of this.near(target,radius))this.secondary(e,shot.damage,shot.posture,['enchantBolt','magic','elemental']);g.emit('enchantImpact',{x:target.x,y:target.y,z:shot.z,radius});}
+      }
+      this.enchant.shots=this.enchant.shots.filter(s=>s.remaining>0);
+      if(p.innerForceRecoveringGray>p.grayHp)p.innerForceRecoveringGray=p.grayHp;
+    }
     // Shared helpers for the completed duals. All target-wide bonuses are
     // applied here, so DOT, companions, reflected shots and J share one rule.
+    markShadowSlash({enemy,arrow}){
+      if(!arrow||!this.pair('swallowReturn','pursuit')||!enemy||enemy.dead||enemy.furnaceCapture)return;
+      this.shadowSlash.markedId=enemy.id;
+    }
+    armShadowSlash(serial){
+      const s=this.shadowSlash;s.serial=serial;s.targetId=this.pair('swallowReturn','pursuit')?s.markedId:null;s.markedId=null;s.contact=false;
+    }
+    isShadowSlashTarget(enemy){
+      const s=this.shadowSlash;return !!s&&this.pair('swallowReturn','pursuit')&&s.serial===this.game.p.attackSerial&&s.targetId===enemy?.id;
+    }
+    queueCleaveShocks(shock){
+      this.v11.delayedShocks.push({...shock,order:2});
+      // Twin Cleave fades over 1.05s (1.16s with a rock rift); repeat near its end.
+      const repeatDelay=shock.rock&&shock.full?1.05:.95;
+      if(this.pair('burstEcho','twinCleave'))this.v11.delayedShocks.push({...shock,t:shock.t+repeatDelay,order:3});
+    }
     scaleAttackDamage(event,mult){event.damage*=mult;if(event.percentDamage)event.percentDamage*=mult;}
     addAttackPercent(event,amount){event.damage+=amount;event.percentDamage=(event.percentDamage||0)+amount;}
     ruthlessScale(e){if(!this.rank('ruthless'))return 0;const ratio=e.hp/e.maxHp;if(ratio<=(this.pair('precision','ruthless')?.50:.40))return 1;return this.pair('ruthless','giantKiller')&&ratio>=.70?.50:0;}
@@ -1869,10 +1979,10 @@ if(typeof document!=='undefined'&&!document.getElementById('ascensions-styles'))
       const r=this.rank('shadow');if(!r)return;const p=this.game.p;
       if(p.stealth&&this.isJ(event.tags)){this.leaveShadow(true);this.shadow.strikeSerial=p.attackSerial;}
       if(this.shadow.strikeSerial===p.attackSerial)this.scaleAttackDamage(event,1+[0,.25,.50,.70][r]);
-      if(r===3&&this.isJ(event.tags)&&(p.x-event.enemy.x)*event.enemy.face<0){this.scaleAttackDamage(event,1.30);event.posture+=20;this.game.emit('backstab',{x:event.enemy.x,y:event.enemy.y});}
+      if(r===3&&this.isJ(event.tags)&&(p.x-event.enemy.x)*event.enemy.face<0){this.scaleAttackDamage(event,1.30);event.posture+=20;this.game.emit('backstab',{x:event.enemy.x,y:event.enemy.y,z:(event.enemy.z||0)+48*event.enemy.scale,scale:event.enemy.scale,face:p.face});}
     }
     onDirectAttackHit(event){
-      const {enemy,tags,damage}=event;if(!enemy)return;if(this.rank('swiftBlade')&&tags.some(t=>t==='normal'||t==='comboFinisher')){this.swift.stacks=Math.min(this.swiftMax(),this.swiftStacks()+1);this.swift.time=this.game.time;}if(enemy.dead){if(tags.includes('rockThrust')&&this.pair('medusaEye','rockThrust'))this.rockThrustHit(enemy,tags);if(tags.includes('heavy')&&this.rank('twinCleave')&&this.v11.twinSerial!==this.game.p.attackSerial){this.v11.twinSerial=this.game.p.attackSerial;this.v11.delayedShocks.push({x:enemy.x,y:enemy.y,t:.24,rank:this.rank('twinCleave'),serial:this.game.p.attackSerial,damage,posture:event.posture,rock:tags.includes('rockThrust')&&this.pair('rockThrust','twinCleave'),face:this.game.p.face,borrowTwin:this.borrowHeavy.twin&&this.borrowHeavy.serial===this.game.p.attackSerial,full:this.game.p.fullCharge||this.game.p.rockThrustFull,overkill:this.v16?.twinOver?.serial===this.game.p.attackSerial?this.v16.twinOver.amount:0});}return;}
+      const {enemy,tags,damage}=event;if(!enemy)return;if(this.rank('swiftBlade')&&tags.some(t=>t==='normal'||t==='comboFinisher')){this.swift.stacks=Math.min(this.swiftMax(),this.swiftStacks()+1);this.swift.time=this.game.time;}if(enemy.dead){if(tags.includes('rockThrust')&&this.pair('medusaEye','rockThrust'))this.rockThrustHit(enemy,tags);if(tags.includes('heavy')&&this.rank('twinCleave')&&this.v11.twinSerial!==this.game.p.attackSerial){this.v11.twinSerial=this.game.p.attackSerial;this.queueCleaveShocks({x:enemy.x,y:enemy.y,t:.24,rank:this.rank('twinCleave'),serial:this.game.p.attackSerial,damage,posture:event.posture,rock:tags.includes('rockThrust')&&this.pair('rockThrust','twinCleave'),face:this.game.p.face,borrowTwin:this.borrowHeavy.twin&&this.borrowHeavy.serial===this.game.p.attackSerial,full:this.game.p.fullCharge||this.game.p.rockThrustFull,overkill:this.v16?.twinOver?.serial===this.game.p.attackSerial?this.v16.twinOver.amount:0});}return;}
       const ultimate=this.rank('ultimateForm');if(ultimate>=2&&this.ultimate.remaining>0)this.addStatus(enemy,'burn',ultimate===2?12:24,6,['ultimateForm','fire']);
       const swift=this.rank('swiftBlade');if(swift&&tags.some(t=>t==='normal'||t==='comboFinisher')){
         
@@ -1976,12 +2086,12 @@ if(typeof document!=='undefined'&&!document.getElementById('ascensions-styles'))
       this.globalTargetDamage(event);this.beforeEnemyDamageV10(event);this.v11BeforeEnemyDamage(event);this.v12BeforeEnemyDamage(event);this.dualBeforeEnemyDamage(event);
       if(this.pair('medusaEye','bullRush')&&event.tags.includes('bullRush')&&isBoss(event.enemy)&&this.isPetrified(event.enemy))event.damage+=event.enemy.maxHp*.10;
     }
-    innerForceDamageTaken(){const stored=this.innerForce.pendingGray;this.innerForce.pendingGray=0;if(stored<=0)return;const p=this.game.p,cap=Math.max(0,p.maxHp*(1+(p.healCapBonus||0))-p.hp-p.grayHp),gain=Math.min(cap,stored);if(gain>0){p.grayHp+=gain;this.game.emit('innerForceGray',{x:p.x,y:p.y,z:p.z,amount:gain});}}
+    innerForceDamageTaken(){const stored=this.innerForce.pendingGray;this.innerForce.pendingGray=0;if(stored<=0)return;const p=this.game.p,cap=Math.max(0,p.maxHp*(1+(p.healCapBonus||0))-p.hp-p.grayHp),gain=Math.min(cap,stored);if(gain>0){p.grayHp+=gain;if(this.pair('tenacity','innerForce'))p.innerForceRecoveringGray=(p.innerForceRecoveringGray||0)+gain;this.game.emit('innerForceGray',{x:p.x,y:p.y,z:p.z,amount:gain});}}
     innerForceParry({enemy}){if(this.rank('innerForce')!==3)return;const p=this.game.p,amount=Math.min(p.grayHp,p.maxHp*.08);if(amount<=0)return;const restored=this.restoreGray(amount);if(restored>0&&enemy&&!enemy.dead){this.secondary(enemy,restored*2.5,restored*1.5,['innerForce','counter']);this.game.emit('innerForceCounter',{x:enemy.x,y:enemy.y,amount:restored});}}
     steadfastDamageTaken(){const r=this.rank('steadfast'),p=this.game.p;if(r===1&&p.state==='charge')this.steadfast.slow=.55;}
     steadfastBlock(event){const r=this.rank('steadfast'),p=this.game.p;if(r!==3||p.state!=='charge')return;if(this.game.random()<this.chance(this.pair('steadfast','battleFormation')?.45:.30,'steadfastBlock')){event.handled=true;event.result=this.game.blockHit(event.damage,event.enemy,event.arrow,{source:'steadfast'});this.game.emit('steadfastBlock',{x:p.x,y:p.y,z:p.z});}}
     rockThrustHit(enemy,tags){const r=this.rank('rockThrust'),p=this.game.p;if(!r||!tags.includes('rockThrust'))return;if(r>=2&&this.rockThrust.serial!==p.attackSerial){this.rockThrust.serial=p.attackSerial;const radius=r===3?175:140,damage=r===3?35:24,posture=r===3?30:18;for(const e of this.near(enemy,radius,new Set([enemy.id])))this.secondary(e,damage,posture,['rockThrust','shockwave',...(p.rockThrustFull?['fullCharge']:[])]);this.game.emit('rockShockwave',{x:enemy.x,y:enemy.y,radius,rank:r});}if(this.pair('armorRend','rockThrust')&&!enemy.dead){this.dualState.rockNails.set(enemy.id,{serial:p.attackSerial,time:this.game.time});this.game.emit('rockNailMark',{x:enemy.x,y:enemy.y,z:60*enemy.scale,id:enemy.id});if(enemy.state==='stunned'||enemy.posture<=0)this.detonateRockNail(enemy,'postureBreak');}if(r===3&&p.rockThrustFull&&!enemy.dead){const threshold=isBoss(enemy)?.10:.20;if(enemy.hp<=enemy.maxHp*threshold)this.slay(enemy,'rockThrust');}}
-    detonateRockNail(enemy,source='attack'){const mark=this.dualState.rockNails.get(enemy?.id);if(!mark||!enemy||enemy.dead)return false;this.dualState.rockNails.delete(enemy.id);const radius=185;this.secondary(enemy,14,52+enemy.maxPosture*(isBoss(enemy)?.035:.10),['rockNail','armorRend']);for(const e of this.near(enemy,radius,new Set([enemy.id])))this.secondary(e,14*.55,(52+e.maxPosture*(isBoss(e)?.035:.10))*.55,['rockNail','shockwave']);this.game.emit('rockNailBurst',{x:enemy.x,y:enemy.y,z:(enemy.z||0)+58*enemy.scale,scale:enemy.scale,radius,source,boss:isBoss(enemy)});return true;}
+    detonateRockNail(enemy,source='attack'){const mark=this.dualState.rockNails.get(enemy?.id);if(!mark||!enemy||enemy.dead)return false;this.dualState.rockNails.delete(enemy.id);const radius=185;this.secondary(enemy,52,52+enemy.maxPosture*(isBoss(enemy)?.035:.10),['rockNail','armorRend']);for(const e of this.near(enemy,radius,new Set([enemy.id])))this.secondary(e,52*.55,(52+e.maxPosture*(isBoss(e)?.035:.10))*.55,['rockNail','shockwave']);this.game.emit('rockNailBurst',{x:enemy.x,y:enemy.y,z:(enemy.z||0)+58*enemy.scale,scale:enemy.scale,radius,source,boss:isBoss(enemy)});return true;}
     windSwordQiReady(serial){const w=this.v11.wind;return this.pair('windBlade','swordQi')&&w.serial===serial&&(w.attackAmount||0)>=2;}
     windAttackAmount(serial){const w=this.v11.wind;if(w.serial!==serial)return 0;return this.windSwordQiReady(serial)?w.attackAmount:(w.spent||0);}
     onAttackStart({index,serial}){const r=this.rank('swordQi');if(!r||index!==3||this.windSwordQiReady(serial))return;const p=this.game.p;this.swordQi.pending.push({serial,t:Math.max(.02,(p.attack?.wind||.18)+(p.attack?.active||.12)*.24),face:p.face,fourth:true});}
@@ -2240,7 +2350,7 @@ if(typeof document!=='undefined'&&!document.getElementById('ascensions-styles'))
     }
     triggerLightningMark(e,r=this.rank('lightningRod')||3,{force=false,orb=false,noChain=false}={}){if(!e?.lightningMark||e.dead)return false;const now=this.game.time,delay=[0,.85,.7,.30][r];if(!force&&now-(e.lightningMark.time??now)<delay)return false;e.lightningMark=null;const damage=[0,30,45,60][r],bounces=noChain?0:[0,0,1,3][r]+(this.pair('lightning','lightningSpirit')?1:0);this.secondary(e,damage,[0,25,40,45][r],['lightningRod','lightning',...(orb?['perfectMachine']:[])]);let cur=e,seen=new Set([e.id]),points=[{x:e.x,y:e.y-(e.z||0)-55*e.scale}];for(let i=0;i<bounces;i++){const next=this.near(cur,280,seen).sort((a,b)=>distance(cur,a)-distance(cur,b))[0];if(!next)break;seen.add(next.id);points.push({x:next.x,y:next.y-(next.z||0)-55*next.scale});this.secondary(next,damage*.72,14+5*r,['lightningRod','lightning',...(orb?['perfectMachine']:[])]);cur=next;}this.game.emit('lightningRod',{x:e.x,y:e.y,rank:r,bounces:seen.size-1,points,orb});return true;}
     lightningRodHit(e,tags){const r=this.rank('lightningRod');if(!r||!this.isJ(tags))return;if(this.triggerLightningMark(e,r))return;const now=this.game.time;if(!e.lightningMark&&this.game.random()<this.chance([0,.30,.30,.40][r],'lightningRodMark')){e.lightningMark={time:now};this.game.emit('lightningMark',{x:e.x,y:e.y,z:60*e.scale,rank:r});}}
-    applyFrostStack(e,r=this.rank('frostTrace'),{storm=false}={}){if(!e||e.dead||!r)return;const max=[0,4,6,6][r],slowPerStack=.06/(isBoss(e)?3:1);const previousStacks=e.frostStacks||0;e.frostStacks=Math.min(max,previousStacks+1);e.frostSlow=Math.min(e.frostSlow||1,Math.max(storm?.38:.45,1-e.frostStacks*slowPerStack));e.frostT=Math.max(e.frostT||0,4);this.game.emit('frostStack',{x:e.x,y:e.y,z:55*e.scale,stacks:e.frostStacks,max,rank:r,storm});if(e.frostStacks>=max&&r>=2){this.addStatus(e,'frostbite',r===2?14:24,4,['frostTrace','ice',...(storm?['tornado','storm']:[])]);if(r===3&&previousStacks<max){if(isBoss(e)){e.frostTraceBossSlowUntil=this.game.time+1.2;}else{e.frozenUntil=this.game.time+4;e.state='flinch';e.t=4;e.queue=[];}this.game.emit('freeze',{x:e.x,y:e.y,z:55*e.scale,boss:isBoss(e),storm});}}}
+    applyFrostStack(e,r=this.rank('frostTrace'),{storm=false}={}){if(!e||e.dead||!r)return;const max=[0,4,6,6][r],slowPerStack=.06/(isBoss(e)?3:1);const previousStacks=e.frostStacks||0;e.frostStacks=Math.min(max,previousStacks+1);e.frostSlow=Math.min(e.frostSlow||1,Math.max(storm?.38:.45,1-e.frostStacks*slowPerStack));e.frostT=Math.max(e.frostT||0,4);this.game.emit('frostStack',{x:e.x,y:e.y,z:55*e.scale,stacks:e.frostStacks,max,rank:r,storm});if(e.frostStacks>=max&&previousStacks<max&&this.pair('frostTrace','thousandFire'))this.frostExplosion(e);if(e.frostStacks>=max&&r>=2){this.addStatus(e,'frostbite',r===2?14:24,4,['frostTrace','ice',...(storm?['tornado','storm']:[])]);if(r===3&&previousStacks<max){if(isBoss(e)){e.frostTraceBossSlowUntil=this.game.time+1.2;}else{e.frozenUntil=this.game.time+4;e.state='flinch';e.t=4;e.queue=[];}this.game.emit('freeze',{x:e.x,y:e.y,z:55*e.scale,boss:isBoss(e),storm});}}}
     frostHit(e,tags){const r=this.rank('frostTrace');if(!r||!this.isJ(tags))return;this.applyFrostStack(e,r);}
     sealHit(e,tags){
       const r=this.rank('sealingNail'),p=this.game.p;if(!r||!tags.some(t=>t==='normal'||t==='comboFinisher')||p.state!=='attack'||e.seal?.remaining>0)return;
@@ -2299,7 +2409,7 @@ if(typeof document!=='undefined'&&!document.getElementById('ascensions-styles'))
       const m=this.dragonRoar.pending;
       if(m){
         if(m.phase==='warn'){
-          m.t-=dt;if(m.t<=0){m.phase='sweep';m.t=1.35;m.total=1.35;m.prevX=m.dir>0?m.x1:m.x2;m.hitIds=new Set();g.emit('dragonSweepStart',{y:m.y,dir:m.dir,rank:r,x:m.prevX});}
+          m.t-=dt;if(m.t<=0){this.spawnDragonTar();m.phase='sweep';m.t=1.35;m.total=1.35;m.prevX=m.dir>0?m.x1:m.x2;m.hitIds=new Set();g.emit('dragonSweepStart',{y:m.y,dir:m.dir,rank:r,x:m.prevX});}
           return;
         }
         m.t-=dt;const q=clamp(1-m.t/m.total,0,1),x=m.dir>0?m.x1+(m.x2-m.x1)*q:m.x2-(m.x2-m.x1)*q;
@@ -2533,7 +2643,7 @@ if(typeof document!=='undefined'&&!document.getElementById('ascensions-styles'))
       if(!enemy)return;const p=this.game.p,serial=p.attackSerial;if(this.pair('prideMark','probing')&&tags.includes('normal')&&p.attackIndex===0&&distance(p,enemy)>=(p.attack?.range||150)*.72)enemy.probeStacks=(enemy.probeStacks||0)+2;
       const release=this.v11.wind.release;if(release?.serial===serial&&this.isJ(tags)){const d=distance(p,enemy);if(d<release.distance){release.distance=d;release.target={id:enemy.id,x:enemy.x,y:enemy.y,z:Math.max(24,50*(enemy.scale||1))};}}
       const nail=this.dualState.rockNails.get(enemy.id);if(nail&&nail.serial!==serial&&this.v11IsHeavy(tags))this.detonateRockNail(enemy,tags.includes('comboFinisher')?'fourth':'heavy');
-      const tc=this.rank('twinCleave');if(tc&&tags.includes('heavy')&&this.v11.twinSerial!==serial){this.v11.twinSerial=serial;this.v11.delayedShocks.push({serial,overkill:this.v16?.twinOver?.serial===serial?this.v16.twinOver.amount:0,x:enemy.x,y:enemy.y,t:.24,rank:tc,rock:tags.includes('rockThrust')&&this.pair('rockThrust','twinCleave'),full:p.fullCharge||p.rockThrustFull,face:p.face,damage,posture,borrowTwin:this.borrowHeavy.twin&&this.borrowHeavy.serial===serial});}
+      const tc=this.rank('twinCleave');if(tc&&tags.includes('heavy')&&this.v11.twinSerial!==serial){this.v11.twinSerial=serial;this.queueCleaveShocks({serial,overkill:this.v16?.twinOver?.serial===serial?this.v16.twinOver.amount:0,x:enemy.x,y:enemy.y,t:.24,rank:tc,rock:tags.includes('rockThrust')&&this.pair('rockThrust','twinCleave'),full:p.fullCharge||p.rockThrustFull,face:p.face,damage,posture,borrowTwin:this.borrowHeavy.twin&&this.borrowHeavy.serial===serial});}
       const rb=this.rank('returnBlade');if(rb===3&&this.v11.returnBlade.serial===serial&&this.game.random()<this.chance(.12,'returnBladeBreak'))this.postureBreak(enemy,'returnBlade');
       if(rb===3&&this.v11.returnBlade.serial===serial){const lineTargets=this.v11Alive().filter(e=>e!==enemy&&Math.abs(e.y-p.y)<52&&((e.x-p.x)*p.face)>0&&distance(p,e)<420).slice(0,3);for(const o of lineTargets)this.secondary(o,damage*.30,posture*.30,['returnBlade','pierce']);}
       const pr=this.rank('probing');if(pr&&p.attackIndex===0&&tags.includes('normal')){const cap=pr===1?1:pr===2?4:999;enemy.probeStacks=Math.min(cap,(enemy.probeStacks||0)+1);this.game.emit('probeMark',{x:enemy.x,y:enemy.y,z:54*enemy.scale,stacks:enemy.probeStacks,rank:pr});}
@@ -2541,7 +2651,7 @@ if(typeof document!=='undefined'&&!document.getElementById('ascensions-styles'))
       const tf=this.rank('thousandFire');if(tf&&(this.isJ(tags)||tags.includes('contactHeat'))){const now=this.game.time,old=this.v11.heat.get(enemy.id),entry=old&&now-old.t<3.0?old:{n:0,t:now};entry.n++;entry.t=now;this.v11.heat.set(enemy.id,entry);const need=[0,8,7,6][tf];this.game.emit('heatStack',{x:enemy.x,y:enemy.y,z:55*enemy.scale,n:entry.n,need,rank:tf});if(entry.n>=need){this.v11.heat.delete(enemy.id);const radius=[0,120,155,190][tf];this.secondary(enemy,[0,50,65,90][tf],[0,15,20,28][tf],['thousandFire','fire']);for(const o of this.near(enemy,radius,new Set([enemy.id]))){this.secondary(o,[0,30,40,55][tf],[0,10,14,20][tf],['thousandFire','fire']);this.addStatus(o,'burn',[0,6,9,12][tf],5,['thousandFire','fire']);if(tf===3)o.knockX+=(o.x>=enemy.x?1:-1)*85;}this.addStatus(enemy,'burn',[0,6,9,12][tf],5,['thousandFire','fire']);if(this.pair('swiftBlade','thousandFire')){const extra=46*.75*(p.damageMultiplier||1);for(let i=0;i<3&&!enemy.dead;i++)this.secondary(enemy,extra,0,['flameBlade','thousandFire','fire']);if(!enemy.dead&&enemy.hp/enemy.maxHp<=(isBoss(enemy)?.10:.20))this.slay(enemy,'flameBlade');}if(tf===3)this.v11.fireTrail.push({x:enemy.x,y:enemy.y,radius:100,life:5,tick:0,heatGround:true});this.game.emit('frictionBurst',{x:enemy.x,y:enemy.y,radius,rank:tf});}}
       const dw=this.rank('delayedWound');if(dw&&this.isJ(tags)){const old=this.v11.wounds.get(enemy.id)||{amount:0};old.amount+=[0,3,5,7][dw]+damage*[0,.13,.17,.21][dw]+(tags.includes('comboFinisher')&&dw===3?47:0);this.v11.wounds.set(enemy.id,old);}
       const bt=this.rank('bloodTide');if(bt&&tags.some(t=>t==='normal'||t==='comboFinisher')&&this.game.random()<this.chance([0,.10,.15,.20][bt],'bloodTideBleed'))this.addStatus(enemy,'bleed',bt===1?3:bt===2?7:15,9,['bloodTide','bleed']);
-      const anti=this.rank('antiRegen');if(anti&&this.isJ(tags)){enemy.antiRegen=true;enemy.antiRegenSerum=enemy.antiRegenSerum?{...enemy.antiRegenSerum,rank:anti}:{rank:anti,timer:6};if(anti===3)this.addStatus(enemy,'serum',9,6,['antiRegen','dot']);this.game.emit('antiRegenMark',{x:enemy.x,y:enemy.y,z:60*enemy.scale,rank:anti});}
+      const anti=this.rank('antiRegen');if(anti&&this.isJ(tags)){enemy.antiRegen=true;enemy.antiRegenSerum=enemy.antiRegenSerum?{...enemy.antiRegenSerum,rank:anti}:{rank:anti,timer:6};if(anti===3)this.addStatus(enemy,'serum',9,this.pair('poisonBlade','antiRegen')?Infinity:6,['antiRegen','dot'],{infinite:this.pair('poisonBlade','antiRegen'),forecastDuration:6});this.game.emit('antiRegenMark',{x:enemy.x,y:enemy.y,z:60*enemy.scale,rank:anti});}
       const fk=this.rank('flyingKick');if(fk&&tags.includes('thrust')&&!isBoss(enemy)&&(this.game.isSmallEnemy?.(enemy)||TYPES[enemy.type]?.elite)&&this.game.random()<this.chance([0,.40,.50,.60][fk],'flyingKick')){const small=this.game.isSmallEnemy(enemy);const launched=this.game.launchEnemy(enemy,p.x,p.y,{force:small?[0,650,850,1050][fk]:[0,340,420,500][fk],lift:small?[0,260,340,430][fk]:0,duration:.8});if(launched){enemy.flyingKickMark??={rank:fk,fromX:p.x,fromY:p.y};enemy.flyingKickMark.cannon=!!this.pair('bowling','flyingKick');}this.game.emit('flyingKick',{x:enemy.x,y:enemy.y,z:45*enemy.scale,rank:fk});}
       const gu=this.rank('guillotine');if(gu===3&&tags.includes('downStrike')&&!enemy.dead&&enemy.hp/enemy.maxHp<(isBoss(enemy)?.05:.15))this.slay(enemy,'guillotine');
        const eagle=this.rank('eagleDrop');if(eagle===3&&tags.includes('downStrike')&&!enemy.dead&&(p.plungeStartZ||0)>=p.eagleDropHighThreshold){let threshold=.20+(this.rank('guillotine')===3?.15:0)+(this.pair('guillotine','eagleDrop')?.15:0);if(isBoss(enemy)&&(this.rank('guillotine')===3||this.pair('guillotine','eagleDrop')))threshold/=3;if(enemy.hp/enemy.maxHp<=threshold)this.slay(enemy,'eagleDrop');}
@@ -2635,9 +2745,9 @@ if(typeof document!=='undefined'&&!document.getElementById('ascensions-styles'))
       // Wind Blade's own movement-speed bonus is applied here; movement wind gain is settled after all speed bonuses are known.
       const wind=this.rank('windBlade');if(wind>=2)p.moveSpeedMultiplier*=wind===2?1.05:1.15;
       // Burst echoes are custom shocks: they intentionally do NOT call onMomentumBurst / Ultimate Form.
-      for(const a of this.v11.burstEcho){a.t-=dt;a.x=p.x;a.y=p.y;}for(const a of this.v11.burstEcho.filter(a=>a.t<=0)){const r=a.rank,order=a.order,full=this.pair('burstEcho','twinCleave'),cfg=this.run.getMomentumBurstConfig();const rad=(order===2?[0,250,300,350][r]:250),dm=(order===2?[0,10,15,20][r]:10),po=(order===2?[0,10,20,30][r]:15);const solar=this.pair('newSun','burstEcho'),basePosture=10+Math.min(14,Math.max(0,this.run.level-1)*.45),echoDamage=solar?Math.max(0,g.hooks.modify('momentumBurstDamage',dm,{run:this.run,kind:'blast'}))*(this.pair('newSun','ultimateForm')?2:1):dm,echoPosture=solar?po*cfg.posture/basePosture:po;for(const e of this.near(a,full?Math.max(rad,[0,250,300,350][r],cfg.radius):rad)){this.secondary(e,full?Math.max(echoDamage,cfg.damage):echoDamage,full?Math.max(echoPosture,cfg.posture):echoPosture,['burstEcho',...(solar?['solarEcho']:[])]);if(solar&&!e.dead&&!e.furnaceCapture)this.addStatus(e,'burn',15,5,['solarEcho','newSun','fire']);if(order===2&&r>=2&&!isBoss(e))e.knockX+=(e.x>=a.x?1:-1)*90;}g.emit('burstEcho',{x:a.x,y:a.y,radius:full?Math.max(rad,[0,250,300,350][r],cfg.radius):rad,rank:r,order});}this.v11.burstEcho=this.v11.burstEcho.filter(a=>a.t>0);
+      for(const a of this.v11.burstEcho){a.t-=dt;a.x=p.x;a.y=p.y;}for(const a of this.v11.burstEcho.filter(a=>a.t<=0)){const r=a.rank,order=a.order,cfg=this.run.getMomentumBurstConfig();const rad=(order===2?[0,250,300,350][r]:250),dm=(order===2?[0,10,15,20][r]:10),po=(order===2?[0,10,20,30][r]:15);const solar=this.pair('newSun','burstEcho'),basePosture=10+Math.min(14,Math.max(0,this.run.level-1)*.45),echoDamage=solar?Math.max(0,g.hooks.modify('momentumBurstDamage',dm,{run:this.run,kind:'blast'}))*(this.pair('newSun','ultimateForm')?2:1):dm,echoPosture=solar?po*cfg.posture/basePosture:po;for(const e of this.near(a,rad)){this.secondary(e,echoDamage,echoPosture,['burstEcho',...(solar?['solarEcho']:[])]);if(solar&&!e.dead&&!e.furnaceCapture)this.addStatus(e,'burn',15,5,['solarEcho','newSun','fire']);if(order===2&&r>=2&&!isBoss(e))e.knockX+=(e.x>=a.x?1:-1)*90;}g.emit('burstEcho',{x:a.x,y:a.y,radius:rad,rank:r,order});}this.v11.burstEcho=this.v11.burstEcho.filter(a=>a.t>0);
       // Delayed twin-cleave shocks.
-      for(const s of this.v11.delayedShocks)s.t-=dt;for(const s of this.v11.delayedShocks.filter(s=>s.t<=0)){const rockBonus=s.rock?1.50:1,rad=(s.rank===3&&s.full?225:[0,100,145,185][s.rank])*(s.borrowTwin?1.2:1);if(s.rock&&s.full){for(const e of this.v11Alive())if((e.x-s.x)*s.face>-40&&(e.x-s.x)*s.face<420&&Math.abs(e.y-s.y)<75)this.secondary(e,35*rockBonus,45*rockBonus,['twinCleave','rockRift']);g.emit('rockRift',{x:s.x,y:s.y,face:s.face,length:420});}for(const e of this.near(s,rad)){this.secondary(e,((s.overkill||0)+Math.max([0,25,40,70][s.rank],this.pair('burstEcho','twinCleave')?(s.damage||0):0))*rockBonus,Math.max([0,20,30,45][s.rank],this.pair('burstEcho','twinCleave')?(s.posture||0):0)*rockBonus,['twinCleave',...(s.rock?['rockThrust','elemental',...(s.full?['fullCharge']:[])]:[]),...(s.borrowTwin?['borrowTwin']:[])]);if(s.rank===3&&s.full&&g.isSmallEnemy?.(e))g.launchEnemy(e,s.x,s.y,{force:620,lift:220,duration:.55});if(s.rank===3&&s.full&&g.random()<this.chance(s.borrowTwin?.25:.18,'twinCleaveBreak'))this.postureBreak(e,'twinCleave');}g.emit('twinShock',{x:s.x,y:s.y,radius:rad,rank:s.rank,blood:(s.overkill||0)>0,face:s.face,rockRiftLength:s.rock&&s.full?420:0});}this.v11.delayedShocks=this.v11.delayedShocks.filter(s=>s.t>0);
+      for(const s of this.v11.delayedShocks)s.t-=dt;for(const s of this.v11.delayedShocks.filter(s=>s.t<=0)){const rockBonus=s.rock?1.50:1,rad=(s.rank===3&&s.full?225:[0,100,145,185][s.rank])*(s.borrowTwin?1.2:1);if(s.rock&&s.full){for(const e of this.v11Alive())if((e.x-s.x)*s.face>-40&&(e.x-s.x)*s.face<420&&Math.abs(e.y-s.y)<75)this.secondary(e,35*rockBonus,45*rockBonus,['twinCleave','rockRift']);g.emit('rockRift',{x:s.x,y:s.y,face:s.face,length:420});}for(const e of this.near(s,rad)){this.secondary(e,((s.overkill||0)+[0,25,40,70][s.rank])*rockBonus,[0,20,30,45][s.rank]*rockBonus,['twinCleave',...(s.rock?['rockThrust','elemental',...(s.full?['fullCharge']:[])]:[]),...(s.borrowTwin?['borrowTwin']:[])]);if(s.rank===3&&s.full&&g.isSmallEnemy?.(e))g.launchEnemy(e,s.x,s.y,{force:620,lift:220,duration:.55});if(s.rank===3&&s.full&&g.random()<this.chance(s.borrowTwin?.25:.18,'twinCleaveBreak'))this.postureBreak(e,'twinCleave');}g.emit('twinShock',{x:s.x,y:s.y,radius:rad,rank:s.rank,order:s.order||2,blood:(s.overkill||0)>0,face:s.face,rockRiftLength:s.rock&&s.full?420:0});}this.v11.delayedShocks=this.v11.delayedShocks.filter(s=>s.t>0);
       // Corpse bombs.
       for(const b of this.v11.corpseBomb)b.t-=dt;for(const b of this.v11.corpseBomb.filter(b=>b.t<=0)){const rad=b.strong?215:[0,100,128,158][b.rank];for(const e of this.near(b,rad)){this.secondary(e,(b.strong?96:[0,30,45,55][b.rank])+(b.maxHpBonus||0)+(b.overkillBonus||0),b.strong?58:[0,10,15,20][b.rank],['corpseBomb',...(b.strong?['mindControl']:[])]);if(b.rank===3){const k=['burn','bleed','poison','frostbite'][Math.floor(g.random()*4)],tag=k==='burn'?'fire':k;this.addStatus(e,k,b.strong?15:8,6,['corpseBomb',tag]);}}g.emit('corpseBomb',{x:b.x,y:b.y,radius:rad,rank:b.rank,strong:!!b.strong});}this.v11.corpseBomb=this.v11.corpseBomb.filter(b=>b.t>0);
       // One swept-contact path for airborne living enemies and visibly flying dead bodies.
@@ -2726,7 +2836,7 @@ if(typeof document!=='undefined'&&!document.getElementById('ascensions-styles'))
           t.vx+=Math.sin(now*1.7+t.x*.01)*12*dt;t.vy+=Math.cos(now*1.3+t.y*.01)*8*dt;
           const rank=tr||t.rank,targets=this.near(t,t.radius||[0,130,165,190][rank]);
           for(const e of targets){this.knowledgeTornadoSlow(e);const dx=t.x-e.x,dy=t.y-e.y,d=Math.hypot(dx,dy)||1,force=[0,45,70,85][rank]*(t.dragonEmpowered?1.35:1);if(!isBoss(e)){e.x+=dx/d*force*dt;e.y+=dy/d*force*.6*dt;}const hit=(t.hits.get(e.id)||0)+dt;t.hits.set(e.id,hit);if(rank>=2&&hit>1.8&&g.isSmallEnemy?.(e)){t.hits.set(e.id,0);g.launchEnemy(e,t.x,t.y,{force:t.dragonEmpowered?820:650,lift:t.dragonEmpowered?330:260,duration:.62});}}
-          if(t.tick>=.2){const elapsed=t.tick;t.tick=0;for(const e of targets){this.secondary(e,[0,3,4,5][rank]*elapsed*(t.fire?2:1)*(t.damageMult||1),[0,4,6,8][rank]*elapsed*(t.dragonEmpowered?1.5:1),['tornado',...(t.fire?['fire','fireTornado']:[])],{periodic:true,quiet:true});if(t.fire)this.addStatus(e,'burn',t.burnDps||8,t.dragonEmpowered?4:3,['fireTornado','fire']);}}
+          if(t.tick>=.2){const elapsed=t.tick;t.tick=0;for(const e of targets){this.secondary(e,[0,3,4,5][rank]*elapsed*(t.fire?2:1)*(t.damageMult||1),[0,4,6,8][rank]*elapsed*(t.dragonEmpowered?1.5:1),['tornado',...(t.airSupport?['airSupport']:[]),...(t.fire?['fire','fireTornado']:[])],{periodic:true,quiet:true});if(t.fire)this.addStatus(e,'burn',t.burnDps||8,t.dragonEmpowered?4:3,['fireTornado','fire',...(t.airSupport?['airSupport']:[]) ]);}}
         }
         let storm=this.v11.tornadoStorm;
         if(storm){
@@ -2976,7 +3086,7 @@ if(typeof document!=='undefined'&&!document.getElementById('ascensions-styles'))
     updateV10(dt){
       this.settleMasteryRations();
       const p=this.game.p;this.quake.bigCd=Math.max(0,this.quake.bigCd-dt);this.rage.hitWindow=Math.max(0,this.rage.hitWindow-dt);if(this.rage.hitWindow<=0)this.rage.hits=0;this.revenge.remaining=Math.max(0,this.revenge.remaining-dt);this.executioner.remaining=Math.max(0,this.executioner.remaining-dt);if(this.executioner.remaining<=0)this.executioner.stacks=0;this.carnage.buff=Math.max(0,this.carnage.buff-dt);this.skillMastery.buff=Math.max(0,this.skillMastery.buff-dt);this.ghostEvasionBoost=Math.max(0,(this.ghostEvasionBoost||0)-dt);for(const d of this.game.decoys){d.life-=dt;if(this.pair('phantom','ghost')&&!d.phantomRush&&d.life<=0){d.phantomRush=true;d.noAggro=true;d.life=.75;d.blocks=Math.max(1,d.blocks);}}
-      this.updateSoulGreatsword(dt);this.updateBlackHole(dt);this.updateIllusion(dt);this.updateLightningSpirit(dt);this.updateDragonRoar(dt);this.updateAirSupport(dt);this.updateBattleFormation(dt);this.updateFood(dt);this.updateHealingSpirit(dt);this.updateDoom(dt);this.updateSeals(dt);this.updateFrostAndVuln(dt);
+      this.updateNewDuals(dt);this.updateSoulGreatsword(dt);this.updateBlackHole(dt);this.updateIllusion(dt);this.updateLightningSpirit(dt);this.updateDragonRoar(dt);this.updateAirSupport(dt);this.updateBattleFormation(dt);this.updateFood(dt);this.updateHealingSpirit(dt);this.updateDoom(dt);this.updateSeals(dt);this.updateFrostAndVuln(dt);
       const hot=this.rank('hotBlood'),mr=this.run.momentum/Math.max(1,this.game.rules.momentumMax);if(hot){p.attackSpeedMultiplier*=1+this.run.momentum*[0,.0012,.002,.002][hot];if(hot===3&&mr>=.999)p.attackSpeedMultiplier*=1.10;}
       if(this.foodBuff>0)p.attackSpeedMultiplier*=1.15;
       const giant=this.rank('giant');if(giant)p.attackSpeedMultiplier*=[1,.90,.90,.90][giant];const pride=this.rank('prideMark');if(pride>=2)p.attackSpeedMultiplier*=pride===2?1.08:1.16;if(this.carnage.buff>0)p.attackSpeedMultiplier*=1.50;
@@ -3752,7 +3862,7 @@ if(typeof document!=='undefined'&&!document.getElementById('ascensions-styles'))
   "elementAffinity": [
     "元素伤害+20%，元素架势伤害+10%。",
     "元素伤害+40%，元素架势伤害+18%。",
-    "元素伤害+50%，元素架势伤害+28%暴击率+5%。非持续元素伤害均可暴击。"
+    "元素伤害+50%，元素架势伤害+28%，暴击率+5%。非持续元素伤害均可暴击。"
   ],
   "starBlessing": [
     "引导星辉0.9秒，随后获得1.2秒无敌与霸体，冷却14秒。",
@@ -4159,7 +4269,7 @@ if(typeof document!=='undefined'&&!document.getElementById('ascensions-styles'))
   "d278": "闪电充能球激发时，引爆战场上所有雷印。",
   "d279": "鬼手迅速处决被其压制的架势破坏目标，震伤周围敌人的架势，并恢复战意。",
   "d280": "靠近黑洞中心时，延长黑洞持续时间0.85秒，并使其跟随你移动。",
-  "d281": "岩石突刺命中留下岩钉。破甲攻击或架势破坏将引爆岩钉，重创目标52外加10%的最大架势值，并对周围敌人造成55%的效果。",
+  "d281": "岩石突刺命中留下岩钉。破甲攻击或架势破坏将引爆岩钉，额外造成52生命伤害与52外加10%最大架势值的架势伤害，并对周围敌人造成55%的效果。",
   "d282": "共振满层时，完美格挡有15%概率触发小钟声；处决首领时直接触发。钟声恢复7生命，震伤全场敌人，近处敌人受到更高伤害。",
   "d283": "连击的第一击将保留风势，第二击将消耗风势，快速突进，攻击范围扩大，突进期间短暂闪过敌人攻击。",
   "d284": "完美格挡后的返刃强化持续3次攻击。",
@@ -4219,5 +4329,25 @@ if(typeof document!=='undefined'&&!document.getElementById('ascensions-styles'))
   ]){const card=DUAL_ASCENSIONS.find(a=>a.id===id);card.name=name;card.description=card.detail=text;}
   const peaText='生成一个豌豆射手随从，每1.4秒射击一发豌豆，造成30生命伤害和20架势伤害。收集食物为其收集养料，积蓄一次叶绿素效果。';
   DUAL_ASCENSIONS.push({id:'d322',name:'豌豆射手',parents:['parasiticVines','fieldRations'],parentNames:['绞杀藤蔓','战地补给'],description:peaText,detail:peaText,constraint:'父卡均 LV3；一次性双重擢升。',maxLevel:1,dual:true});
+  const tripleCleave=DUAL_ASCENSIONS.find(a=>a.id==='d144');
+  tripleCleave.name='三重斩';
+  tripleCleave.description=tripleCleave.detail='蓄力命中后，追加第二次和第三次震击。第三次震击具有和第二次震击相同的效果。';
+  const throatCutText='在格挡来自敌人的投射物后，下一次攻击额外发起影子斩，对其额外造成67生命伤害和37架势伤害，并有30%造成架势破坏。';
+  DUAL_ASCENSIONS.push({id:'d323',name:'割喉',parents:['swallowReturn','pursuit'],parentNames:['燕返','追击'],description:throatCutText,detail:throatCutText,constraint:'父卡均 LV3；一次性双重擢升。',maxLevel:1,dual:true});
+  const NEW_DUALS=[
+    ['d324','回收利用','dismantle','rerollFate','允许在擢升页面拆解，放弃一次擢升机会并获得相当于当前等级50%的经验。擢升选择中每有一个双重擢升，额外获得25%经验。'],
+    ['d325','绝症','poisonBlade','antiRegen','重伤效果不会消失，且提高敌人受到中毒伤害与中毒架势伤害20%。'],
+    ['d326','霜爆','frostTrace','thousandFire','叠满霜痕时，额外触发一次霜爆，造成28伤害与90架势伤害和冻伤效果，并留下减速地面。'],
+    ['d327','金蝉脱壳','guardVitality','heavyRecoil','受到来自首领的伤害时，使冲刺立刻就绪，并震开周围敌人，造成30伤害与50架势伤害。'],
+    ['d328','焦土龙息','dragonRoar','pollutedBlood','巨龙吐息即将生效时，在场上随机生成3-5块焦油。'],
+    ['d329','角斗士','giantKiller','heavyRecoil','完美格挡对精英和首领架势伤害+30%，对精英额外造成其最大架势15%的架势伤害。'],
+    ['d330','闪转腾挪','slideStrike','emergencyDodge','突刺攻击返还30%的闪避冷却，突刺攻击期间不会再被命中。'],
+    ['d331','鬼影重重','illusion','ghost','闪避攻击时，使幻象侵袭目标1秒。4%使目标的精神永远崩坏。'],
+    ['d332','化劲归元','tenacity','innerForce','内功转化的受损生命，会立刻开始恢复。'],
+    ['d333','铁壁蓄锋','steadfast','armorRend','格挡不再打断重击蓄力，每成功格挡一次，重击架势伤害+10%，完美格挡时翻倍。'],
+    ['d334','超凡魔典','choice','pageStorm','攻击时额外射出一个魔法弹。允许在擢升页面拆解，放弃一次擢升机会进行附魔，永久提升魔法弹20伤害与5架势伤害。'],
+    ['d335','高级召唤','airSupport','synergy','每有一个其他召唤物，为飞龙幼崽提供20%伤害加成与8%冷却恢复速度加成。']
+  ];
+  for(const [id,name,a,b,text] of NEW_DUALS)DUAL_ASCENSIONS.push({id,name,parents:[a,b],parentNames:[a,b].map(id=>ASCENSIONS.find(c=>c.id===id).name),description:text,detail:text,maxLevel:1,dual:true,constraint:'父卡均 LV3；一次性双重擢升。'});
   return {ASCENSIONS,DUAL_ASCENSIONS,AscensionEffects};
 });

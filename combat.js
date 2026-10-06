@@ -186,7 +186,7 @@
       while(index<queue.length&&this.cascadeCount<32){const job=queue[index++];this.cascadeCount++;this.hooks.emit(job.name,job.payload);}
       if(index)queue.splice(0,index);
     }
-    guardTime(){const p=this.p;return p.state==='execute'&&p.execDone?p.execGuardT:p.state==='guard'?p.t:null;}
+    guardTime(){const p=this.p;return p.state==='charge'&&this.chargeGuardEnabled?.()?p.chargeGuardT??null:p.state==='execute'&&p.execDone?p.execGuardT:p.state==='guard'?p.t:null;}
     guardActive(){const t=this.guardTime();return t!==null&&t>=this.rules.guardStartup&&t<=this.rules.guardStartup+this.rules.guardWindow;}
     get evasionChanceBase(){const p=this.p;return clamp((p.evasionBase+(p.evasionBonus||0))*(p.probabilityMultiplier||1),0,.75);}
     get evasionChance(){const p=this.p;if(this.time<(p.flowEvasionUntil||0))return 1;return clamp(this.evasionChanceBase-(p.evasionFatigue||0)*(p.evasionFatiguePenalty||.02),0,.75);}
@@ -404,6 +404,7 @@
       this.emit('block',{x:p.x+p.face*25,y:p.y,z:p.z+48,...this.guardVisualState?.(),source,grayAmount,momentumCost:gate.momentumCost||0});this.hitstop(.025);return result;
     }
     resolvePerfectBlock(e,arrow,{source='guard',preservePlayer=false,reflectArrow=true}={}) {
+      if(this.p.state==='charge'&&this.chargeGuardEnabled?.())preservePlayer=true;
       const p=this.p,saved=preservePlayer?{state:p.state,t:p.t,combo:p.combo,attack:p.attack,attackIndex:p.attackIndex,hitIds:p.hitIds,swingSound:p.swingSound,attackBuffer:p.attackBuffer}:null;
       if(!preservePlayer){p.state='idle';p.t=0;p.guardCd=0;p.counter=.5;}
       p.guardFlash=.22;p.invuln=Math.max(p.invuln,.10);this.stats.parries++;this.hitstop(.065);
@@ -432,6 +433,7 @@
       this.p.guardCd=0;this.p.guardBuffer=0;this.p.counter=.5;return result;
     }
     receiveHit(damage,e,arrow) {
+      if(this.p.state==='thrust'&&this.thrustInvulnerable?.())return 'immune';
       const p=this.p;if(p.hp<=0||p.state==='execute'&&p.invuln>0&&!this.guardActive())return 'immune';
       if(p.hunterMarkT>0)damage*=1.2;
       if(this.guardActive()){
@@ -480,7 +482,7 @@
       // Scale after direct bonuses, before target-wide vulnerabilities.
       if(options.contactMultiplier!==undefined){damage*=options.contactMultiplier;posture*=options.contactMultiplier;}
       // Fixed fire-arc damage bypasses attack/critical scaling, but respects enemy vulnerabilities.
-      damage+=options.contactBonusDamage||0;posture+=options.contactBonusPosture||0;
+      damage+=(options.contactBonusDamage||0)+(attackContext.contactBonusDamage||0);posture+=(options.contactBonusPosture||0)+(attackContext.contactBonusPosture||0);
       const globalDamage=this.trigger('beforeEnemyDamage',{enemy:e,damage,posture,tags,direct,secondary,periodic:!!options.periodic,executionBonus:options.executionBonus||1});damage=globalDamage.damage;posture=globalDamage.posture;
       // Final-boss executions pass through ascension and vulnerability hooks above.
       // Cap the actual hit after both execution bonus budgets at 30% of maximum HP.
@@ -488,7 +490,7 @@
       damage=Math.max(0,damage);posture=Math.max(0,posture);
       const melee=direct&&!options.periodic&&tags.some(t=>['normal','comboFinisher','heavy','thrust','downStrike'].includes(t));
       const guardFlags=e.attack?.flags||[],stance=!e.offensive&&(e.state==='windup'&&guardFlags.some(f=>['parryStance','guardStance','spikeGuard'].includes(f))||['windup','active'].includes(e.state)&&guardFlags.includes('shieldAdvance'));
-      if(stance&&melee&&!e.guardConsumed&&(this.p.x-e.x)*e.face>0){
+      if(stance&&melee&&!attackContext.shadowSlash&&!e.guardConsumed&&(this.p.x-e.x)*e.face>0){
         e.guardReaction=.22;this.emit('shieldBlock',{x:e.x,y:e.y});
         if(guardFlags.includes('parryStance')){e.guardConsumed=true;e.queue=[TYPES[e.type].moveKeys.find(k=>MOVES[k].flags.includes('counter'))];this.recoverEnemy(e,.08);}
         else{
@@ -497,7 +499,7 @@
         }
         return;
       }
-      const braced=(e.type==='shield'||(TYPES[e.type].armor&&/盾/.test(TYPES[e.type].name)))&&kind==='normal'&&e.state==='idle'&&(this.p.x-e.x)*e.face>0;
+      const braced=!attackContext.shadowSlash&&(e.type==='shield'||(TYPES[e.type].armor&&/盾/.test(TYPES[e.type].name)))&&kind==='normal'&&e.state==='idle'&&(this.p.x-e.x)*e.face>0;
       if(braced){damage=Math.ceil(damage*.22);posture*=1.35;e.guardReaction=.18;this.emit('shieldBlock',{x:e.x,y:e.y});}
       e.lastDamageRecord={amount:damage,preHp:e.hp,tags:[...tags],time:this.time};const preHp=e.hp,actualPosture=Math.min(e.posture,posture);e.hp=Math.max(0,e.hp-damage);e.posture=Math.max(0,e.posture-posture);
       this.trigger('onEnemyDamageResolved',{enemy:e,damage,posture,tags,direct,secondary,options});
@@ -625,9 +627,11 @@
       }
       p.dashCd=p.dashRegen;
       if(this.time-p.lastEvasion>4&&p.evasionFatigue>0){p.evasionFatigue=0;p.evasionRecovery=0;}
-      if(p.grayHp>0&&!p.bossPlague&&(!p.voidMire&&this.time-p.lastRealDamage>=this.rules.grayRecoveryDelay||(p.grayRecoveryWhileHit||0)>0)){
+      if(p.grayHp>0&&!p.bossPlague&&(!p.voidMire&&this.time-p.lastRealDamage>=this.rules.grayRecoveryDelay||(p.grayRecoveryWhileHit||0)>0||(p.innerForceRecoveringGray||0)>0&&!p.voidMire)){
         const recentMult=!p.voidMire&&this.time-p.lastRealDamage>=this.rules.grayRecoveryDelay?1:(p.grayRecoveryWhileHit||0);
-        const amount=Math.min(p.grayHp,Math.max(0,this.hooks.modify('grayRecovery',this.rules.grayRecoveryRate*p.grayRecoveryMultiplier*recentMult*dt)));
+        const rate=Math.max(0,this.hooks.modify('grayRecovery',this.rules.grayRecoveryRate*p.grayRecoveryMultiplier*dt));
+        const amount=Math.min(p.grayHp,rate*recentMult+(!p.voidMire?Math.min(p.innerForceRecoveringGray||0,rate*(1-recentMult)):0));
+        p.innerForceRecoveringGray=Math.max(0,(p.innerForceRecoveringGray||0)-amount);
         p.grayHp-=amount;p.hp+=amount;this.trigger('onRecoverGrayHealth',{amount});
       }
       if(p.comboGrace<=0&&p.state==='idle')p.combo=0;
@@ -649,7 +653,7 @@
       // skilled players another startup + perfect window without sacrificing the
       // forgiving multi-hit ordinary guard for players who simply hold the first guard.
       const perfectRefresh=p.state==='guard'&&p.guardCd<=0;
-      if((free||perfectRefresh)&&p.guardBuffer>0&&p.guardCd<=0){if(p.execInvuln>0){p.invuln=0;p.execInvuln=0;}p.state='guard';p.t=0;p.guardCd=liveGuardTotal;p.guardBuffer=0;p.attackBuffer=0;this.emit('guard',{x:p.x,y:p.y,refreshed:perfectRefresh});}
+      if((free||perfectRefresh)&&p.guardBuffer>0&&p.guardCd<=0){if(p.execInvuln>0){p.invuln=0;p.execInvuln=0;}if(p.state==='charge'&&this.chargeGuardEnabled?.())p.chargeGuardT=0;else{p.state='guard';p.t=0;}p.guardCd=liveGuardTotal;p.guardBuffer=0;p.attackBuffer=0;this.emit('guard',{x:p.x,y:p.y,refreshed:perfectRefresh});}
       // Guarding in execution recovery keeps the finish animation running, but gives
       // up its invulnerability immediately. Guard timing has its own clock.
       if(p.state==='execute'&&p.execDone&&p.guardBuffer>0&&p.guardCd<=0){p.invuln=0;p.execInvuln=0;p.execGuardT=0;p.guardCd=liveGuardTotal;p.guardBuffer=0;this.emit('guard',{x:p.x,y:p.y,execution:true});}
@@ -673,6 +677,7 @@
         if(input.s&&p.z>12&&p.canDownStrike)this.startPlunge();else this.startAttack();
       }
       p.t+=dt;
+      if(p.state==='charge'&&p.chargeGuardT!=null){p.chargeGuardT+=dt;if(p.chargeGuardT>liveGuardEnd)p.chargeGuardT=null;}else p.chargeGuardT=null;
       if(p.state==='execute'&&p.execGuardT!==null)p.execGuardT+=dt;
       let dx=(input.d?1:0)-(input.a?1:0),dy=(input.s?1:0)-(input.w?1:0);
       if(p.z>0&&p.downStrikeCount>0&&!p.diveBombDashActive){dy=Math.min(0,dy);p.vy=Math.min(0,p.vy);if(p.state==='dash')p.dashY=Math.min(0,p.dashY);}
@@ -703,7 +708,8 @@
             const radial=p.state==='heavy'&&p.whirlwindRank>0&&distance(p,e)<a.range*.95;
             const fireRadial=p.state==='heavy'&&a.fireWhirlArcs>0&&distance(p,e)<a.range*.95*1.3;
             const heightOK=body?p.z<body.top&&p.z+78>body.bottom:p.z<e.scale*78+25;
-            if(p.t>=a.wind+a.active*.35&&!e.dead&&!e.furnaceCapture&&!p.hitIds.has(e.id)&&(forward||radial||fireRadial)&&heightOK){
+            const reachable=this.hooks.modify('playerAttackReach',(forward||radial||fireRadial)&&heightOK,{enemy:e});
+            if(p.t>=a.wind+a.active*.35&&!e.dead&&!e.furnaceCapture&&!p.hitIds.has(e.id)&&reachable){
               const rings=Math.max(0,(a.whirlTurns||1)-1),fireArcs=fireRadial?a.fireWhirlArcs:0,contactMultiplier=fireArcs?((radial?(ex<30?.60:1):forward?1:0)+fireArcs*.20):radial?(ex<30?.60+rings*.20:1+rings*.10):1;
               p.hitIds.add(e.id);this.damageEnemy(e,a.damage,a.posture,p.state==='heavy'?(p.fullCharge?['heavy','fullCharge']:['heavy']):p.state==='thrust'?(p.rockThrustActive?(p.rockThrustFull?['thrust','rockThrust','heavy','fullCharge']:['thrust','rockThrust','heavy']):'thrust'):p.attackIndex===3?'comboFinisher':'normal',{contactMultiplier,contactBonusDamage:fireArcs*27,contactBonusPosture:fireArcs*10});
               this.hitstop(p.attackIndex===3?.09:.042);
@@ -757,12 +763,12 @@
         if(p.z>0||p.vz>0){p.vz-=1450*dt;p.z+=p.vz*dt;}
         if(p.state==='plunge'){
           // Swept vertical contact prevents tunnelling through enemies at high fall speeds.
-          const inDownStrikeRange=e=>{if(e.dead||e.furnaceCapture)return false;const body=isBoss(e)?this.enemyHurtbox(e):null;return Math.abs((body?.x??e.x)-p.x)<(50+(body?.rx??e.scale*12))*p.downRangeMultiplier&&Math.abs((body?.y??e.y)-p.y)<40*p.downRangeMultiplier&&p.z<(body?.top??e.scale*85+18);};
+          const inDownStrikeRange=e=>{if(e.dead||e.furnaceCapture)return false;const body=isBoss(e)?this.enemyHurtbox(e):null;return this.hooks.modify('playerAttackReach',Math.abs((body?.x??e.x)-p.x)<(50+(body?.rx??e.scale*12))*p.downRangeMultiplier&&Math.abs((body?.y??e.y)-p.y)<40*p.downRangeMultiplier&&p.z<(body?.top??e.scale*85+18),{enemy:e});};
           const target=this.enemies.find(inDownStrikeRange);
           if(target){
             const highDrop=p.eagleDropRank>=2&&p.plungeStartZ>=p.eagleDropHighThreshold;
             const areaStrike=p.guillotineRank===3||highDrop;
-            const victims=areaStrike?this.enemies.filter(inDownStrikeRange):[target];
+            const victims=this.enemies.filter(e=>inDownStrikeRange(e)&&(areaStrike||e===target||this.hooks.modify('playerAttackReach',false,{enemy:e})));
             p.downStrikeCount=(p.downStrikeCount||0)+1;
             const strikeCount=p.downStrikeCount;
             const downMultiplier=p.downDamageMultiplier*(1+(p.downStrikeDamageGrowth||0)*Math.max(0,strikeCount-1));

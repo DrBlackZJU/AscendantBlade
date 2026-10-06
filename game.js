@@ -519,6 +519,21 @@ function getSurvival(){
       if(giftTriggered){const pool=page.filter(o=>o.id!==id&&!o.fallback&&(o.dual?!this.duals[o.id]:(this.upgrades[o.id]||0)<(o.maxLevel||3)));if(pool.length){const bonus=pool[Math.floor(this.game.random()*pool.length)];if(this.applyAscensionOffer(bonus,{free:true})){const gifted={id:bonus.id,name:bonus.name,rank:bonus.dual?'DUAL':this.upgrades[bonus.id]||null,dual:!!bonus.dual,rapidBoost:!!bonus.rapidBoost};this.lastAscensionChoice.gifted=gifted;this.game.emit('bonusAscension',gifted);}}}
       this.offers=[];this.currentBonusRerolls=0;this.rerollDualBoost=0;if(this.pendingLevels)this.makeOffers(false);return true;
     }
+    canDismantleOffers(){return !this.training&&this.game.status==='playing'&&this.pendingLevels>0&&this.offers.length>0&&(this.hasDual('dismantle','rerollFate')||this.hasDual('choice','pageStorm'));}
+    dismantleOffers(){
+      if(!this.canDismantleOffers())return false;
+      const recycling=this.hasDual('dismantle','rerollFate'),enchanting=this.hasDual('choice','pageStorm');
+      const dualCount=this.offers.filter(o=>o.dual).length,xp=recycling?this.nextXP*(.50+.25*dualCount):0;
+      const wasRapidForce=this.ascensionSelections>=4&&!!this.effects.rapidGrowthForceNext;
+      this.ascensionSelections++;this.pendingLevels--;this.creditSources.shift();
+      if(wasRapidForce)this.effects.rapidGrowthForceNext=false;
+      this.offers=[];this.currentBonusRerolls=0;this.rerollDualBoost=0;
+      if(enchanting)this.effects.enchant.levels++;
+      this.xp+=xp;this.totalXP+=xp;this.lastAscensionChoice=null;
+      this.processLevelUps();
+      if(this.pendingLevels&&!this.offers.length)this.makeOffers(false);
+      this.game.emit('ascensionDismantled',{xp,enchanting,dualCount,credits:this.pendingLevels});return true;
+    }
     step(dt,input={},pressed={}){
       if(this.finalPhase==='battle'&&!this.game.enemies.some(e=>this.finalIds.has(e.id)&&!e.dead)){
         this.finishFinalBattle();
@@ -711,7 +726,7 @@ const AshBattleArt=(()=>{
     const core=c.createLinearGradient(x,y,x,y-height*.63);core.addColorStop(0,pale+'99');core.addColorStop(.4,pale+'88');core.addColorStop(1,pale+'00');c.beginPath();c.moveTo(x-w*.35,y);c.bezierCurveTo(x-w*.8,y-height*.3,x+sway*.6,y-height*.3,x+sway*.8,y-height*.69);c.quadraticCurveTo(x+w*.3,y-height*.27,x+w*.4,y);c.fillStyle=core;c.fill();
     const ember=(time*1.8+noise(seed))%1;c.globalAlpha*=.9;stroke(c,[[x+sway*ember,y-height*ember],[x+sway*ember+2,y-height*ember-3]],pale,1);c.globalAlpha/=.9;
   }
-  const IMPACTS={giantImpact:'stone',probeConsume:'probe',finalHoly:'holy',holyStrike:'holy',bountyClaim:'bounty',enemyExplosion:'fire',quake:'stone',shockwave:'airPressure',rockShockwave:'airPressure',twinShock:'goldFissure',burstEcho:'burst',peakShock:'airPressure',dualHeavyShock:'smallRecoil',bullImpact:'bull',posturePulse:'bladeShock',corpseBomb:'blood',overkill:'overkillRupture',bloodTide:'blood',flyingKickExplosion:'goldShrapnel',heatBurst:'fire',projectileFireBurst:'projectileFire',frictionBurst:'frictionHeat',poisonFlameBlast:'poisonFlame',serumReactionBurst:'serumReaction',emberSpreadBurst:'flameSpread',heavyRecoil:'heavyRecoil',ignite:'fire',meteorImpact:'meteor',fireTouch:'fire',acidBlood:'acidBlood',plague:'poison',iceBarrierBreak:'iceArmor',freeze:'ice',consecrationEnd:'holy',furnace:'fire',timeReturn:'void'};
+  const IMPACTS={frostExplosion:'ice',giantImpact:'stone',probeConsume:'probe',finalHoly:'holy',holyStrike:'holy',bountyClaim:'bounty',enemyExplosion:'fire',quake:'stone',shockwave:'airPressure',rockShockwave:'airPressure',twinShock:'goldFissure',burstEcho:'burst',peakShock:'airPressure',dualHeavyShock:'smallRecoil',bullImpact:'bull',posturePulse:'bladeShock',corpseBomb:'blood',overkill:'overkillRupture',bloodTide:'blood',flyingKickExplosion:'goldShrapnel',heatBurst:'fire',projectileFireBurst:'projectileFire',frictionBurst:'frictionHeat',poisonFlameBlast:'poisonFlame',serumReactionBurst:'serumReaction',emberSpreadBurst:'flameSpread',heavyRecoil:'heavyRecoil',ignite:'fire',meteorImpact:'meteor',fireTouch:'fire',acidBlood:'acidBlood',plague:'poison',iceBarrierBreak:'iceArmor',freeze:'ice',consecrationEnd:'holy',furnace:'fire',timeReturn:'void'};
   class Effects{
     constructor(){this.items=[];}
     clear(){this.items=[];}
@@ -979,6 +994,7 @@ function initializeGame(){
     if(type==='swing'){noise(.12,.055,1700);tone(180,60,.12,.035,'triangle');}
     if(type==='heavy'){noise(.18,.14,550);tone(105,28,.24,.16,'triangle');}
     if(type==='hit'){noise(.07,.105,700);tone(155,42,.09,.12,'triangle');}
+    if(type==='enchant'){tone(980,360,.18,.045,'sine');tone(1480,640,.14,.025,'triangle');noise(.04,.025,2600);}
     if(type==='parry'){tone(1250,520,.33,.075);tone(2450,1900,.22,.04,'sine',.01);noise(.04,.1,3200);tone(85,40,.13,.1);}
     if(type==='break'){tone(450,130,.4,.08,'sawtooth');noise(.23,.12,2000);}
     if(type==='dash'){noise(.17,.075,900);tone(300,90,.18,.035);}
@@ -1092,13 +1108,19 @@ function initializeGame(){
     $('upgrade-summary').textContent=`LV.${run.level} · 剩余 ${run.pendingLevels} 次擢升机会。`;
     const choices=$('upgrade-choices');choices.style.setProperty('--offer-count',Math.max(1,run.offers.length));
     choices.innerHTML=run.offers.map((o,i)=>{const owned=!!run.upgrades[o.id],dual=!!o.dual,parentNames=dual?(o.parentNames||o.parents||[]).join(' + '):'';const typeLabel=dual?'双重':owned?'强化':'领悟';const rank=dual?'DUAL / LV3 + LV3':o.fallback?'满修':o.rapidBoost?'快速成长 · 直接 LV'+o.grantTo:owned?'LV'+run.upgrades[o.id]+' → LV'+o.nextLevel:'获得 LV1';return `<button class="upgrade-card ${owned?'owned':''} ${o.rapidBoost?'rapid-growth':''} ${dual?'dual-ascension':''}" data-upgrade="${o.id}"><span class="choice-number">0${i+1} / ${typeLabel}</span><span class="rank">${rank}</span><h3>${o.name}</h3><span class="subtitle">${dual?parentNames:o.subtitle||''}</span><p>${o.description}</p></button>`;}).join('')+((bonus||rerolls)?`<button id="reroll-upgrades" class="upgrade-reroll">重掷命运 [R] · ${bonus?`本次 ${bonus}`:`剩余 ${rerolls}`} 次</button>`:'');
+    if(run.canDismantleOffers())choices.insertAdjacentHTML('beforeend','<button id="dismantle-upgrades" class="upgrade-reroll">拆解 [T]</button>');
     document.querySelectorAll('[data-upgrade]').forEach(b=>b.onclick=()=>chooseUpgrade(b.dataset.upgrade));const rr=$('reroll-upgrades');if(rr)rr.onclick=()=>{if(run.rerollOffers())showUpgrade();};
+    const dismantle=$('dismantle-upgrades');if(dismantle)dismantle.onclick=dismantleUpgrade;
   }
   function showTrainingChoices(){
     $('upgrade-summary').textContent='试炼场 · 每次 E 选择一项直接升至 LV3；双重自动补齐双方 LV3。击杀概率效果在稻草人死亡时必触发。';
     const area=$('upgrade-choices');area.classList.add('training-choices');area.innerHTML='<div class="training-controls"><input id="training-search" placeholder="搜索擢升或父卡名称" aria-label="搜索擢升"><label>生命上限 <input id="dummy-hp" type="number" min="100" max="1000000" value="'+run.trainingConfig.hp+'"></label><label>架势上限 <input id="dummy-posture" type="number" min="10" max="100000" value="'+run.trainingConfig.posture+'"></label><button id="reset-dummies">应用并复原稻草人</button><button id="close-training">返回战斗 [E]</button></div><div id="training-pool"></div>';
     const render=()=>{const q=$('training-search').value.trim().toLowerCase(),pool=run.offers.filter(a=>(a.name+' '+AshI18n.english(a.name)+' '+(a.parentNames||[]).map(n=>n+' '+AshI18n.english(n)).join(' ')+' '+a.id).toLowerCase().includes(q));$('training-pool').innerHTML=pool.map(a=>{const owned=a.parents?!!run.duals[a.id]:run.upgrades[a.id]===3;return `<button class="upgrade-card ${a.parents?'dual-ascension':''}" data-training="${a.id}" ${owned?'disabled':''}><span class="rank">${owned?'已持有':a.parents?'双重 / 自动获得父卡':'基础 / LV3'}</span><h3>${a.name}</h3><p>${a.parents?a.parentNames.join(' + ')+'：'+a.description:a.levels.map((v,i)=>'LV'+(i+1)+' '+v).join('<br>')}</p></button>`;}).join('');document.querySelectorAll('[data-training]').forEach(b=>b.onclick=()=>chooseUpgrade(b.dataset.training));};
     $('training-search').oninput=render;$('reset-dummies').onclick=()=>{run.trainingConfig.hp=clamp(Number($('dummy-hp').value)||3000,100,1000000);run.trainingConfig.posture=clamp(Number($('dummy-posture').value)||600,10,100000);for(const e of game.enemies)if(e.dummy)run.resetTrainingDummy(e);};$('close-training').onclick=()=>{run.offers=[];mode='playing';$('upgrade-screen').classList.add('hidden');$('pause').classList.remove('hidden');canvas.focus();};render();
+  }
+  function dismantleUpgrade(){
+    if(!run.dismantleOffers())return;sound('chapter');
+    if(run.offers.length)showUpgrade();else{mode='playing';$('upgrade-screen').classList.add('hidden');$('pause').classList.remove('hidden');canvas.focus();}
   }
   function chooseUpgrade(id){
     if(!run.chooseAscension(id))return;sound('chapter');
@@ -1157,6 +1179,7 @@ function initializeGame(){
     if(e.code==='Tab'){e.preventDefault();toggleCodex();return;}
     if(e.code==='Escape'&&mode==='codex'){toggleCodex();return;}
     if(mode==='upgrade'&&e.code==='KeyR'){if(run.rerollOffers())showUpgrade();return;}
+    if(mode==='upgrade'&&e.code==='KeyT'){e.preventDefault();dismantleUpgrade();return;}
     if(mode==='upgrade'&&/^Digit[12345]$/.test(e.code)){const o=run.offers[Number(e.code.slice(-1))-1];if(o)chooseUpgrade(o.id);}
     else if(e.code==='Enter'&&mode==='title')start();
     else if(e.code==='Escape')pause();
@@ -1221,6 +1244,8 @@ function initializeGame(){
       if(e.type==='lightning'){lightningFX.push({...e,t:0,life:.36});sound('parry');shake=Math.max(shake,4);if(e.primary){ring(e.primary.x,e.primary.y+26,'#b9d7ff',44);burst(e.primary.x,e.primary.y+26,18,'#dcebff',250,0);}}
       if(e.type==='ignite'){if(e.spread){label(e.x,e.y-132,'炎 扩','#ffc27c',16);}else{const count=15+(e.rank||1)*4;ring(e.x,e.y,'#e68c47',e.radius);burst(e.x,e.y,count,'#f6b35d',210+(e.rank||1)*30,40);if(e.rank){ring(e.x,e.y,'#ffb25d',28+(e.rank||1)*14,58);burst(e.x,e.y,8+(e.rank||1)*4,'#ff9540',120+(e.rank||1)*30,58);}}}
       if(e.type==='shockwave'){sound('heavy');shake=12;}
+      if(e.type==='enchantImpact'){const z=e.z||48;burst(e.x,e.y,18,'#bf91ff',190,z);burst(e.x,e.y,8,'#fff0ff',100,z);shake=Math.max(shake,2);sound('enchant');}
+      if(e.type==='frostExplosion'){ring(e.x,e.y,'#bcefff',e.radius||190,40);burst(e.x,e.y,24,'#c7f4ff',210,48);}
       if(e.type==='chainsawRend'){burst(e.x,e.y,12,'#efb16c',175,46);ring(e.x,e.y,'#dcb576',34,40);}
       if(e.type==='bloodShadow'){burst(e.x,e.y,10,'#d75e72',160,45);}
       if(e.type==='thorns'){burst(e.x,e.y,5,'#d5a6a0',110,45);dualFX.push({kind:'thornGuard',x:e.sourceX??game.p.x,y:e.sourceY??game.p.y,z:e.sourceZ??game.p.z,t:0,life:e.perfect?.4:.3});}
@@ -1370,7 +1395,7 @@ function initializeGame(){
       if(e.type==='timeSeal'){ring(e.x,e.y,'#55bfff',84,e.z*.5);screenFlash=Math.max(screenFlash,.025);}
       if(e.type==='timeReturn'){ring(e.x,e.y,'#79d7ff',96,e.z*.45);burst(e.x,e.y,16,'#74cfff',150,e.z*.5);}
       if(e.type==='timeSealDevour'){timeSealDevourFX.push({...e,t:0,life:.42,seed:Math.random()*TAU});screenFlash=Math.max(screenFlash,.10);shake=Math.max(shake,5);}
-      if(['ghostCrush','blackHoleRide','rockNailBurst','soulLinkShock','allLightningMarks','levelDoomWave','ghostExecute','lightningTrail','lightningTrailBurst','huntExecute','resonanceKillingAura','windPursuit','acidSpike','overkillLaser','alphaBloodFeast','bloodExecutionerBurst','alphaRift'].includes(e.type)){const lives={ghostCrush:.72,blackHoleRide:.75,rockNailBurst:.66,soulLinkShock:.48,allLightningMarks:.7,levelDoomWave:.75,ghostExecute:.72,lightningTrail:.95,lightningTrailBurst:.58,huntExecute:.62,resonanceKillingAura:.72,windPursuit:.42,acidSpike:.38,overkillLaser:.22,alphaBloodFeast:AshEarthBloodFX.life.blood,bloodExecutionerBurst:AshEarthBloodFX.life.blood,alphaRift:.48};dualFX.push({...e,kind:e.type,t:0,life:lives[e.type]||.6,seed:Math.random()*TAU});}
+      if(['shadowSlash','ghostCrush','blackHoleRide','rockNailBurst','soulLinkShock','allLightningMarks','levelDoomWave','ghostExecute','lightningTrail','lightningTrailBurst','huntExecute','resonanceKillingAura','windPursuit','acidSpike','overkillLaser','alphaBloodFeast','bloodExecutionerBurst','alphaRift'].includes(e.type)){const lives={shadowSlash:.20,ghostCrush:.72,blackHoleRide:.75,rockNailBurst:.66,soulLinkShock:.48,allLightningMarks:.7,levelDoomWave:.75,ghostExecute:.72,lightningTrail:.95,lightningTrailBurst:.58,huntExecute:.62,resonanceKillingAura:.72,windPursuit:.42,acidSpike:.38,overkillLaser:.22,alphaBloodFeast:AshEarthBloodFX.life.blood,bloodExecutionerBurst:AshEarthBloodFX.life.blood,alphaRift:.48};dualFX.push({...e,kind:e.type,t:0,life:lives[e.type]||.6,seed:Math.random()*TAU});}
       if(e.type==='miniBell'){sound('bell');shake=Math.max(shake,10);screenFlash=Math.max(screenFlash,.07);dualFX.push({...e,kind:'miniBell',t:0,life:1.15,seed:Math.random()*TAU});label(e.x,e.y-e.z-128,'小 · 敲 · 钟','#f5dda0',18);}
       if(e.type==='ghostCrush'||e.type==='ghostExecute'){sound('heavy');shake=Math.max(shake,12);}
       if(e.type==='groundDragStart')sound('heavy');
@@ -1447,7 +1472,7 @@ function initializeGame(){
       if(e.type==='shadowEnter')label(e.x,e.y-e.z-108,'遁 影','#9b9dbb',13);
       if(e.type==='shadowExit'&&e.strike)ring(e.x,e.y,'#a38ec4',55,e.z+35);
       if(e.type==='shadowCut'){burst(e.x,e.y,14,'#b5b9bc',210,45);slashes.push({x:e.x,y:e.y-48,face:game.p.face,index:2,t:0,life:.22,color:'#aab0b6',scale:1.15});}
-      if(e.type==='backstab'){slashes.push({x:e.x,y:e.y-48,face:1,index:3,t:0,life:.3,color:'#17121f',scale:1.4});slashes.push({x:e.x,y:e.y-48,face:-1,index:3,t:0,life:.3,color:'#17121f',scale:1.4});burst(e.x,e.y,14,'#51405d',180,50);}
+      if(e.type==='backstab')dualFX.push({...e,kind:'shadowSlash',t:0,life:.20});
       if(e.type==='meteorWarn')meteorFX.push({...e,t:0,life:e.duration||.7});
       if(e.type==='meteorImpact'){sound('heavy');shake=Math.max(shake,13);const color=e.pollution?'#bf83ed':'#f0a45a';ring(e.x,e.y,color,e.radius,12);burst(e.x,e.y,46,e.pollution?'#83dfc8':'#f1a354',430,28);if(e.zone)ring(e.x,e.y,e.pollution?'#8e6fd3':'#d46d35',e.zone,0);}
       if(e.type==='launch')burst(e.x,e.y,8,'#b7a98b',180,e.z+15);
@@ -2500,6 +2525,7 @@ function initializeGame(){
       else if(fx.kind==='lightningTrail'){const x2=fx.x2-camera,y2=fx.y2;line(x,y,x2,y2,'rgba(91,165,244,.24)',10*(1-q));for(let i=0;i<7;i++){const k=i/6;circle(x+(x2-x)*k,y+(y2-y)*k,2.5,'#87c8ff');}}
       else if(fx.kind==='lightningTrailBurst'){const x2=fx.x2-camera,y2=fx.y2;ctx.shadowColor='#77d9ff';ctx.shadowBlur=25;for(let i=0;i<3;i++)AshBattleArt.bolt(ctx,[x,y+i*7-7],[x2,y2+i*7-7],fx.seed*20+i+Math.floor(fx.t*30),4-i);for(let i=0;i<9;i++){const k=i/8,xx=x+(x2-x)*k,yy=y+(y2-y)*k;fog(xx,yy,38*(1-q),19*(1-q),'rgba(116,225,255,.55)');}}
       else if(fx.kind==='ghostCrush'||fx.kind==='ghostExecute'){fog(x,y,110+ease*80,75+ease*45,'rgba(116,71,157,'+(.34*(1-q))+')');AshBattleArt.hand(ctx,x,y+28,.18+q*.7,fx.t*3);for(let i=0;i<12;i++){const a=fx.seed+i*TAU/12,r=(28+ease*130);line(x+Math.cos(a)*18,y+Math.sin(a)*8,x+Math.cos(a)*r,y+Math.sin(a)*r*.34,i%3?'#a77bd0':'#f1d5ff',3*(1-q));}}
+      else if(fx.kind==='shadowSlash')AshCombatFX.shadowSlash(ctx,fx,camera);
       else if(fx.kind==='rockNailBurst')AshCombatFX.rockBurst(ctx,fx,camera);
       else if(fx.kind==='soulBladeEmpowered')AshCombatFX.soulImpact(ctx,fx,camera);
       else if(fx.kind==='miniBell'){const r=(fx.radius||235)*(.22+ease*.95);fog(x,y-42,95+ease*100,120+ease*70,'rgba(255,218,133,'+(.20*(1-q))+')');for(let i=0;i<4;i++){ctx.strokeStyle=i?'rgba(245,207,119,.45)':'#fff0bc';ctx.lineWidth=(5-i*.7)*(1-q)+.8;ctx.beginPath();ctx.ellipse(x,y,r*(.7+i*.12),r*(.22+i*.035),0,0,TAU);ctx.stroke();}for(let i=0;i<16;i++){const a=i*TAU/16,rr=r*(.8+(i%3)*.08);line(x+Math.cos(a)*rr*.55,y+Math.sin(a)*rr*.16,x+Math.cos(a)*rr,y+Math.sin(a)*rr*.28,i%4===0?'#fff9df':'#e6bd68',2.5*(1-q));}}
@@ -2601,6 +2627,8 @@ function initializeGame(){
     for(const z of run?.effects?.meteor?.zones||[])(z.pollution?AshBattleArt.pollutionField:AshBattleArt.fireField)(ctx,z,camera,game.time);
     const iceFlameTrail=!!run?.hasDual('frostTrace','fireTouch');
     for(const z of run?.effects?.v11?.fireTrail||[])AshBattleArt.fireField(ctx,z,camera,game.time,iceFlameTrail);
+    for(const z of run?.effects?.frostGround||[]){ctx.save();ctx.globalAlpha=Math.min(1,z.life)*.65;ellipse(z.x-camera,z.y,z.radius,z.radius*.38,'#749ead55','#bce9f099',1.5);for(let i=0;i<7;i++){const a=i*2.4;line(z.x-camera+Math.cos(a)*z.radius*.7,z.y+Math.sin(a)*z.radius*.25,z.x-camera+Math.cos(a)*z.radius*.3,z.y+Math.sin(a)*z.radius*.1,'#c0f1ff88',1.5);}ctx.restore();}
+    for(const s of run?.effects?.enchant?.shots||[]){ctx.save();ctx.globalCompositeOperation='lighter';ctx.shadowColor='#b996ff';ctx.shadowBlur=16;line(s.x-camera-s.face*26,s.y-s.z,s.x-camera,s.y-s.z,'#ae8eff88',5);circle(s.x-camera,s.y-s.z,6,'#eee0ff');ctx.restore();}
     const gh=run?.effects?.v11?.ghostHand;if(gh?.hold>0){const target=game.enemies.find(e=>!e.dead&&(e.id===gh.targetId||e.state==='stunned'));if(target)AshBattleArt.hand(ctx,target.x-camera,target.y,.70+Math.sin(game.time*3)*.04,game.time);}
     for(const m of meteorFX)AshBattleArt.meteor(ctx,m,camera);
     for(const d of run?.effects?.luckSpearPending||[]){const e=d.enemy;if(!e||e.dead||e.furnaceCapture)continue;const px=e.x-camera,fall=clamp((.2-d.t)/.2,0,1),sy=e.y-(e.z||0)-330+274*fall*fall;ctx.save();ctx.globalCompositeOperation='lighter';ctx.globalAlpha=clamp((d.duration-d.t)/.12,0,1);ctx.shadowColor='#ffe69a';ctx.shadowBlur=20;line(px,sy-100,px,sy+18,'#ffe49a',5);line(px-8,sy-58,px+8,sy-58,'#f7d270',3);path([[px,sy+24],[px-7,sy+7],[px+7,sy+7]],'#fff1b0',1,true,true);ctx.restore();}
