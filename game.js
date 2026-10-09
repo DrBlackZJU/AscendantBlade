@@ -2219,6 +2219,8 @@ function initializeGame(){
   }
   let medusaGazeFX=[];
   function fighter(e,isPlayer=false,ghost=false){
+    // Boss death art takes precedence over status masks and corpse-consuming kills.
+    if(!isPlayer&&!ghost&&e.dead&&isBoss(e))return fighterBody(e);
     if(e.dead&&e.noCorpse&&e.deathFlavor!=='annihilation')return;
     const kind=!isPlayer&&!ghost&&e.dead?e.deathFlavor:null;
     if(!kind){
@@ -2389,8 +2391,8 @@ function initializeGame(){
     if(!isPlayer&&!ghost&&!e.dead&&!e.woundSnapshot)drawEnemyAttackVisual(e,j,visual,x,y,z,s,face);
     if(ghost||e.dead||e.groundDrag||e.woundSnapshot)return;
     if(!isPlayer&&e.pressureWeakUntil>game.time){
-      ctx.save();ctx.strokeStyle='#929699';ctx.lineWidth=1.8;ctx.lineCap='round';
-      for(let i=0;i<5;i++){const drift=(realTime*30+i*17)%62,bx=x+(i-2)*15*s,by=y-z-(92-drift)*s;ctx.globalAlpha=.35+.35*Math.sin(Math.PI*drift/62);ctx.beginPath();for(let j=0;j<=8;j++){const xx=bx+Math.sin(j*.7+realTime*3+i)*3*s,yy=by+j*3*s;if(j===0)ctx.moveTo(xx,yy);else ctx.lineTo(xx,yy);}ctx.stroke();}ctx.restore();
+      ctx.save();ctx.strokeStyle='#555b60';ctx.lineWidth=1.8;ctx.lineCap='round';
+      for(let i=0;i<5;i++){const drift=(realTime*30+i*17)%62,bx=x+(i-2)*15*s,by=y-z-(92-drift)*s;ctx.globalAlpha=.60+.30*Math.sin(Math.PI*drift/62);ctx.beginPath();for(let j=0;j<=8;j++){const xx=bx+Math.sin(j*.7+realTime*3+i)*3*s,yy=by+j*3*s;if(j===0)ctx.moveTo(xx,yy);else ctx.lineTo(xx,yy);}ctx.stroke();}ctx.restore();
     }
     if(e.effects?.iceFlame||e.effects?.burn||e.effects?.tarBurn){const cold=!!e.effects?.iceFlame;fog(x,y-z-43*s,isPlayer?43*s:29*s,isPlayer?62*s:49*s,cold?'#73caff3d':isPlayer?'#df383854':'#eb81303d');for(let i=0;i<(isPlayer?7:4);i++){const xx=x+(i-3)*8*s+Math.sin(realTime*7+i)*4*s,yy=y-z-10*s-(i%3)*17*s;AshBattleArt.flame(ctx,xx,yy,(isPlayer?26:19)*s,i,realTime,cold?'#8bdcff':isPlayer?'#e95738':'#e9a64c');}}
 
@@ -2858,7 +2860,7 @@ function initializeGame(){
     AshBossArt.draw(ctx,{x,y,scale,slot,time,alpha,silhouette,face:-1});
   }
   function drawDemon(e){
-    if(e.medusaGold||e.medusaUntil>game.time||['stone','goldStone'].includes(e.deathFlavor))return fighter(e);
+    if(!e.dead&&(e.medusaGold||e.medusaUntil>game.time||['stone','goldStone'].includes(e.deathFlavor)))return fighter(e);
     const spec=AshCombat.ENEMY_CATALOG.BY_ID[e.type],intro=run.finalPhase==='intro',q=intro?clamp((run.finalIntro-.7)/3.5,0,1):1,x=e.x-camera;
     e.finalArtSlot=spec.slot;
     if(x>-450&&x<W+450){ctx.save();ctx.beginPath();ctx.rect(x-440,0,880,e.y+5);ctx.clip();let dx=x,dy=e.y-(e.z||0)+(1-q)*360;if(e.dead){const u=clamp(e.deathT/.40,0,1),fall=u*u*(3-2*u);ctx.translate(dx,dy-4*fall);ctx.rotate((e.face||1)*1.52*fall);dx=dy=0;}AshBossArt.draw(ctx,{x:dx,y:dy,scale:1.45,slot:spec.slot,time:e.dead?(e.bossDeathAt||0):game.time,alpha:e.dead?Math.max(0,1-e.deathT/.8):1,face:e.face,entity:e,dead:e.dead});ctx.restore();if(e.dead)AshBossArt.deathEffects(ctx,e,camera);}
@@ -3030,7 +3032,7 @@ function initializeGame(){
       for(const g of ghosts)fighter(g,true,true);
       const entities=[...game.enemies.filter(e=>!e.furnaceConsumed&&!e.timeErased&&(e.dummy||!e.dead||e.rushCorpseUntil>run.time||e.deathT<.8)),{...game.p,isPlayer:true}].sort((a,b)=>a.y-b.y);
       let detailedDeaths=0;
-      for(const e of entities){if(e.dead&&!TYPES[e.type]?.boss&&++detailedDeaths>64){const x=e.x-camera;if(x>=-80&&x<=W+80){ctx.save();ctx.globalAlpha=Math.max(0,1-e.deathT/.8);ellipse(x,e.y,18*(e.scale||1),6,'#84748d');ctx.restore();}continue;}if(e.groundDragged&&e.dead)continue;if(e.groundDrag)drawGroundDrag(e);else if(TYPES[e.type]?.final)drawDemon(e);else fighter(e,!!e.isPlayer);}drawCrowdedBossIndicators();drawV18Overlays();AshBossModels.effects(ctx,game,camera,{warning:warningGlint,mist:mistCloud});
+      for(const e of entities){if(e.dead&&!TYPES[e.type]?.boss&&++detailedDeaths>64){const x=e.x-camera;if(x>=-80&&x<=W+80){ctx.save();ctx.globalAlpha=Math.max(0,1-e.deathT/.8);ellipse(x,e.y,18*(e.scale||1),6,'#84748d');ctx.restore();}continue;}if(e.groundDragged&&e.dead&&!isBoss(e))continue;if(e.groundDrag&&!(e.dead&&isBoss(e)))drawGroundDrag(e);else if(TYPES[e.type]?.final)drawDemon(e);else fighter(e,!!e.isPlayer);}drawCrowdedBossIndicators();drawV18Overlays();AshBossModels.effects(ctx,game,camera,{warning:warningGlint,mist:mistCloud});
       drawV12PersistentFX();drawPeaShooter();drawKillingAuraFX();drawBreakMomentumWaves();drawIntimidationFX();drawCurseFX();drawSauronEyeFX();arrows();drawFX();for(const e of game.enemies)enemyBars(e);
     }
     rain();

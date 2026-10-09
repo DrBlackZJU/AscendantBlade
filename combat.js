@@ -580,7 +580,7 @@
         if(e.deathFlavor==='annihilation')e.noCorpse=true;
         if(e.corpseLocked){e.knockX=e.knockY=e.knockVz=0;if(e.deathFlavor!=='wind')e.z=0;e._bowlingProjectile=null;e.flyingKickMark=null;e._flyingKickCorpse=false;}
       }
-      if(e.medusaGold||e.medusaUntil>this.time){e.deathFlavor=e.medusaGold?'goldStone':'stone';e.statueCollapse=false;e.corpseLocked=true;e.knockX=e.knockY=e.knockVz=0;e._bowlingProjectile=null;e.flyingKickMark=null;}
+      if(e.medusaGold||e.medusaUntil>this.time){if(!base.boss)e.deathFlavor=e.medusaGold?'goldStone':'stone';e.statueCollapse=false;e.corpseLocked=true;e.knockX=e.knockY=e.knockVz=0;e._bowlingProjectile=null;e.flyingKickMark=null;}
       if(tags.includes('selfDestruct')){e.noCorpse=true;e.corpseLocked=true;e.knockX=e.knockY=e.knockVz=e.z=0;e._bowlingProjectile=null;}
       // A launched enemy can die mid-flight. Keep the SAME rendered body and its
       // previous sweep endpoint available to Bowling's collision handler.

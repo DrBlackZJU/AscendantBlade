@@ -84,7 +84,20 @@ const Roster=(function(){
  behemoth:[m('深渊撕咬','melee',260,{pose:'bite',damage:38})]
  };
  for(const row of rows){row[4].push(...(extra[row[1]]||[]));if(['general','reaper'].includes(row[1]))row[5]={...row[5],speed:115.5};if(row[1]==='claw_beast')row[4].find(a=>a.action==='burrow').range=264;if(row[1]==='profane_obelisk')row[4].push(skill('召唤亵渎石碑','summonObelisk',{cooldown:15,wind:1.05}));if(row[1]==='twin_blade')Object.assign(row[4][2],{action:'jumpThrust',lunge:0,active:.8,contactFraction:.72,pose:'dualThrust'});if(row[1]==='war_hammer')for(const a of row[4])if(!a.unarmed&&a.damage>0){a.range*=1.2;a.lane=100;}}
- function apply(bosses){rows.forEach((r,i)=>{const group=Math.floor(i/9),j=i%9,tier=Math.floor(j/3),slot=j%3,e=bosses.find(b=>b.group===group&&b.tier===tier&&b.slot===slot);if(!e)throw Error('Missing boss slot '+i);const [name,bossKind,weapon,deathStyle,moves,opts={}]=r;Object.assign(e,{name,bossKind,weapon,deathStyle,art:'boss_'+bossKind,bodyPlan:'boss',humanoid:group===0||[9,10,11,12,14,15,16,17,26].includes(i),scale:1.4,reach:260,speed:105,ammo:Infinity,mana:null,hybrid:true,ranged:moves.some(m=>m.ranged),armor:true,flags:['armor'],revives:false,rageAt:.5,core:moves.map(m=>m.name).join('、'),...opts});e.morphology=e.humanoid?'humanoid':'nonhumanoid';e.moves=moves.map((a,k)=>({...a,key:e.id+'_m'+(k+1),bossMove:true,lane:a.lane||75,flags:[...a.flags],damage:a.damage?(a.damage+group*3+tier*2):0}));});}
+ function apply(bosses){rows.forEach((r,i)=>{
+  const group=Math.floor(i/9),j=i%9,tier=Math.floor(j/3),slot=j%3,e=bosses.find(b=>b.group===group&&b.tier===tier&&b.slot===slot);
+  if(!e)throw Error('Missing boss slot '+i);
+  const [name,bossKind,weapon,deathStyle,moves,opts={}]=r;
+  Object.assign(e,{name,bossKind,weapon,deathStyle,art:'boss_'+bossKind,bodyPlan:'boss',humanoid:group===0||[9,10,11,12,14,15,16,17,26].includes(i),scale:1.4,reach:260,speed:105,ammo:Infinity,mana:null,hybrid:true,ranged:moves.some(m=>m.ranged),armor:true,flags:['armor'],revives:false,rageAt:.5,...opts});
+  e.morphology=e.humanoid?'humanoid':'nonhumanoid';
+  e.moves=moves.map((a,k)=>({...a,key:e.id+'_m'+(k+1),bossMove:true,lane:a.lane||75,flags:[...a.flags],damage:a.damage?(a.damage+group*3+tier*2):0}));
+  if(bossKind==='claw_beast'){
+   // Enrage owns a one-shot move; the regular burrow keeps both of its cooldowns.
+   const burrow=e.moves.find(a=>a.action==='burrow');
+   e.moves.push({...burrow,key:e.id+'_rageBurrow',name:'狂暴遁地',range:396,damage:burrow.damage*1.5,cooldown:0,once:true,reactiveOnly:true,rageOnly:true,flags:[...burrow.flags]});
+  }
+  e.core=e.moves.map(m=>m.name).join('、');
+ });}
  return {apply,rows};
 })();
 
@@ -217,7 +230,7 @@ const Encounters=(function(){
  }
  function fx(g,e,type,props={}){g.bossEffects??=[];const f={type,owner:e,x:e.x,y:e.y,delay:.65,life:.35,age:0,radius:190,damage:24,flags:[],...props};g.bossEffects.push(f);return f;}
  function hit(g,e,a,shape={}){if(!(a.damage>0))return 'miss';const p=g.p,guard=g.guardActive(),dx=(p.x-(shape.x??e.x))*e.face,dy=p.y-(shape.y??e.y),r=shape.radius??a.range,radial=Math.hypot(dx,dy*1.6);let inside=shape.radial?radial<r+(guard?18:0):(a.both?Math.abs(dx)<r:dx>-(guard?45:30)&&dx<r+(guard?g.rules.guardReachX:0))&&Math.abs(dy)<(a.lane||75)+(guard?g.rules.guardReachY:0),heightOK=p.z<(shape.height||135);if(shape.minRadius&&radial<shape.minRadius)inside=false;if(shape.arc&&dx<0)inside=false;
-  if(kind(e)==='war_hammer'&&!a.unarmed&&!shape.radial){const h=hammerHead(e,g.time),rx=(e.scale||1)*85*(a.hammerRadiusScale||1),ry=a.lane||100,rz=(e.scale||1)*45;e.hammerContact={...h,rx,ry,rz};inside=((p.x-h.x)/(rx+(guard?g.rules.guardReachX:0)))**2+((p.y-h.y)/(ry+(guard?g.rules.guardReachY:0)))**2<1;heightOK=p.z<h.z+rz&&p.z+100>h.z-rz;}
+  if(kind(e)==='war_hammer'&&!a.unarmed&&!shape.radial){const h=hammerHead(e,g.time),rx=(e.scale||1)*85*(a.hammerRadiusScale||1),ry=a.lane||100,rz=(e.scale||1)*45;e.hammerContact={...h,rx,ry,rz};const headInside=((p.x-h.x)/(rx+(guard?g.rules.guardReachX:0)))**2+((p.y-h.y)/(ry+(guard?g.rules.guardReachY:0)))**2<1,headHeight=p.z<h.z+rz&&p.z+100>h.z-rz;const closeRange=Math.min(r,110*(e.scale||1)),closeInside=(a.both?Math.abs(dx)<closeRange:dx>-(guard?45:30)&&dx<closeRange+(guard?g.rules.guardReachX:0))&&Math.abs(dy)<Math.min(a.lane||75,75)+(guard?g.rules.guardReachY:0),closeHeight=p.z<(shape.height||135);inside=headInside||closeInside;heightOK=(headInside&&headHeight)||(closeInside&&closeHeight);}
   if(!inside||!heightOK){if(!shape.quietMiss)g.trigger('onEnemyAttackMiss',{enemy:e,move:a});return 'miss';}
   const result=g.receiveHit(a.damage,e,null);g.resolveEnemyMoveSpecial(e,a,result);return result;
  }
@@ -401,7 +414,11 @@ const Encounters=(function(){
   if(!controlled(e)){
    if(s.arrival&&['idle','recovery'].includes(e.state)){this.beginEnemyMove(e,TYPES[e.type].moveKeys.find(k=>MOVES[k].action==='arrival'));return;}
    if(s.forceSword&&['idle','recovery'].includes(e.state)){s.forceSword=false;const key=TYPES[e.type].moveKeys.find(k=>MOVES[k].action==='returnSword');s.cd[key]=0;this.beginEnemyMove(e,key);return;}
-   if(s.rageBurrow){s.rageBurrow=false;const key=TYPES[e.type].moveKeys.find(k=>MOVES[k].action==='burrow');s.cd[key]=0;this.beginEnemyMove(e,key);e.attack.range=396;e.attack.damage*=1.5;return;}
+   if(s.rageBurrow){
+    const key=e.type+'_rageBurrow';e.queue=[];this.beginEnemyMove(e,key);
+    if(e.attack?.key===key&&e.state==='burrow')s.rageBurrow=false;
+    return;
+   }
    if(s.slide>s.clock){e.x+=s.slideDir*650*dt;e.y+=Math.sin(s.clock*4)*130*dt;}
    if(s.backstep>s.clock&&!e.vineRoot){const step=380*(e.frostSlow||1)*this.iceFlameMoveMultiplier(e)*(e.tarSlow||1)*dt;e.x-=e.face*step;if(!this.loopWorld)e.x=clamp(e.x,this.bounds.left+10,this.bounds.right-15);e.walkDistance+=step;}
    if(s.vacuum>s.clock){
@@ -1207,7 +1224,8 @@ const AberrantArt=(function(Motion){
  // Same idle-render height as the mean of the nine chapter-I bosses (259.667 / 248 px).
  // Art-only multiplier: encounter ranges, actor scale and the independent priestHand stay unchanged.
  const MODEL_SCALE=259.6666666666667/248;
- const modelScale=k=>MODEL_SCALE*(k==='spider_queen'?1.2:k==='bladder'?1.15:k==='great_bell'?1.05:(k==='resentment'||k==='marked_priest')?1.1:1);
+ const RESENTMENT_SCALE=Math.round(248*MODEL_SCALE*1.1*1.08)/248;
+ const modelScale=k=>k==='resentment'?RESENTMENT_SCALE:MODEL_SCALE*(k==='spider_queen'?1.2:k==='bladder'?1.15:k==='great_bell'?1.05:k==='marked_priest'?1.1:1);
  const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v)),smooth=v=>{v=clamp(v);return v*v*(3-2*v);};
  const mix=(a,b,t)=>Object.fromEntries(Object.keys(a).map(k=>[k,a[k]+(b[k]-a[k])*t]));
  const rest={x:0,y:0,tilt:0,reach:0,lift:0,spread:0,jaw:0,tongue:0,cast:0,staff:0,fold:0};

@@ -51,7 +51,7 @@ if(typeof document!=='undefined'&&!document.getElementById('ascensions-styles'))
     ['potential','蓄势','一刺穿山',['满蓄力时间延长至 1.4 秒，满蓄力伤害上限提高至 115。','满蓄力时间延长至 1.7 秒，伤害上限提高至 160。','满蓄力时间 1.9 秒，伤害上限 190；满蓄力释放范围冲击。']],
     ['evasion','轻灵步','险中脱身',['基础闪避率 12%，移动速度 +10%。','基础闪避率提高至 20%，移动速度 +15%。','基础闪避率提高至 30%，移动速度 +20%；每层闪避疲劳惩罚由 2% 降至 1%。']],
     ['curse','诅咒','咒目噬命',['一只咒眼每 2 秒侵蚀目标 12 生命。','睁开第二只眼；每只眼每 2 秒侵蚀 20 生命。','每只眼每 2 秒侵蚀 30 生命；目标低于 15% 生命时直接斩杀。']],
-    ['refinement','精炼','百炼成锋',['获得经验值 +10%。','获得经验值 +20%。','获得经验值 +25%；击杀 BOSS 立刻额外获得 1 次擢升机会。']],
+    ['refinement','精炼','百炼成锋',['获得经验值 +10%。','获得经验值 +20%。','获得经验值 +25%；击杀首领时，有50%概率获得一次额外擢升机会。']],
     ['choice','抉择抉择','歧路愈多',['每次擢升的可选项由 3 个提高至 4 个。','保留 4 个选项；选择后有 5% 概率额外获得本页一个未选择擢升。','每次擢升提供 5 个选项；额外获得概率提高至 10%。']],
     ['clash','交锋','攻中藏守',['普攻每一击有 30% 概率拥有迎击窗口，第四击必定拥有。','迎击窗口扩大，第四击额外暴击率提高至 15%。','只有第四击拥有短暂完美迎击时机；第四击额外暴击率提高至 25%。']],
     ['bloodthirst','渴血','命悬一线',['总生命低于 50% 时，移动速度 +10%，攻击速度 +8%。','低生命时移速 +15%、攻速 +12%；总生命低于 25% 时攻击可恢复少量灰血。','低生命时移速 +20%、攻速 +16%；总生命低于 30% 时攻击回复更多灰血。']],
@@ -73,7 +73,7 @@ if(typeof document!=='undefined'&&!document.getElementById('ascensions-styles'))
     ['cooldown','快速冷却','万物稍迟',['所有明确冷却时间降低 10%。','所有明确冷却时间降低 20%。','所有明确冷却时间降低 30%；被真实击中前，每 40 秒自动闪避一次，并使敌方时间流速降至 35%，持续 1.5 秒。']],
     ['steadfast','岿然','山岳不移',['蓄力时受到的伤害降低；受击不会打断蓄力，但会短暂拖慢蓄力速度。','蓄力时完全霸体，不再因受击减慢；蓄力重击伤害略微提高。','蓄力重击伤害进一步提高；蓄力期间受到攻击时有概率直接格挡。']],
     ['rockThrust','岩石突刺','一线崩岩',['蓄力过程中发动突刺，可将当前蓄力转化为突刺重击。','突刺重击范围扩大，命中时产生冲击波。','突刺重击伤害与架势伤害进一步提高；满蓄力可斩杀低生命敌人。']],
-    ['precision','精密','毫厘夺命',['暴击率 +8%，暴击伤害倍率由 2 倍提高至 2.2 倍。','暴击率提高至 +14%，暴击伤害倍率提高至 2.4 倍。','暴击率提高至 +20%，暴击伤害倍率提高至 2.6 倍；暴击额外造成普通敌人最大生命 3%、BOSS 最大生命 1% 的伤害。']],
+    ['precision','精密','毫厘夺命',['暴击率 +8%，暴击伤害倍率由 2 倍提高至 2.2 倍。','暴击率提高至 +14%，暴击伤害倍率提高至 2.4 倍。','暴击率提高至 +20%，暴击伤害倍率提高至 2.6 倍；暴击额外造成普通敌人当前生命 3%、BOSS 当前生命 1% 的伤害。']],
     ['lightningDash','闪电冲刺','掠阵惊雷',['冲刺穿过处于攻击前摇、出招或后摇的敌人时，造成 32 生命/16 架势雷电伤害，并使冲刺距离 +5%。','雷电伤害提高至 50 生命/24 架势，冲刺距离 +15%。','雷电伤害提高至 70 生命/34 架势，冲刺距离 +28%；雷击有 50% 概率弹射至附近另一名敌人。']],
     ['swordQi','剑气','四式出锋',['第四击释放剑气，造成 24 生命、12 架势伤害，可命中 1 名敌人。','剑气造成 36 生命、18 架势伤害，可穿透 3 名敌人。','剑气造成 44 生命、24 架势伤害且无限穿透；每第 3 道化为巨型剑气，造成 82 生命、48 架势伤害。']],
     ['innerForce','内功','化劲归元',['受到的非持续真实伤害 -10%；被化解伤害的 50% 转为灰血。','非持续真实伤害 -15%；被化解伤害的 65% 转为灰血。','非持续真实伤害 -20%；被化解伤害的 80% 转为灰血；完美格挡最多运化最大生命 8% 的灰血，并按恢复量的 2.5 倍生命伤害、1.5 倍架势伤害反震。']],
@@ -102,7 +102,7 @@ if(typeof document!=='undefined'&&!document.getElementById('ascensions-styles'))
     ['hotBlood','热血','气盛锋疾',['战意越高，攻击速度越快，并获得少量经验获取加成。','攻速与经验加成提高；战意上限 +10。','战意上限总计 +20；战意满时获得额外攻速与暴击率。']],
     ['dismantle','拆解','析敌成术',['暴击率 +10%；暴击命中会获得少量额外经验。','之后每次升级额外获得 1% 暴击率，最多由本擢升累计 20%。','暴击会短暂提高目标受到的伤害和其提供的经验；升级暴击成长上限提高至 30%。']],
     ['carnage','残杀','斩后余烈',['处决动作更快，并从处决中获得更多战意。','处决战意收益进一步提高，处决索敌距离略微扩大。','处决战意进一步提高；处决 BOSS 后获得攻速强化、战意回满与短暂无敌。']],
-    ['dexterity','灵巧','一刃专心',['一次 攻击只覆盖 1 个目标时，造成额外伤害并获得额外暴击率。','对最多 2 个目标的攻击也可获得加成，数值提高。','对最多 3 个目标生效，并额外造成目标最大生命百分比伤害。']],
+    ['dexterity','灵巧','一刃专心',['一次 攻击只覆盖 1 个目标时，造成额外伤害并获得额外暴击率。','对最多 2 个目标的攻击也可获得加成，数值提高。','对最多 3 个目标生效，并额外造成目标当前生命百分比伤害。']],
     ['beastSlayer','野兽杀手','异形克星',['对非人型敌人造成额外生命与架势伤害。','增伤与削势提高，并获得额外暴击率。','对低生命非人型敌人有概率斩杀，对低架势非人型敌人有概率架势破坏，并在成功触发时获得额外战意。']],
     ['executioner','行刑','杀一儆百',['处决后短时间提高移动速度与伤害，并有概率恐惧附近敌人。','强化可以通过连续处决叠层，恐惧范围提高。','层数同时提高恐惧范围与概率；对恐惧敌人造成额外伤害。']],
     ['lightningRod','引雷','一印唤霆',['直接攻击有 20% 基础概率留下雷印；等待 0.85 秒后再次命中，引发 30 生命、26 架势雷击。','留印概率提高至 28%，等待缩短至 0.7 秒；雷击造成 44 生命、34 架势伤害，并弹射 1 名敌人。','留印概率提高至 38%，等待缩短至 0.22 秒；雷击造成 58 生命、42 架势伤害，并弹射最多 3 名敌人。']],
@@ -218,9 +218,9 @@ if(typeof document!=='undefined'&&!document.getElementById('ascensions-styles'))
       '每 0.5 秒每名流血敌人恢复 0.28 生命，另加场上流血每秒总伤害的 0.8%，单次最多 2.1；普通攻击施加概率提高至 20%，流血每秒伤害提高至 11。'
     ],
     meditation:[
-      '静止 1.8 秒进入冥想；每秒恢复 1.5 生命、获得 2 战意。',
-      '进入冥想所需时间缩短至 1.35 秒；每秒恢复 3 生命、获得 4 战意。',
-      '进入冥想所需时间缩短至 1 秒；每秒恢复 5 生命、获得 6 战意；进入冥想 0.5 秒后可用自动普通格挡，之后每 4 秒可触发一次。'
+      '静止 1.5 秒进入冥想；每秒恢复 2 生命、获得 5 战意。战意爆发不会打断冥想。',
+      '进入冥想所需时间缩短至 1.2 秒；每秒恢复 3 生命、获得 10 战意。',
+      '进入冥想所需时间缩短至 1 秒；每秒恢复 5 生命、获得 15 战意；进入冥想 0.5 秒后可用自动普通格挡，之后每 4 秒可触发一次。'
     ],
     consecration:[
       '周期生成半径 150、持续 6 秒的祝福领域；站在其中每秒恢复 1.6 生命，灰血自然恢复速度 ×1.25；领域消失后基础冷却 13 秒。',
@@ -695,7 +695,7 @@ if(typeof document!=='undefined'&&!document.getElementById('ascensions-styles'))
     ['quakeStomp',1,'约 135 范围','约 145 范围'],['quakeStomp',1,'24 生命、17 架势','45 生命、20 架势'],['quakeStomp',2,'40 生命、28 架势','60 生命、30 架势'],['quakeStomp',2,'约 157 范围','约 145 范围'],['quakeStomp',2,'18 生命、15 架势','20 生命、15 架势'],['quakeStomp',3,'52 生命、38 架势','75 生命、45 架势'],['quakeStomp',3,'约 194 范围、26 生命和 22 架势','约 171 范围、30 生命和 25 架势'],['quakeStomp',3,'72 生命和 52 架势','120 生命和 80 架势'],
   ];
   balanceEdits.push(
-    ['sealingNail',1,'2 秒；BOSS 为 0.3 秒','3 秒；BOSS 为 0.35 秒'],['sealingNail',2,'3 秒、BOSS 延长至 0.45 秒','4 秒、BOSS 延长至 0.45 秒'],['sealingNail',2,'8 生命和 8 架势','13 生命和 13 架势'],['sealingNail',3,'BOSS 封印延长至 0.55 秒','普通敌人封印延长至 5 秒，BOSS 封印延长至 0.55 秒'],['sealingNail',3,'32 生命、26 架势','52 生命、52 架势'],
+    ['sealingNail',1,'2 秒；BOSS 为 0.3 秒','4 秒；BOSS 为 0.35 秒'],['sealingNail',2,'3 秒、BOSS 延长至 0.45 秒','5 秒、BOSS 延长至 0.45 秒'],['sealingNail',2,'8 生命和 8 架势','13 生命和 13 架势'],['sealingNail',3,'BOSS 封印延长至 0.55 秒','普通敌人封印延长至 6 秒，BOSS 封印延长至 0.55 秒'],['sealingNail',3,'32 生命、26 架势','52 生命、52 架势'],
     ['rage',2,'至少 2 次','至少 3 次'],['rage',2,'0.72 秒','0.7 秒'],['rage',3,'1.25 秒','1.2 秒'],
     ['soulGreatsword',1,'3.2 生命','4 生命'],['soulGreatsword',1,'最多 +65%','最多 +200 伤害'],['soulGreatsword',2,'5.28 生命','2 生命'],['soulGreatsword',3,'6.72 生命','2.5 生命'],['soulGreatsword',3,'最多 2.2 灰血','最多 3 灰血'],
     ['blackHole',1,'每 0.28 秒','每 0.3 秒'],['blackHole',1,'2.4 生命、2 架势','4 生命、4 架势'],['blackHole',2,'3.8 生命、3.3 架势','6 生命、6 架势'],['blackHole',3,'5.2 生命、4.8 架势','9 生命、9 架势'],
@@ -887,7 +887,7 @@ if(typeof document!=='undefined'&&!document.getElementById('ascensions-styles'))
     ['d316','雕琢岩石','swiftBlade','第四击对石化的敌人额外造成10%最大生命值的伤害与20%最大架势值的架势伤害，并斩杀生命值不高于40%的石化敌人。'],
     ['d317','撞碎瓷器','bullRush','狂牛冲撞会直接撞碎石化的敌人。如果使用接近满蓄的冲撞撞碎敌人，产生震波对周围敌人造成36伤害与80架势伤害，并击飞小型敌人。'],
     ['d318','铁石心肠','intimidation','石化的敌人每秒损失13外加5%最大架势值。'],
-    ['d319','心之刚','outnumbered','石化时间延长2s，击杀石化敌人提供2秒霸体与10%减伤效果。'],
+    ['d319','心之钢','outnumbered','石化时间延长2s，击杀石化敌人提供2秒霸体与10%减伤效果。'],
     ['d320','炼金术','refinement','每9秒，随机将一个敌人永久变为黄金。将其击碎可获得3倍经验奖励。'],
     ['d321','雕刻艺术家','beastSlayer','美杜莎之眼的冷却缩短至9秒。对石化的敌人以及岩石类敌人生命与架势伤害+40%。']
   ];
@@ -914,7 +914,7 @@ if(typeof document!=='undefined'&&!document.getElementById('ascensions-styles'))
   "d32": "每次整分钟敲钟强制触发至少 1.5 秒子弹时间；期间敌方时间流速降至 35%，玩家闪避率 +35 个百分点。",
   "d33": "战意低于 35% 时，所有战意获取 +20%；战意高于 70% 时，受伤补偿获得的战意 +12%。",
   "d34": "蓄势达到 90% 即进入恰至巅峰窗口，并按满蓄效果结算。",
-  "d35": "无论蓄势把最大蓄力上限延长到多少，达到满蓄所需时间压缩至 1 秒。",
+  "d35": "无论蓄势把最大蓄力上限延长到多少，达到满蓄所需时间压缩至 0.75 秒。",
   "d37": "场上出现 BOSS 时，赏金标记立即锁定该 BOSS。",
   "d38": "旋风斩的追加环斩变为随蓄力形成的 2–4 道火弧，范围为原环斩的 1.3 倍；每道保留环斩伤害，额外造成固定 27 生命、10 架势伤害，身前敌人承受完整环斩伤害，并施加烈焰重剑 LV3 的点燃及扩散效果。",
   "d44": "下劈起始高度 ≥150 时，落地必定触发 LV3 大震踏并无视当前大震踏冷却；大震踏半径 320，造成 72 生命/52 架势。",
@@ -966,7 +966,7 @@ if(typeof document!=='undefined'&&!document.getElementById('ascensions-styles'))
   "d150": "战意爆发后生成 265×100 的椭圆龙息区域，持续 4.1 秒并在 0.1 秒后生效；首次命中造成 38 生命/20 架势并点燃 8/秒持续 5 秒，留在区域内每 0.3 秒再受 4 生命。",
   "d151": "每次下劈命中额外震踏：第 1–4 次半径 110，造成 18 生命/20 架势；第 5 次命中或落地触发半径 420 巨震，造成 110 生命/100 架势并击飞。精英仅承受 20% 击飞力度；踏击地面后刷新。",
   "d152": "连续下劈每次将断头台斩杀阈值提高 5 个百分点，最多提高 25 个百分点；对 BOSS 使用对应阈值的 1/3。",
-  "d154": "每次处决使当前行刑剩余持续时间 ×1.25，并把残杀连段层数 +1（最高 5），随后获得等于该层数的战意（1–5）。有行刑层数时，直接攻击每层额外 +2.5% 生命伤害。",
+  "d154": "行刑持续时间延长至8秒，且每次处决逐渐获得更多战意。每层行刑层数额外提高4%伤害与架势伤害。",
   "d157": "地面滑铲期间每秒积累 9 风势（上限 3）；后续突刺消耗当前风势 w，释放长度 380＋150w 的长风刃，造成 18＋14w 生命/30＋34w 架势。满 3 风势时为 60 生命/132 架势、长度 830。",
   "d158": "滑铲后的突刺命中正在出招的敌人时，触发最多 4 跳弹射雷电；每跳 22 生命/14 架势，弹射搜索半径 300。",
   "d160": "奔袭移动速度 >100 时，每秒额外积累 0.5 奔袭充能；撞击追加 20＋当前风势×12 生命/30 架势，并获得 0.5 风势。",
@@ -1101,7 +1101,7 @@ if(typeof document!=='undefined'&&!document.getElementById('ascensions-styles'))
   "d48": "骷髅寿命 +25%；骷髅死亡或到期时转化 8 灰血，并治疗 3 生命，披甲和魂刃骷髅分别转化 12 灰血并治疗 5 生命。",
   "d52": "幻象侵袭普通敌人时有 15% 基础概率改为施加 9 秒心灵控制，不施加幻象；控制结束时死亡。",
   "d54": "第二击对有试探层数的目标追踪距离 +50%；蓄力重击与突刺可向试探目标短追踪，获得 0.10 秒无敌帧。",
-  "d55": "普攻附带的所有最大生命百分比伤害也享受该次攻击暴击倍率，包括先发制人、精密、灵巧及其他擢升附伤。",
+  "d55": "攻击附带的最大生命值和当前生命值百分比伤害也能享受暴击加成。",
   "d64": "正式死里逃生复活恢复至 80% 最大生命，并立即触发星辉护佑 2.2 秒无敌与霸体。",
   "d65": "藏锋额外生命伤害及斩杀阈值乘以本次蓄力倍率，普通蓄力倍率为（29＋蓄力比例×（蓄力伤害上限−29））/29；岩石突刺按自身蓄力伤害倍率结算。",
   "d66": "借力后的下一次蓄力重击，一剑两断震波生命/架势伤害 +80%、范围 +20%；满蓄时有 25% 基础概率使被震波命中的敌人架势破坏。",
@@ -1224,7 +1224,7 @@ if(typeof document!=='undefined'&&!document.getElementById('ascensions-styles'))
       if(pair('antiRegen','catalyst')&&e.antiRegenSerum&&tags.includes('catalyst')){pulse(e,200,75,45,['fire'],'serumReactionBurst');g.heal(5,{source:'serumCatalyst'});}
     });
     wrap('beforeEnemyDamage',(old,event)=>{const e=event.enemy,t=event.tags||[];
-      if(pair('carnage','executioner')&&f.executioner.stacks>0)f.multiplyEnemyDamage(event,1+.025*f.executioner.stacks);
+      if(pair('carnage','executioner')&&f.executioner.remaining>0&&f.executioner.stacks>0){const mult=1+.04*f.executioner.stacks;f.multiplyEnemyDamage(event,mult);event.posture*=mult;}
       if(pair('elementAffinity','synergy')&&(t.some(tag=>['lightningSpirit','airSupport','perfectMachine','fireTornado','parasiticVines','peaShooter'].includes(tag))||(t.includes('mindAlly')&&pair('frostTrace','mindControl')))){f.multiplyEnemyDamage(event,1.25);event.posture*=1.2;}
       // Transfer tags explicitly terminate both normal link sharing and overkill recursion.
       if(t.includes('overkillTransfer')&&!t.includes('soulLinkShare'))t.push('soulLinkShare');
@@ -1285,7 +1285,7 @@ if(typeof document!=='undefined'&&!document.getElementById('ascensions-styles'))
     const nailBigQuake=center=>{pulse(center,420,150,100,['quakeStomp','big']);for(const e of near(center,420)){const elite=!!TYPES[e.type]?.elite&&!e.eliteLost&&!boss(e);g.launchEnemy(e,center.x,center.y,{force:1000,lift:elite?1000:430,duration:.9,allowElite:true,eliteForceScale:.20});}s.nailBigTriggered=true;};
     g.hooks.on('onDownStrikeHit',event=>{if(!pair('paleNail','quakeStomp')||!event.count)return;s.nailCount=event.count;if(event.count===5&&!s.nailBigTriggered)nailBigQuake(event.enemy||p);else if(event.count!==5)pulse(event.enemy||p,110,18,20,['quakeStomp']);});
     g.hooks.on('onDownStrikeLand',()=>{if(pair('paleNail','quakeStomp')&&(p.downStrikeCount>=5||s.nailCount>=5)&&!s.nailBigTriggered)nailBigQuake(p);s.nailCount=0;s.nailBigTriggered=false;});
-    g.hooks.on('onExecutionHit',({enemy})=>{s.executionCount++;s.wasExecuting=true;if(pair('carnage','executioner')){s.carnageStacks=Math.min(5,(s.carnageStacks||0)+1);f.executioner.remaining*=1.25;run.gainMomentum(s.carnageStacks,'carnageChain');}if(pair('alpha','executioner'))f.executioner.stacks=Math.min(8,f.executioner.stacks+1);if(pair('carnage','killingAura')){s.auraStacks=Math.min(5,(s.auraStacks||0)+1);}if(pair('alpha','soulBlade')){const before=f.v11.soulBlades.length;f.v11SpawnSoulBlade?.(enemy);if(f.v11.soulBlades.length===before)f.v11.soulBlades.push({x:enemy.x,y:enemy.y,vx:0,vy:0,life:5,rank:3,cd:.05,hit:new Set()});for(const b of f.v11.soulBlades){b.v16Held=true;b.v16Bonus=1+s.executionCount*.12;}}});
+    g.hooks.on('onExecutionHit',({enemy})=>{s.executionCount++;s.wasExecuting=true;if(pair('carnage','executioner')){s.carnageStacks=Math.min(5,(s.carnageStacks||0)+1);f.executioner.remaining=8;run.gainMomentum(s.carnageStacks,'carnageChain');}if(pair('alpha','executioner'))f.executioner.stacks=Math.min(8,f.executioner.stacks+1);if(pair('carnage','killingAura')){s.auraStacks=Math.min(5,(s.auraStacks||0)+1);}if(pair('alpha','soulBlade')){const before=f.v11.soulBlades.length;f.v11SpawnSoulBlade?.(enemy);if(f.v11.soulBlades.length===before)f.v11.soulBlades.push({x:enemy.x,y:enemy.y,vx:0,vy:0,life:5,rank:3,cd:.05,hit:new Set()});for(const b of f.v11.soulBlades){b.v16Held=true;b.v16Bonus=1+s.executionCount*.12;}}});
     g.hooks.on('onMomentumBurst',()=>{let blue=false;if(pair('dragonRoar','newSun')&&!f.dragonRoar.pending){if(f.dragonRoar.cooldown<=0){f.updateDragonRoar(0);if(f.dragonRoar.pending){f.dragonRoar.pending.blue=true;blue=true;s.blue=3;}}}if(pair('dragonRoar','roar'))s.beams.push({x:p.x,y:p.y,t:0,life:4.1,warn:.1,tick:0,rx:265,ry:100,blue:blue||s.blue>0,hit:new Set()});});
     wrap('update',(old,dt)=>{s.swordFlights??=[];const flight=s.swordFlights[0];if(flight){if(!flight.started){flight.started=true;flight.x=p.x+63;flight.y=p.y-68;flight.duration=Math.max(.10,dist(p,flight.enemy)/(1100*f.v11SummonSpeed()));flight.tx=flight.enemy.x;flight.ty=flight.enemy.y-45;}if(!flight.done&&!flight.enemy.dead){flight.tx=flight.enemy.x;flight.ty=flight.enemy.y-45;}flight.t+=dt;if(flight.t>=flight.duration&&!flight.done){flight.done=true;if(!flight.enemy.dead&&!(flight.enemy.mindControlT>0)&&!(flight.enemy.timeSealT>0)){if(flight.tags.includes('spiritSpin')){for(const e of near(flight.enemy,180))f.secondary(e,flight.damage,flight.posture,[...flight.tags,'swordArrival'],flight.options);f.dualState.spiritSpin={x:flight.tx,y:flight.ty+45,life:.42,delay:0};flight.hold=.42;g.emit('spiritSpin',{x:flight.tx,y:flight.ty+45,radius:180});}else f.secondary(flight.enemy,flight.damage,flight.posture,[...flight.tags,'swordArrival'],flight.options);g.emit('swordSpiritImpact',{x:flight.enemy.x,y:flight.enemy.y});}}if(flight.t>=flight.duration*2+(flight.hold||0))s.swordFlights.shift();}for(const key of ['soulHit','orbIce'])s.timers[key]=Math.max(0,(s.timers[key]||0)-dt);for(const key of ['summonHaste','hot','aura','boundSpirit','blue'])s[key]=Math.max(0,s[key]-dt);const echoes=f.v11.burstEcho.length;old(dt);if(pair('attackSwordSpirit','defenseSwordSpirit')){f.dualState.twoSwords-=dt;if(f.dualState.twoSwords<=0){f.dualState.twoSwords=8;s.swordSweep={t:0,hits:new Set()};}if(s.swordSweep){const sw=s.swordSweep;sw.t+=dt;for(const e of near(p,290)){if(sw.hits.has(e.id))continue;const a=sw.t*13;for(const sign of [-1,1])if(Math.hypot(e.x-p.x-Math.cos(a)*240*sign,(e.y-p.y-Math.sin(a)*95*sign)*1.5)<85){sw.hits.add(e.id);hit(e,80,60,['attackSwordSpirit','swordArrival']);break;}}if(sw.t>1.1)s.swordSweep=null;}}
       if(pair('cooldown','meditation')&&f.v11.meditation.active){p.enemyTimeScale=Math.min(p.enemyTimeScale,.92);const seen=new Set();const walk=(obj)=>{if(!obj||seen.has(obj)||obj.id&&obj.hp!==undefined)return;seen.add(obj);for(const [key,value] of Object.entries(obj)){if(['run','game','skeletons'].includes(key)||value instanceof Map||value instanceof Set)continue;if((/cd$|cooldown$/i.test(key)||key==='skill')&&typeof value==='number')obj[key]=Math.max(0,value-dt*.50);else if(key==='cd'&&Array.isArray(value))for(let i=0;i<value.length;i++)value[i]=Math.max(0,value[i]-dt*.50);else if(value&&typeof value==='object'&&!Array.isArray(value))walk(value);}};for(const key of ['timeFlow','meteor','dragonRoar','lightningSpirit','airSupport','healingSpirit','fearless','immortal','shadow','poisonBlade','blackHole','illusion','quake','ringBlade','v11','v12','dualState'])walk(f[key]);for(const key of ['fireball','flame','tornado'])f.airSupport[key]=Math.max(0,f.airSupport[key]-dt*.50);if(p.state!=='dash')p.dashRegen=Math.max(0,p.dashRegen-dt*.50);}
@@ -1552,7 +1552,7 @@ if(typeof document!=='undefined'&&!document.getElementById('ascensions-styles'))
       const attack=({serial,index})=>{
         if(this.pair('resonance','hiddenEdge')&&this.forkSerial!==serial){
           this.forkSerial=serial;const excess=Math.max(0,this.resonance.stacks-4);
-          if(excess){this.resonance.stacks=4;for(const e of this.near(p,240))this.secondary(e,0,24*excess,['tuningFork']);g.emit('resonanceShock',{x:p.x,y:p.y,radius:240,waves:1,stacks:excess});}
+          if(excess){this.resonance.stacks=4;for(const e of this.near(p,240))this.secondary(e,0,24*excess,['tuningFork']);g.emit('posturePulse',{x:p.x,y:p.y,z:p.z||0,scale:p.scale||1,radius:240,amount:24*excess,rank:3});}
         }
         this.edgeAssault.serial=this.pair('afterForce','hiddenEdge')&&index===0&&this.v11.hiddenEdge.serial===serial&&this.v11.hiddenEdge.spent>0?serial:-1;
         if(this.edgeAssault.serial===serial)p.invuln=Math.max(p.invuln,.14);
@@ -1615,6 +1615,16 @@ if(typeof document!=='undefined'&&!document.getElementById('ascensions-styles'))
         this.v12.tar.push(f);g.emit('tarSpawn',{x:f.x,y:f.y,radius:f.radius,rank:3});
       }
     }
+    igniteDragonTar(){
+      if(!this.pair('dragonRoar','pollutedBlood'))return;
+      // Snapshot before damage: kills may create more tar through polluted blood.
+      const fields=this.v12.tar.filter(f=>f.life>0);
+      for(const f of fields)f.burning=true;
+      for(const f of fields){
+        for(const e of this.near(f,f.radius))this.secondary(e,28,14,['scorchedDragonTar','pollutedBlood','fire','explosion']);
+        this.game.emit('heatBurst',{x:f.x,y:f.y,radius:f.radius,rank:f.rank});
+      }
+    }
     updateNewDuals(dt){
       const g=this.game,p=g.p;
       for(const f of this.frostGround){const active=Math.min(dt,f.life);f.life-=dt;if(active>0)for(const e of this.near(f,f.radius)){e.tarSlow=Math.min(e.tarSlow||1,.70);e.tarT=Math.max(e.tarT||0,.15);}}
@@ -1670,9 +1680,9 @@ if(typeof document!=='undefined'&&!document.getElementById('ascensions-styles'))
       const beast=this.rank('beastSlayer');if(beast&&TYPES[e.type]?.humanoid===false){this.multiplyEnemyDamage(event,[1,1.15,1.18,1.20][beast]);event.posture*=[1,1.15,1.18,1.20][beast];}
       const battle=this.rank('battleFormation');if(battle&&this.battleFormation.active)this.multiplyEnemyDamage(event,[1,1.12,1.20,1.28][battle]);
       const ultimate=this.rank('ultimateForm');if(ultimate&&this.ultimate.remaining>0){const mult=[1,1.12,1.16,1.20][ultimate];this.multiplyEnemyDamage(event,mult);event.posture*=mult;}
-      const ex=this.rank('executioner');if(ex&&this.executioner.remaining>0){const stacks=ex===1?0:Math.max(1,this.executioner.stacks||1),per=ex===3?.08:.05;this.multiplyEnemyDamage(event,1.10+per*stacks);if(ex===3&&(e.fearT>0||e.permaFear))this.multiplyEnemyDamage(event,1.20);}
+      const ex=this.rank('executioner');if(ex&&this.executioner.remaining>0){const stacks=ex===1?0:Math.max(1,this.executioner.stacks||1),per=ex===3?.08:.05;this.multiplyEnemyDamage(event,1.10+per*stacks);if(ex===3&&(e.fearT>0||e.permaFear)){this.multiplyEnemyDamage(event,1.20);event.posture*=1.20;}}
       const man=this.rank('maniac');if(man&&this.run.momentum<40)this.multiplyEnemyDamage(event,1+[0,.15,.20,.30][man]);
-      const flawless=this.rank('flawless');if(flawless&&p.hp>=p.maxHp*(1+(p.healCapBonus||0))-.5)this.multiplyEnemyDamage(event,[1,1.20,1.35,1.35][flawless]);
+      const flawless=this.rank('flawless');if(flawless&&p.hp>=p.maxHp*(1+(p.healCapBonus||0))-.5){this.multiplyEnemyDamage(event,[1,1.20,1.35,1.35][flawless]);event.posture*=[1,1.10,1.15,1.15][flawless];}
       if(this.rank('outnumbered')===3&&this.outnumberedCount(8)>=8)this.multiplyEnemyDamage(event,1.20);
       const opening=this.rank('exploitOpening');if(opening&&this.v12ControlCount(e))event.posture*=1+[0,.20,.35,.45][opening];
       if(e.starColourVulnerability){this.multiplyEnemyDamage(event,1+e.starColourVulnerability,'vulnerability');event.posture*=1+e.starColourVulnerability;}
@@ -1838,7 +1848,7 @@ if(typeof document!=='undefined'&&!document.getElementById('ascensions-styles'))
       const slide=r.slideStrike||0;p.thrustDamageMultiplier=[1,1.40,1.60,2][slide];p.thrustPostureMultiplier=[1,1.50,1.75,2.40][slide];p.thrustRangeMultiplier=[1,1.15,1.24,1.40][slide];p.dashInvulnBonus=[0,.025,.04,.055][slide];
        const eagle=r.eagleDrop||0;p.jumpMax=eagle>=2?3:2;p.jumpHeightMultiplier=[1,1.20,1.20,1.30][eagle];p.eagleDropRank=eagle;p.eagleDropHighThreshold=this.pair('eagleDrop','diveBomb')?115:75;
       const giant=r.giant||0,pride=r.prideMark||0;p.attackRangeMultiplier=[1,1.10,1.20,1.25][giant]*[1,1.15,1.24,1.35][pride]*(this.pair('giant','prideMark')?1.30:1);p.visualScale=[1.04,1.12,1.20,1.29][giant];p.swordScale=this.pair('giant','prideMark')?1.43:1;
-      p.chargeGlobalMultiplier=[1,1.15,1.28,1.42][r.chargeAccel||0];if(this.pair('potential','chargeAccel'))p.chargeGlobalMultiplier=Math.max(p.chargeGlobalMultiplier,p.chargeMax/1.0);p.peakFullThreshold=this.pair('peakTiming','potential')?.90:.98;
+      p.chargeGlobalMultiplier=[1,1.15,1.28,1.42][r.chargeAccel||0];if(this.pair('potential','chargeAccel'))p.chargeGlobalMultiplier=Math.max(p.chargeGlobalMultiplier,p.chargeMax/.75);p.peakFullThreshold=this.pair('peakTiming','potential')?.90:.98;
       p.elementAffinityRank=r.elementAffinity||0;p.diveBombRank=r.diveBomb||0;p.swallowReturnRank=r.swallowReturn||0;
        const pale=r.paleNail||0;p.downBounce=true;p.downStrikeMax=[1,3,3,5][pale];p.downDamageMultiplier=[1,1,1.20,1.28][pale];p.downStrikeDamageGrowth=pale===3?.30:0;p.downRangeMultiplier=[1,1,1.25,1.36][pale]*(this.pair('giant','prideMark')?1.30:1);p.unlimitedDownStrike=pale>0;p.guillotineRank=r.guillotine||0;p.downStrikeAoeRank=Math.max(p.guillotineRank===3?3:0,eagle>=2?eagle:0);
       p.grayRecoveryWhileHit=r.tenacity>=2?.30:0;
@@ -2040,7 +2050,7 @@ if(typeof document!=='undefined'&&!document.getElementById('ascensions-styles'))
       if(!this.isJ(event.tags))return;let chance=this.game.p.critBase||0;
       const clash=this.rank('clash');if(clash&&event.tags.includes('comboFinisher'))chance+=[0,0,.15,.25][clash];
       chance+=event.critBonus||0;if(this.pair('clash','heavyRecoil')&&event.tags.includes('comboFinisher')&&this.isElite(event.enemy))chance+=.15;chance=this.chance(chance,'critical');
-      if(event.forceCrit||(chance>0&&this.game.random()<chance)){const mult=(this.game.p.critMultiplier||2)+(event.critMultBonus||0);event.damage*=mult;event.posture*=mult;if(!this.pair('bully','precision'))event.damage-=(event.percentDamage||0)*(mult-1);if(this.rank('precision')===3)event.damage+=event.enemy.maxHp*(isBoss(event.enemy)?.01:.03)*(this.pair('bully','precision')?mult:1);if(!event.tags.includes('critical'))event.tags.push('critical');this.game.emit('critical',{x:event.enemy.x,y:event.enemy.y,z:55*event.enemy.scale,chance:event.forceCrit?1:chance,mult});}
+      if(event.forceCrit||(chance>0&&this.game.random()<chance)){const mult=(this.game.p.critMultiplier||2)+(event.critMultBonus||0);event.damage*=mult;event.posture*=mult;if(!this.pair('bully','precision'))event.damage-=(event.percentDamage||0)*(mult-1);if(this.rank('precision')===3)event.damage+=event.enemy.hp*(isBoss(event.enemy)?.01:.03)*(this.pair('bully','precision')?mult:1);if(!event.tags.includes('critical'))event.tags.push('critical');this.game.emit('critical',{x:event.enemy.x,y:event.enemy.y,z:55*event.enemy.scale,chance:event.forceCrit?1:chance,mult});}
     }
     swiftMax(){return this.pair('swiftBlade','hotBlood')?8:[0,6,6,6][this.rank('swiftBlade')];}
     swiftStacks(){return this.game.time-this.swift.time<=2?this.swift.stacks:0;}
@@ -2073,7 +2083,7 @@ if(typeof document!=='undefined'&&!document.getElementById('ascensions-styles'))
       this.newAttackHit(event);this.v11AttackHit(event);
     }
     modifyKillXP(event){if(event.enemy?.medusaGold)event.value*=3;if(this.pair('beastSlayer','flaw')&&TYPES[event.enemy?.type]?.humanoid===false&&(event.tags||[]).some(t=>['heavy','comboFinisher','thrust','downStrike'].includes(t)))event.value*=1.30;if(this.pair('dismantle','bully')&&event.enemy?.bullyVulnT>0)event.value*=1.25;if(this.pair('refinement','skillMastery')&&this.techniqueKind(event.tags))event.value*=1.25;const r=this.rank('refinement');if(r)event.value*=[1,1.10,1.20,1.25][r];this.modifyNewKillXP(event);this.v11ModifyKillXP(event);const fb=this.rank('forgedBlade');if(fb>=2)event.value*=fb===2?1.05:1.10;const field=this.v11.pageStorm.field;if(this.pair('pageStorm','skillMastery')&&field&&distance(event.enemy,field)<field.radius)event.value*=1.20;}
-    onKill({enemy,tags}){if(enemy?.suppressDeathrattle){if(enemy.id===this.v11.bountyId)this.v11.bountyId=null;if(enemy.id===this.dualState.beastBountyId)this.dualState.beastBountyId=null;return;}this.dualGapKill(enemy,tags);const ref=this.rank('refinement');if(ref===3&&isBoss(enemy))this.run.grantAscensionCredit('refinementBoss');if(this.rank('forgedBlade')===3&&isBoss(enemy)){this.v12.forgeBossSteps=(this.v12.forgeBossSteps||0)+1;this.game.emit('forgeBoss',{x:this.game.p.x,y:this.game.p.y,z:this.game.p.z,steps:this.v12.forgeBossSteps,growth:this.forgedBladeGrowth()});}if(this.rank('killingAura')){const active=this.killingAuraSurge>0;this.killingAuraSurge=5;if(!active)this.timers.aura=0;}this.devour(enemy,tags);this.necromancy(enemy,tags);this.breakOnKill(enemy,tags);this.newKillEffects(enemy,tags);this.v11Kill(enemy,tags);this.v12Kill(enemy,tags);this.dualKill(enemy,tags);}
+    onKill({enemy,tags}){if(enemy?.suppressDeathrattle){if(enemy.id===this.v11.bountyId)this.v11.bountyId=null;if(enemy.id===this.dualState.beastBountyId)this.dualState.beastBountyId=null;return;}this.dualGapKill(enemy,tags);const ref=this.rank('refinement');if(ref===3&&isBoss(enemy)&&this.game.random()<this.chance(.50,'refinementBoss'))this.run.grantAscensionCredit('refinementBoss');if(this.rank('forgedBlade')===3&&isBoss(enemy)){this.v12.forgeBossSteps=(this.v12.forgeBossSteps||0)+1;this.game.emit('forgeBoss',{x:this.game.p.x,y:this.game.p.y,z:this.game.p.z,steps:this.v12.forgeBossSteps,growth:this.forgedBladeGrowth()});}if(this.rank('killingAura')){const active=this.killingAuraSurge>0;this.killingAuraSurge=5;if(!active)this.timers.aura=0;}this.devour(enemy,tags);this.necromancy(enemy,tags);this.breakOnKill(enemy,tags);this.newKillEffects(enemy,tags);this.v11Kill(enemy,tags);this.v12Kill(enemy,tags);this.dualKill(enemy,tags);}
     breakOnKill(enemy,tags){
       const r=this.rank('breakMomentum');if(!r)return;
       if(r===3&&isBoss(enemy)){const maxRadius=Math.max(900,this.game.bounds.right-this.game.bounds.left);this.breakMomentumWaves.push({x:enemy.x,y:enemy.y,radius:0,maxRadius,speed:2600,hit:new Set([enemy.id])});this.game.emit('breakWave',{x:enemy.x,y:enemy.y,radius:0,maxRadius,screen:true});return;}
@@ -2351,7 +2361,7 @@ if(typeof document!=='undefined'&&!document.getElementById('ascensions-styles'))
     }
     onExecutionExtras({enemy}){
       const carn=this.rank('carnage');if(carn===3&&isBoss(enemy)){this.carnage.buff=6;this.run.momentum=this.game.rules.momentumMax;this.run.syncTemporaryMomentum();this.game.p.invuln=Math.max(this.game.p.invuln,2);this.game.emit('carnageBoss',{x:this.game.p.x,y:this.game.p.y,z:this.game.p.z});}
-      const ex=this.rank('executioner');if(ex){this.executioner.stacks=ex>=2?Math.min(this.pair('alpha','executioner')?8:4,(this.executioner.stacks||0)+1):1;this.executioner.remaining=5;const radius=ex===1?180:ex===2?240:280+Math.max(0,this.executioner.stacks-1)*35,base=.15+(ex===3?this.executioner.stacks*.025:0);for(const e of this.near(this.game.p,radius))if(this.game.random()<this.chance(base,'executionerFear')){const permanent=this.pair('breakMomentum','executioner')&&this.game.random()<this.chance(.20,'executionerPermanentFear');this.fearEnemy(e,2.4,{permanent});}this.game.emit('executioner',{x:this.game.p.x,y:this.game.p.y,stacks:this.executioner.stacks,rank:ex});}
+      const ex=this.rank('executioner');if(ex){this.executioner.stacks=ex>=2?Math.min(this.pair('alpha','executioner')?8:4,(this.executioner.stacks||0)+1):1;this.executioner.remaining=this.pair('carnage','executioner')?8:5;const radius=ex===1?180:ex===2?240:280+Math.max(0,this.executioner.stacks-1)*35,base=.15+(ex===3?this.executioner.stacks*.025:0);for(const e of this.near(this.game.p,radius))if(this.game.random()<this.chance(base,'executionerFear')){const permanent=this.pair('breakMomentum','executioner')&&this.game.random()<this.chance(.20,'executionerPermanentFear');this.fearEnemy(e,2.4,{permanent});}this.game.emit('executioner',{x:this.game.p.x,y:this.game.p.y,stacks:this.executioner.stacks,rank:ex});}
     }
     onPostureBreak({enemy}={}){
       if(!enemy||!this.rank('intimidation')||this.pair('intimidation','curse')||!this.intimidation.targetIds.includes(enemy.id))return;
@@ -2404,7 +2414,7 @@ if(typeof document!=='undefined'&&!document.getElementById('ascensions-styles'))
       const giant=this.rank('giant');if(giant){this.scaleAttackDamage(event,[1,1.12,1.22,1.30][giant]);if(tags.includes('comboFinisher'))this.scaleAttackDamage(event,[1,1,1.22,1.30][giant]);}
       const bs=this.rank('bloodSword');if(bs&&tags.includes('heavy'))this.scaleAttackDamage(event,[1,1,1.15,1.30][bs]);
       const hot=this.rank('hotBlood'),mr=this.run.momentum/Math.max(1,this.game.rules.momentumMax);if(hot===3&&mr>=.999)event.critBonus=(event.critBonus||0)+.15;
-      const dex=this.rank('dexterity');if(dex){const targets=this.estimateAttackTargets(event),limit=dex;if(targets<=limit||this.pair('dexterity','beastSlayer')&&TYPES[e.type]?.humanoid===false){this.scaleAttackDamage(event,[1,1.15,1.20,1.25][dex]);event.critBonus=(event.critBonus||0)+[0,.08,.10,.10][dex];if(dex===3)this.addAttackPercent(event,e.maxHp*(isBoss(e)?.01:.02));}}
+      const dex=this.rank('dexterity');if(dex){const targets=this.estimateAttackTargets(event),limit=dex;if(targets<=limit||this.pair('dexterity','beastSlayer')&&TYPES[e.type]?.humanoid===false){this.scaleAttackDamage(event,[1,1.15,1.20,1.25][dex]);event.critBonus=(event.critBonus||0)+[0,.08,.10,.10][dex];if(dex===3)this.addAttackPercent(event,e.hp*(isBoss(e)?.01:.02));}}
       const beast=this.rank('beastSlayer');if(beast&&TYPES[e.type]?.humanoid===false){if(beast>=2)event.critBonus=(event.critBonus||0)+[0,0,.10,.15][beast];}
       
       const pride=this.rank('prideMark');if(pride===3&&this.isJ(tags)&&p.attack){const d=distance(p,e),edge=(p.attack.range||150)*.72;if(d>=edge){this.scaleAttackDamage(event,1.20);event.critBonus=(event.critBonus||0)+.15;}}
@@ -2436,7 +2446,7 @@ if(typeof document!=='undefined'&&!document.getElementById('ascensions-styles'))
       if(hits!==4)return;
       this.applySeal(e,r);
     }
-    applySeal(e,r=3){if(!e||e.dead||e.seal?.remaining>0)return;const dur=isBoss(e)?[0,.35,.45,.55][r]:[0,3,4,5][r];e.seal={remaining:dur,tick:.5,rank:r};if(e.state!=='stunned'){e.state='flinch';e.t=dur;}e.queue=[];
+    applySeal(e,r=3){if(!e||e.dead||e.seal?.remaining>0)return;const dur=isBoss(e)?[0,.8,1,1.2][r]:[0,4,5,6][r];e.seal={remaining:dur,tick:.5,rank:r};if(e.state!=='stunned'){e.state='flinch';e.t=dur;}e.queue=[];
       if(r===3)this.secondary(e,52,52,['sealingNail']);this.game.emit('seal',{x:e.x,y:e.y,z:70*e.scale,rank:r,duration:dur,boss:isBoss(e)});
     }
     beastSlayerHit(e,tags){const r=this.rank('beastSlayer');if(r!==3||TYPES[e.type]?.humanoid!==false||!this.isJ(tags)||e.dead)return;if(e.hp/e.maxHp<=.15&&this.game.random()<this.chance(.15,'beastSlay')){this.slay(e,'beastSlayer');this.run.gainMomentum(8,'beastSlayer');return;}if(e.posture/e.maxPosture<=.15&&this.game.random()<this.chance(.15,'beastBreak')){this.postureBreak(e,'beastSlayer');this.run.gainMomentum(5,'beastSlayer');}}
@@ -2485,7 +2495,7 @@ if(typeof document!=='undefined'&&!document.getElementById('ascensions-styles'))
       const m=this.dragonRoar.pending;
       if(m){
         if(m.phase==='warn'){
-          m.t-=dt;if(m.t<=0){this.spawnDragonTar();m.phase='sweep';m.t=1.35;m.total=1.35;m.prevX=m.dir>0?m.x1:m.x2;m.hitIds=new Set();g.emit('dragonSweepStart',{y:m.y,dir:m.dir,rank:r,x:m.prevX});}
+          m.t-=dt;if(m.t<=0){this.spawnDragonTar();this.igniteDragonTar();m.phase='sweep';m.t=1.35;m.total=1.35;m.prevX=m.dir>0?m.x1:m.x2;m.hitIds=new Set();g.emit('dragonSweepStart',{y:m.y,dir:m.dir,rank:r,x:m.prevX});}
           return;
         }
         m.t-=dt;const q=clamp(1-m.t/m.total,0,1),x=m.dir>0?m.x1+(m.x2-m.x1)*q:m.x2-(m.x2-m.x1)*q;
@@ -2801,7 +2811,7 @@ if(typeof document!=='undefined'&&!document.getElementById('ascensions-styles'))
       this.v11MarkBounty();
     }
     spawnTornadoes(){const r=this.rank('tornado');if(!r||this.v11.tornadoStorm)return;const n=r===3?2:1;while(this.v11.tornadoes.filter(t=>!Number.isFinite(t.life)).length<n)this.v11.tornadoes.push({x:this.game.p.x+(this.game.random()-.5)*420,y:this.game.p.y+(this.game.random()-.5)*180,vx:(this.game.random()<.5?-1:1)*80,vy:(this.game.random()-.5)*55,tick:0,mergeCd:0,hits:new Map()});}
-    updateMeditation(dt){const p=this.game.p,g=this.game;const med=this.rank('meditation');if(med){const still=(this.pair('meditation','breakMomentum')&&p.state==='execute'&&this.v11.meditation.active)||(this.pair('battleFormation','dash')&&p.state==='dash')||(Math.hypot(p.vx||0,p.vy||0)<12&&!['attack','heavy','thrust','dash','plunge','hurt','execute'].includes(p.state));if(still){this.v11.meditation.t+=dt;const need=[0,1.8,1.35,1.0][med];if(this.v11.meditation.t>=need){if(!this.v11.meditation.active){this.v11.meditation.activeAge=Math.max(0,this.v11.meditation.t-need);if(this.pair('flowingEase','meditation'))this.v11.flow.stacks=10;}else this.v11.meditation.activeAge=(this.v11.meditation.activeAge||0)+dt;this.v11.meditation.active=true;g.heal([0,1.5,3,5][med]*dt,{source:'meditation',quiet:true});this.run.gainMomentum([0,2,4,6][med]*dt,'meditation');}}else{this.v11.meditation.t=0;this.v11.meditation.active=false;this.v11.meditation.activeAge=0;}}}
+    updateMeditation(dt){const p=this.game.p,g=this.game;const med=this.rank('meditation');if(med){const still=(this.pair('meditation','breakMomentum')&&p.state==='execute'&&this.v11.meditation.active)||(this.pair('battleFormation','dash')&&p.state==='dash')||(Math.hypot(p.vx||0,p.vy||0)<12&&!['attack','heavy','thrust','dash','plunge','hurt','execute'].includes(p.state));if(still){this.v11.meditation.t+=dt;const need=[0,1.5,1.2,1.0][med];if(this.v11.meditation.t>=need){if(!this.v11.meditation.active){this.v11.meditation.activeAge=Math.max(0,this.v11.meditation.t-need);if(this.pair('flowingEase','meditation'))this.v11.flow.stacks=10;}else this.v11.meditation.activeAge=(this.v11.meditation.activeAge||0)+dt;this.v11.meditation.active=true;g.heal([0,2,3,5][med]*dt,{source:'meditation',quiet:true});this.run.gainMomentum([0,5,10,15][med]*dt,'meditation');}}else{this.v11.meditation.t=0;this.v11.meditation.active=false;this.v11.meditation.activeAge=0;}}}
     updateV11(dt){
       this.updateGroundDrags(dt);
       const g=this.game,p=g.p,now=g.time;
@@ -3192,7 +3202,7 @@ if(typeof document!=='undefined'&&!document.getElementById('ascensions-styles'))
   const MEDITATION_DUAL_BALANCE={"d121": "在祝圣领域内持续冥想时，每秒返还 0.8 秒领域寿命，返还率 80%；领域净消耗为 0.2 秒/秒。", "d224": "冥想期间敌方时间流速降至 92%；技能冷却效率 +50%，技能冷却按 1.5 倍速度恢复。", "d251": "进入冥想时立刻叠满 10 层游刃；冥想状态下游刃层数不会因不移动而消失，受击仍遵循游刃原有掉层机制。", "d254": "持续伤害状态的时间流速 ×2：结算速度翻倍，持续时间同步缩短，总理论伤害不变。"};
   for(const d of DUAL_ASCENSIONS)if(MEDITATION_DUAL_BALANCE[d.id])d.description=d.detail=MEDITATION_DUAL_BALANCE[d.id];
   for(const d of DUAL_ASCENSIONS)if(d.parents.includes('catalyst')){const rule='催化剂仅在新增或刷新 DOT 时判定斩杀；对 BOSS 的最终斩杀阈值减半，包含双重擢升追加的预测值。',detail=d.detail||d.description;d.description+=' '+rule;d.detail=detail+' '+rule;}
-  const GLOBAL_BONUS_DUAL_COPY={"d123": "攻击剑灵对受控敌人的生命伤害 +16%，并优先攻击受控敌人；存在受控敌人时，剑灵普攻冷却每秒额外恢复 0.35 秒。剑灵的架势伤害统一享受乘隙父卡加成，不重复叠加独立父卡倍率。", "d139": "封印中的目标受到的一切生命伤害 +30%、一切架势伤害 +30%；封印仍视作强控制。", "d154": "每次处决使当前行刑剩余持续时间 ×1.25，并把残杀连段层数 +1（最高 5），随后获得等于该层数的战意（1–5）。有行刑层数时，全部生命伤害每层额外 +2.5%。", "d169": "睡眠敌人受到的一切生命伤害额外 +70%、一切架势伤害额外 +100%，与乘隙父卡架势加成叠乘。", "d185": "被威吓选中的目标受到的一切生命伤害 ×1.20；每次伤害命中额外削减其 4% 最大架势，架势部分统一享受乘隙父卡加成。"};
+  const GLOBAL_BONUS_DUAL_COPY={"d123": "攻击剑灵对受控敌人的生命伤害 +16%，并优先攻击受控敌人；存在受控敌人时，剑灵普攻冷却每秒额外恢复 0.35 秒。剑灵的架势伤害统一享受乘隙父卡加成，不重复叠加独立父卡倍率。", "d139": "封印中的目标受到的一切生命伤害 +30%、一切架势伤害 +30%；封印仍视作强控制。", "d154": "行刑持续时间延长至8秒，且每次处决逐渐获得更多战意。每层行刑层数额外提高4%伤害与架势伤害。", "d169": "睡眠敌人受到的一切生命伤害额外 +70%、一切架势伤害额外 +100%，与乘隙父卡架势加成叠乘。", "d185": "被威吓选中的目标受到的一切生命伤害 ×1.20；每次伤害命中额外削减其 4% 最大架势，架势部分统一享受乘隙父卡加成。"};
   GLOBAL_BONUS_DUAL_COPY.d05='新星爆发的生命和架势伤害均 ×2，其直接爆发伤害击杀的敌人湮灭。终极形态期间，击杀普通/精英/BOSS 分别延长 0.6/0.6/2 秒；造成破势延长 1/1/2 秒，剩余时间最高 11 秒。';
   for(const d of DUAL_ASCENSIONS){if(d.parents.includes('carnage')&&d.parents.includes('killingAura'))d.description=d.detail='每次处决获得一层杀势，最高 5 层；每层使杀意范围 +15、每秒伤害 +6。';if(d.id==='d290')d.description=d.detail='满层共振时，完美格挡对 235 范围敌人造成 26＋最大生命 9% 伤害（BOSS 为 3%）；生命不高于 28% 的敌人直接架势破坏，普通敌人伤害最多扣至 1 生命。';if(GLOBAL_BONUS_DUAL_COPY[d.id])d.description=d.detail=GLOBAL_BONUS_DUAL_COPY[d.id];const names=d.parents.filter(p=>['executioner','maniac','outnumbered','flawless','ultimateForm'].includes(p)).map(p=>ASCENSIONS.find(c=>c.id===p).name);let rule=names.length?names.join('、')+'的生命伤害加成适用于所有伤害来源。':'';if(d.parents.includes('killingAura'))rule+=' 杀意 LV3 击杀后 5 秒的范围易伤对全部生命伤害生效，强度为 18%。';if(d.parents.includes('exploitOpening'))rule+=' 受控目标的一切架势伤害均享受乘隙加成。';if(rule){const detail=d.detail||d.description;d.description+=' '+rule.trim();d.detail=detail+' '+rule.trim();}}
   // Final player copy follows the October 2 mechanic changes.
@@ -3332,7 +3342,7 @@ if(typeof document!=='undefined'&&!document.getElementById('ascensions-styles'))
   "refinement": [
     "获得的经验值 +10%。",
     "获得的经验值 +20%。",
-    "获得的经验值 +25%。击杀 BOSS 时，立即额外获得 1 次擢升机会。"
+    "获得的经验值 +25%。击杀首领时，有50%概率获得一次额外擢升机会。"
   ],
   "choice": [
     "每次擢升提供 4 个选项。",
@@ -3449,7 +3459,7 @@ if(typeof document!=='undefined'&&!document.getElementById('ascensions-styles'))
   "precision": [
     "暴击率 +8%，暴击伤害提高至 2.2 倍。",
     "暴击率 +14%，暴击伤害提高至 2.4 倍。",
-    "暴击率 +20%，暴击伤害提高至 2.5 倍。攻击暴击时，额外造成敌人最大生命值 3% 的伤害。"
+    "暴击率 +20%，暴击伤害提高至 2.5 倍。攻击暴击时，额外造成敌人当前生命值 3% 的伤害。"
   ],
   "lightningDash": [
     "冲刺穿过正在攻击的敌人时，以雷电造成 35 生命伤害与 20 架势伤害。",
@@ -3497,9 +3507,9 @@ if(typeof document!=='undefined'&&!document.getElementById('ascensions-styles'))
     "一次腾空期间，最多连续下劈 5 次。连续下劈的伤害逐次提高，每次提高 30%。"
   ],
   "sealingNail": [
-    "四连击全部命中同一敌人时，以锁链封印目标 3 秒。",
-    "封印延长至 4 秒，期间持续侵蚀生命与架势。",
-    "封印延长至 5 秒，施加封印时立刻创伤目标 52 生命值与 52 架势值。封印中的目标架势低于 15% 时立即破坏，生命低于 15% 时被拖入地下斩杀。"
+    "四连击全部命中同一敌人时，以锁链封印目标 4 秒。",
+    "封印延长至 5 秒，期间持续侵蚀生命与架势。",
+    "封印延长至 6 秒，施加封印时立刻创伤目标 52 生命值与 52 架势值。封印中的目标架势低于 15% 时立即破坏，生命低于 15% 时被拖入地下斩杀。"
   ],
   "rage": [
     "受击无敌时间 +20%，受伤获得的战意 +35%。",
@@ -3594,7 +3604,7 @@ if(typeof document!=='undefined'&&!document.getElementById('ascensions-styles'))
   "dexterity": [
     "一次攻击只命中 1 名敌人时，攻击伤害 +15%，暴击率 +8%。",
     "一次攻击命中不超过 2 名敌人时，攻击伤害 +20%，暴击率 +10%。",
-    "一次攻击命中不超过 3 名敌人时，攻击伤害 +25%，暴击率 +10%，并额外造成目标 2% 最大生命值的伤害。"
+    "一次攻击命中不超过 3 名敌人时，攻击伤害 +25%，暴击率 +10%，并额外造成目标 2% 当前生命值的伤害。"
   ],
   "beastSlayer": [
     "对非人形敌人的生命与架势伤害各 +15%。",
@@ -3603,8 +3613,8 @@ if(typeof document!=='undefined'&&!document.getElementById('ascensions-styles'))
   ],
   "executioner": [
     "处决后 5 秒内伤害与移动速度 +10%，处刑有 15% 概率恐惧周围敌人 2.4 秒。",
-    "连续处决叠加最多 4 层行刑加成，进一步提高伤害与移速，恐惧范围扩大。",
-    "每层行刑的伤害与移速加成提高 60%，且提高恐惧范围。对恐惧敌人额外造成 20% 伤害。"
+    "连续处决叠加最多4层行刑加成，每层额外提供5%伤害与移动速度。恐惧范围扩大。",
+    "每层行刑的伤害与移速额外加成提高到8%，且从层数中提高恐惧范围与概率。对恐惧敌人额外造成20%生命伤害与架势伤害。"
   ],
   "lightningRod": [
     "直接攻击有 30% 概率留下雷印；0.85 秒后再次命中，引发 30 生命伤害与 25 架势伤害的雷击。",
@@ -3852,9 +3862,9 @@ if(typeof document!=='undefined'&&!document.getElementById('ascensions-styles'))
     "每9秒可建立两组链接，伤害传导比例提高至30%。处决链接目标时，额外重创其他链接目标的生命与架势。"
   ],
   "flawless": [
-    "立即恢复25%最大生命值。生命达到治疗上限时，伤害+20%。",
-    "再次恢复25%最大生命值，满生命伤害加成提高至35%。",
-    "治疗额外突破25%最大生命值，并立即恢复50%最大生命值。满生命时攻击速度额外+20%。"
+    "立即恢复25%最大生命值。生命达到治疗上限时，生命伤害+20%，架势伤害+10%。",
+    "再次恢复25%最大生命值，满生命时生命伤害加成提高至35%，架势伤害加成提高至15%。",
+    "治疗额外突破25%最大生命值，并立即恢复50%最大生命值。满生命时生命伤害+35%，架势伤害+15%，攻击速度额外+20%。"
   ],
   "sawStorm": [
     "每8秒向周围发射18枚锯片，每枚造成18伤害与10架势伤害。",
@@ -3877,9 +3887,9 @@ if(typeof document!=='undefined'&&!document.getElementById('ascensions-styles'))
     "接触与点燃进一步增强，火焰伤害加成提高至40%。移动时留下燃烧路径。"
   ],
   "meditation": [
-    "静止1.8秒进入冥想，每秒恢复1.5生命，获得2战意。",
-    "进入冥想仅需1.35秒，每秒恢复3生命，获得4战意。",
-    "进入冥想仅需1秒，每秒恢复5生命，获得6战意。持续冥想时，每4秒可自动格挡一次攻击。"
+    "静止1.5秒进入冥想，每秒恢复2生命，获得5战意。战意爆发不会打断冥想。",
+    "进入冥想仅需1.2秒，每秒恢复3生命，获得10战意。",
+    "进入冥想仅需1秒，每秒恢复5生命，获得15战意。持续冥想时，每4秒可自动格挡一次攻击。"
   ],
   "synergy": [
     "自身攻击速度+8%，召唤物攻击速度与技能冷却恢复速度+12%。",
@@ -4062,7 +4072,7 @@ if(typeof document!=='undefined'&&!document.getElementById('ascensions-styles'))
   "d32": "整分钟敲钟时，进入1.5秒子弹时间，闪避率额外+35%。",
   "d33": "总是保持至少15战意，躁动的极低战意加成阈值提升至30战意。",
   "d34": "蓄力达到90%即可进入巅峰时机，按满蓄效果释放。",
-  "d35": "满蓄至蓄势伤害上限的所需时间缩短至1秒。",
+  "d35": "满蓄至蓄势伤害上限的所需时间缩短至0.75秒。",
   "d36": "每次蓄力进入巅峰时机时，向周围释放冲击波，造成40伤害与60架势伤害。",
   "d37": "首领出现时，赏金标记立即锁定该首领。",
   "d38": "旋风斩的追加环斩化为2—4道火弧，范围扩大、伤害提高。命中点燃敌人，火焰向周围扩散。",
@@ -4090,7 +4100,7 @@ if(typeof document!=='undefined'&&!document.getElementById('ascensions-styles'))
   "d52": "幻象侵袭普通敌人时，有15%概率使其转为心灵控制9秒。",
   "d53": "突刺命中正在攻击的敌人，或高速突刺命中时，额外造成60生命伤害与110架势伤害。",
   "d54": "第二击对带试探的敌人追击距离+50%。蓄力重击与突刺也可短距离追踪试探目标，追击时短暂闪过敌人攻击。",
-  "d55": "攻击附带的最大生命值百分比伤害也能享受暴击加成。",
+  "d55": "攻击附带的最大生命值和当前生命值百分比伤害也能享受暴击加成。",
   "d56": "完美格挡立即将攻击者记为复仇对象，激活复仇加成。",
   "d57": "隐身中处决保留隐身，并将剩余隐身时间刷新至4秒。",
   "d58": "处决灵魂链接目标时，将其他灵魂链接的目标一并处决。",
@@ -4208,7 +4218,7 @@ if(typeof document!=='undefined'&&!document.getElementById('ascensions-styles'))
   "d151": "连续下劈命中额外触发震踏，第5次触发巨震，造成150伤害与100架势伤害，大范围击飞敌人，也能击飞精英。",
   "d152": "连续下劈的斩杀阈值逐次提高，每次提高5%，最高提高25%。",
   "d153": "每次淬炼刀刃时，额外获得20最大生命值。",
-  "d154": "处决延长行刑持续时间，并逐次获得更多战意。每层行刑层数额外提高2.5%伤害。",
+  "d154": "行刑持续时间延长至8秒，且每次处决逐渐获得更多战意。每层行刑层数额外提高4%伤害与架势伤害。",
   "d155": "每名被炼化的敌人额外产出一份食物。",
   "d156": "受到伤害时，有18%概率仅仅受到生命损伤。",
   "d157": "地面滑铲快速积累风势。后续突刺消耗风势，释放长风刃；风势越多，风刃越长、伤害与架势伤害越高。",
@@ -4416,7 +4426,7 @@ if(typeof document!=='undefined'&&!document.getElementById('ascensions-styles'))
     ['d325','绝症','poisonBlade','antiRegen','重伤效果不会消失，且提高敌人受到中毒伤害与中毒架势伤害20%。'],
     ['d326','霜爆','frostTrace','thousandFire','叠满霜痕时，额外触发一次霜爆，造成28伤害与90架势伤害和冻伤效果，并留下减速地面。'],
     ['d327','金蝉脱壳','guardVitality','heavyRecoil','受到来自首领的伤害时，使冲刺立刻就绪，并震开周围敌人，造成30伤害与50架势伤害。'],
-    ['d328','焦土龙息','dragonRoar','pollutedBlood','巨龙吐息即将生效时，在场上随机生成3-5块焦油。'],
+    ['d328','焦土龙息','dragonRoar','pollutedBlood','巨龙吐息即将生效时，在场上随机生成3-5块焦油。吐息会点燃所有焦油，并额外引爆造成28生命伤害与14架势伤害。'],
     ['d329','角斗士','giantKiller','heavyRecoil','完美格挡对精英和首领架势伤害+30%，对精英额外造成其最大架势15%的架势伤害。'],
     ['d330','闪转腾挪','slideStrike','emergencyDodge','突刺攻击返还30%的闪避冷却，突刺攻击期间不会再被命中。'],
     ['d331','鬼影重重','illusion','ghost','闪避攻击时，使幻象侵袭目标1秒。4%使目标的精神永远崩坏。'],
