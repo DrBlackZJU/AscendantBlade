@@ -14,6 +14,7 @@
 const PRIEST_HAND_TIMING={windup:.7,strike:.26,recovery:.5};
 const BEHEMOTH_SPIKE_TIMING={windup:.6,warning:.17,emerge:.055,hold:.17,life:.4};
 const VACUUM={range:850,contact:85,warning:185,damage:32,pullX:220,pullY:105,cooldown:7};
+const BOTTOMLESS_CORPSES={range:170,travel:.6,cap:10};
 /* Authored encounter roster. Stable IDs preserve campaign and rush scheduling. */
 const Roster=(function(){
  'use strict';
@@ -241,6 +242,24 @@ const Encounters=(function(){
  function lob(g,e,a,x=g.p.x,y=g.p.y){return shoot(g,e,a,0,{bomb:true,sx:e.x,sy:e.y,x:e.x,y:e.y,tx:x,ty:y,flight:.9,age:0,startZ:65,z:65,radius:76,poison:a.flags?.includes('poison'),life:3,vx:0,vy:0});}
  function children(g,e){return g.enemies.filter(o=>o!==e&&!o.dead&&o.summonerId===e.id);}
  function summon(g,e,type,count=1,cap=6){const made=[];for(let i=0;i<count&&children(g,e).length<cap;i++){const c=g.spawnEnemyMinion(e,type,e.x+(i%2?-1:1)*(85+30*i),e.y+(i%2?25:-25));made.push(c);}return made;}
+ function corpseRange(e){const s=init(e);return s.vacuum>s.clock&&!controlled(e)?VACUUM.range:BOTTOMLESS_CORPSES.range;}
+ function releaseLocusts(g,e){
+  const s=init(e);if(e.dead||!s.locustPending)return;
+  const room=Math.max(0,BOTTOMLESS_CORPSES.cap-children(g,e).length);
+  s.locustPending-=summon(g,e,'locust',Math.min(room,s.locustPending),BOTTOMLESS_CORPSES.cap).length;
+ }
+ P.bottomlessDeathSink=function(body){
+  if(!body||body.dummy||TYPES[body.type]?.boss||['locust','abaddon'].includes(body.type)||body.noCorpse||body.furnaceConsumed||body.furnaceCapture||body.groundDrag)return null;
+  const owner=this.enemies.filter(e=>!e.dead&&!(e.spawnDelay>0)&&kind(e)==='bottomless'&&distance(body,e)<corpseRange(e)).sort((a,b)=>distance(body,a)-distance(body,b))[0];
+  return owner?{bottomlessOwner:owner,x:owner.x,y:owner.y}:null;
+ };
+ P.captureBottomlessCorpse=function(body,sink){
+  if(body.bottomlessCapture)return;
+  body.deathFlavor='blackHole';body.deathSink=sink;body.deathT=0;body.corpseLocked=true;
+  body.bottomlessCapture={owner:sink.bottomlessOwner,progress:0,done:false};
+  body.knockX=body.knockY=body.knockVz=0;body._bowlingProjectile=null;body.flyingKickMark=null;body._flyingKickCorpse=false;
+  for(const c of this.enemyCorpses)if(c.id===body.id)c.used=true;
+ };
  function friends(g,e){return g.enemies.filter(o=>o!==e&&!o.dead&&!o.spawnDelay&&!o.bossProxy);}
  function edibleAllies(g,e,hpBelow=.5){return friends(g,e).filter(o=>!TYPES[o.type].boss&&o.hp<o.maxHp*hpBelow&&distance(e,o)<500);}
  function blink(g,e,near=170){e.bossBlink={x:e.x,y:e.y,at:g.time};const side=g.random()<.5?-1:1;e.x=g.p.x+side*(near*.65+g.random()*near*.55);e.y=clamp(g.p.y+(g.random()-.5)*90,415,680);if(!g.loopWorld)e.x=clamp(e.x,g.bounds.left+35,g.bounds.right-35);e.face=Math.sign(g.p.x-e.x)||1;fx(g,e,'portal',{delay:0,damage:0,life:.5});}
@@ -375,6 +394,14 @@ const Encounters=(function(){
  });
  function rage(g,e,s){const k=kind(e);s.raged=true;if(k==='hunter')e.ammo=3;if(k==='general')e.ammo=6;if(k==='flame_blade')s.lit=Infinity;if(k==='impaler'){s.spines=8;s.regrow=0;}if(k==='reaper')s.arrival=true;if(k==='dying')s.forceSword=true;if(k==='claw_beast'){s.rageBurrow=true;e.posture=e.maxPosture;e.stun=0;e.pendingStun=false;if(e.state==='stunned'){e.state='idle';e.cd=0;}}if(k==='profane_obelisk')for(const t of friends(g,e).sort((a,b)=>distance(e,a)-distance(e,b)).slice(0,10)){g.healEnemy(t,t.maxHp*.12,{source:'bossEnrage'});if(t.posture<=0||t.state==='stunned'){t.posture=t.maxPosture;t.stun=0;t.pendingStun=false;t.state='recovery';t.t=.35;}}}
  wrap('enemyStep',function(old,e,dt){
+  if(e.dead&&e.bottomlessCapture){
+   const capture=e.bottomlessCapture;e.deathT+=dt;if(capture.done)return;
+   const progress=Math.min(1,e.deathT/BOTTOMLESS_CORPSES.travel),q=1-((1-progress)/Math.max(.0001,1-capture.progress))**3;
+   const portal=Art.abyss.anchor(capture.owner,'bottomless',this.time,'portal');
+   e.x+=(portal[0]-e.x)*q;e.y+=(portal[1]-e.y)*q;e.z=(e.z||0)*(1-q);capture.progress=progress;
+   if(progress>=1){capture.done=true;e.noCorpse=true;const owner=capture.owner;if(!owner.dead){const s=init(owner);s.locustPending=(s.locustPending||0)+1;releaseLocusts(this,owner);}}
+   return;
+  }
   if(!e.dead&&(e.medusaGold||e.medusaUntil>this.time))return old.call(this,e,dt);
   if(e.bossThrown)return;
   if(e.bossDropOwner){const owner=e.bossDropOwner;if(owner.dead){e.bossDropOwner=null;e.z=0;}else{e.x=owner.x+e.dropSide*75;e.y=owner.y;e.z=Math.max(80,owner.z||150);return;}}
@@ -403,7 +430,16 @@ const Encounters=(function(){
   if(k==='war_hammer'&&s.clock>=s.hammer&&!s.charged)s.charged=true;
   if(k==='demon_jelly'&&s.clock>=s.spikes&&!controlled(e)){s.spiked=!s.spiked;if(s.spiked)s.spikeWarning=s.clock+.65;s.spikes=s.clock+(s.spiked?5:4);}
   if(['plague','bladder'].includes(k)&&s.clock>=s.cloud){s.cloud=s.clock+(k==='bladder'?2.2+5.5*e.hp/e.maxHp:7);fx(this,e,'plagueCloud',{delay:0,life:5,radius:k==='bladder'?240:210,damage:0});}
-  if(k==='bottomless'&&children(this,e).length<10){const c=this.enemyCorpses.find(c=>!c.used&&c.life>0&&!['locust','abaddon'].includes(c.type)&&distance(c,e)<170);if(c){const kids=summon(this,e,'locust',1,10);if(kids.length)c.used=true;}}
+  if(k==='bottomless'){
+   // Claim every eligible corpse together; never leave a second reusable corpse behind.
+   for(const c of this.enemyCorpses){
+    if(c.used||c.life<=0||TYPES[c.type]?.boss||['locust','abaddon'].includes(c.type)||distance(c,e)>=corpseRange(e))continue;
+    const body=this.enemies.find(body=>body.id===c.id);
+    if(body){if(body.noCorpse||body.corpseLocked||body.bottomlessCapture)continue;this.captureBottomlessCorpse(body,{bottomlessOwner:e,x:e.x,y:e.y});}
+    else {c.used=true;s.locustPending=(s.locustPending||0)+1;}
+   }
+   releaseLocusts(this,e);
+  }
   if(k==='fortress'){s.brokenLegs=e.hp<e.maxHp*.25;e.moveBuff=s.brokenLegs?0:1;if(s.brokenLegs)e.vx=e.vy=0;if(s.clock>=s.rocket){s.rocket=s.clock+(s.brokenLegs?1.4:5);fx(this,e,'rocket',{delay:.7,damage:28});}}
   if(k==='marked_priest'&&!s.hand){s.hand=fx(this,e,'priestHand',{x:e.x+e.face*95,y:e.y,delay:0,life:Infinity,phase:'seek',cooldown:1,damage:26,radius:85,handMode:0});}
   if(k==='resentment'&&!controlled(e)&&children(this,e).filter(o=>o.type==='abyss_tentacle').length<2&&s.clock>=(s.tentacleNext||2)){s.tentacleNext=s.clock+5;summon(this,e,'abyss_tentacle',2-children(this,e).filter(o=>o.type==='abyss_tentacle').length,2);}

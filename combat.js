@@ -154,7 +154,7 @@
         chargeMax:1.05,heavyMaxDamage:80,heavyDamageMultiplier:1,heavyRangeMultiplier:1,
         executionRange:260,executionChain:false,executionPathDamage:0,executionPathPosture:0,execQueue:[],execDuration:.83,execRushStacks:0,execRushUntil:-1,execInvuln:0,execGuardT:null,
         healCapBonus:0,evasionBase:0,evasionBonus:0,evasionFatigue:0,evasionFatiguePenalty:.02,lastEvasion:-99,evasionRecovery:0,probabilityMultiplier:1,critBase:0,critMultiplier:2,enemyTimeScale:1,enemySlow:1,enemySlowT:0,enemyDots:{},
-        dashCharges:1,dashMaxCharges:1,dashRegen:0,airDashes:0,dashSpeedBoost:false,speedBoost:0,chargeSerial:0,dashDuration:.19,dashBloodDistance:0,
+        dashCharges:1,dashMaxCharges:1,dashRegen:0,tempDash:0,airDashes:0,dashSpeedBoost:false,speedBoost:0,chargeSerial:0,dashDuration:.19,dashBloodDistance:0,
         downBounce:true,unlimitedDownStrike:false,downStrikeCount:0,downStrikeMax:1,downDamageMultiplier:1,downStrikeDamageGrowth:0,downRangeMultiplier:1,jumpMax:2,jumpHeightMultiplier:1,plungeStartZ:0,
         superArmor:0,ultimateForm:0,kills:0,execTarget:null,attackSpeedMultiplier:1,moveSpeedMultiplier:1,dashDistanceMultiplier:1,chargeRateBoost:1,chargeGlobalMultiplier:1,chargeSpeedPenalty:1,attackRangeMultiplier:1,visualScale:1.04,rockThrustRank:0,rockThrustActive:false,rockThrustFull:false,steadfastRank:0,steadfastHeavyMultiplier:1,swallowReturnRank:0,grayRecoveryWhileHit:0,attackSerial:0,dashSerial:0,stealth:false,dashInvulnBonus:0,thrustDamageMultiplier:1,thrustPostureMultiplier:1,thrustRangeMultiplier:1,chargeReadyAt:-99};
       this.stats={kills:0, parries:0, executions:0, maxCombo:0, damageTaken:0};
@@ -212,9 +212,10 @@
       const gain=Math.min(Math.max(0,amount),Math.max(0,ceiling-p.hp-p.grayHp));
       p.hp+=gain;if(gain>0){this.trigger('onHeal',{amount:gain,source,breakthrough});if(!quiet)this.emit('heal',{x:p.x,y:p.y,amount:gain,source});}return gain;
     }
-    canDash(){return this.p.dashCharges>0&&!(this.p.z>0&&this.p.airDash);}
+    hasTempDash(){return this.p.tempDash>0;}
+    canDash(){return (this.hasTempDash()||this.p.dashCharges>0)&&!(this.p.z>0&&this.p.airDash);}
     dashCooldown(){return Math.max(.6,2.0*this.p.dashMultiplier);}
-    spendDash(){const p=this.p;p.dashCharges=Math.max(0,p.dashCharges-1);if(p.dashRegen<=0)p.dashRegen=this.dashCooldown();p.dashCd=p.dashRegen;}
+    spendDash(){const p=this.p;if(this.hasTempDash()){p.tempDash=0;return;}p.dashCharges=Math.max(0,p.dashCharges-1);if(p.dashRegen<=0)p.dashRegen=this.dashCooldown();p.dashCd=p.dashRegen;}
     resetDashes(){const p=this.p;p.dashCharges=p.dashMaxCharges;p.dashRegen=0;p.dashCd=0;p.airDashes=0;p.airDash=false;}
     drainEvents() {const out=this.events;this.events=[];return out;}
     hitstop(seconds) {this.freeze=Math.max(this.freeze,seconds);}
@@ -556,12 +557,13 @@
       if(attemptingRevive&&e.antiRegen&&e.antiRegenSerum)e._deathSentenceReviveBlocked=true;
       // Resolve presentation BEFORE kill hooks can launch or consume the body.
       if(!base.boss&&!e.dummy&&!e.groundDrag&&!e.furnaceCapture&&!e.furnaceConsumed){
-        const h=this.deathBlackHole?.(),stone=base.bodyPlan==='statue'&&['petrifying','dormant'].includes(e.state);
+        const h=this.deathBlackHole?.(),portal=this.bottomlessDeathSink?.(e),stone=base.bodyPlan==='statue'&&['petrifying','dormant'].includes(e.state);
         const flavorTags=this.deathDamageTags?.(tags,e)||tags,has=(...names)=>flavorTags.some(t=>names.includes(t));
         if(e.medusaGold||e.medusaUntil>this.time)e.deathFlavor=e.medusaGold?'goldStone':'stone';
         else if(has('unloadSlash'))e.deathFlavor='shadowSever';
         else if(has('mindFrostDeath'))e.deathFlavor='ice';
         else if(has('consecration','holy','holyStrike','newSunAnnihilation','endEyeAnnihilation'))e.deathFlavor='annihilation';
+        else if(portal){e.deathFlavor='blackHole';e.deathSink=portal;if(stone)e.statueCollapse=true;}
         else if(h&&h.life>0&&distance(h,e)<=h.radius){e.deathFlavor='blackHole';e.deathSink=h;if(stone)e.statueCollapse=true;}
         else if(stone){e.statueCollapse=true;}
         else if(has('iceFlame'))e.deathFlavor='ice';
@@ -588,6 +590,7 @@
         e._bowlingProjectile={rank:0,overkill:0,hit:e._bowlingHit||new Set(),lastX:e._bowlingLastX??e.x,lastY:e._bowlingLastY??e.y};
       }
       if(e.dummy){e.hp=0;e.knockX=e.knockY=e.knockVz=0;}e.dead=true;e.state='dead';e.deathT=0;e.queue=[];
+      if(e.deathSink?.bottomlessOwner&&!e.noCorpse)this.captureBottomlessCorpse(e,e.deathSink);
       if(!e.corpseLocked&&!e.summoned&&!e.dummy)this.enemyCorpses.push({id:e.id,x:e.x,y:e.y,type:e.type,life:7,used:false});
       e.killTags=tags;e.killType=tags[0];
       this.stats.kills++;this.emit('kill',{x:e.x,y:e.y,type:e.type,tags});
@@ -621,7 +624,7 @@
     updatePlayer(dt,input,pressed) {
       const p=this.p;this.updateExecutionRush();if(p.hookRoot>0){p.hookRoot=Math.max(0,p.hookRoot-dt);input={...input,a:false,d:false,w:false,s:false};}p.moveIntent=!!(input.a||input.d||input.w||input.s);p.attackMotionThisStep=false;
       const liveGuardEnd=this.rules.guardStartup+this.rules.guardWindow,liveGuardTotal=liveGuardEnd+this.rules.guardRecovery;
-      for(const key of ['invuln','execInvuln','guardCd','guardFlash','blockFlash','blockMultiGuard','hurt','comboGrace','attackBuffer','jumpBuffer','dashBuffer','guardBuffer','counter','speedBoost','superArmor','ultimateForm'])p[key]=Math.max(0,p[key]-dt);
+      for(const key of ['invuln','execInvuln','guardCd','guardFlash','blockFlash','blockMultiGuard','hurt','comboGrace','attackBuffer','jumpBuffer','dashBuffer','guardBuffer','counter','speedBoost','superArmor','ultimateForm','tempDash'])p[key]=Math.max(0,p[key]-dt);
       if(p.dashCharges<p.dashMaxCharges){
         // Triple Dash starts recovering as soon as a charge is spent.
         if(p.state!=='dash'||p.dashRegenDuringDash)p.dashRegen=Math.max(0,p.dashRegen-dt);
@@ -646,7 +649,7 @@
       const actionable=p.state!=='execute'&&p.state!=='hurt';
       if(actionable&&pressed.q&&this.executeTarget)this.beginExecution(this.executeTarget);
       const thrustCommand=pressed.thrust||(newJ&&(input.shift||pressed.shift))||(pressed.shift&&input.j);
-      if(actionable&&p.state!=='execute'&&thrustCommand&&(p.dashCharges>0||p.state==='dash'&&p.t<.12))this.startThrust(input);
+      if(actionable&&p.state!=='execute'&&thrustCommand&&(this.hasTempDash()||p.dashCharges>0||p.state==='dash'&&p.t<.12))this.startThrust(input);
       else if(p.state!=='execute'&&actionable&&p.dashBuffer>0&&this.canDash())this.startDash(input);
       const attackState=['attack','heavy','thrust'].includes(p.state),heavyGuardCancel=p.state==='heavy'&&p.t>=p.attack.wind+p.attack.active*.35;
       const free=p.state==='idle'||p.state==='landing'||p.state==='charge'||heavyGuardCancel||(attackState&&(p.t<p.attack.wind*.65||p.t>p.attack.wind+p.attack.active));

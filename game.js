@@ -977,7 +977,7 @@ function initializeGame(){
     music.update(dt,{enemyCount,boss});
   }
   const enemyVisualCache=new Map();
-  let ghostTimer=0,slowTime=0,finished=false,reviveCinematic=null;
+  let ghostTimer=0,slowTime=0,finished=false,reviveCinematic=null,defeatElapsed=0;
   let flowTrailFX=[],flowTrailTimer=0,visualFrame=null,visualCounts=new Map();
   function visualScene(){if(!visualFrame||visualFrame.game!==game||visualFrame.time!==game.time||visualFrame.count!==game.enemies.length){const byId=new Map();let visibleCount=0;for(const e of game.enemies)if(!e.dead){byId.set(e.id,e);if(e.x-camera>-180&&e.x-camera<W+180)visibleCount++;}visualFrame={game,time:game.time,count:game.enemies.length,byId,visibleCount,ghostVines:run?.dualRegistry.some(d=>run.duals[d.id]&&d.parents.includes('parasiticVines')&&d.parentNames.some(n=>/幽|鬼|影/.test(n)))};}return visualFrame;}
   const keyMap={KeyW:'w',KeyA:'a',KeyS:'s',KeyD:'d',KeyJ:'j',KeyK:'k',KeyQ:'q',KeyL:'l',KeyR:'r',KeyE:'e',Space:'space',ShiftLeft:'shift',ShiftRight:'shift'};
@@ -1058,8 +1058,8 @@ function initializeGame(){
     clearTimeout(finish.cgTimer);
     selectedArena=clamp(arena,0,2);run=new Run({arena:selectedArena,challenge,training});game=run.game;
     resetDrawingContext();accumulator=0;delete window.AshLastError;if($('runtime-error'))$('runtime-error').hidden=true;mode='playing';finished=false;medusaGazeFX=[];particles=[];rings=[];slashes=[];bloodXFX=[];serumBurstFX=[];texts=[];ghosts=[];lightningFX=[];meteorFX=[];luckSpearFX=[];dissolveFX=[];bladeRingFX=[];bellWaveFX=[];diveBombFX=[];phantomRushFX=[];timeSealDevourFX=[];postureShatterFX=[];windSpiralFX=[];guillotineFX=[];corpseBombFX=[];cocoonBurstFX=[];dualFX=[];lastThornBurstFX=-Infinity;rig.clear();art.clear();$('end-screen').classList.remove('end-screen-cg','cg-finished','cg-skipped');$('victory-cg').classList.add('hidden');$('end-panel').style.removeProperty('opacity');
-    pressed={};keys={};reviveCinematic=null;flowTrailFX=[];flowTrailTimer=0;visualFrame=null;visualCounts.clear();camera=Math.max(0,game.p.x-490);shake=screenFlash=executeFlash=killInk=0;
-    for(const id of ['title-screen','pause-screen','end-screen','upgrade-screen','codex-screen'])$(id).classList.add('hidden');
+    pressed={};keys={};reviveCinematic=null;defeatElapsed=0;canvas.style.removeProperty('filter');flowTrailFX=[];flowTrailTimer=0;visualFrame=null;visualCounts.clear();camera=Math.max(0,game.p.x-490);shake=screenFlash=executeFlash=killInk=0;
+    for(const id of ['title-screen','pause-screen','end-screen','upgrade-screen','codex-screen','manual-screen'])$(id).classList.add('hidden');
     $('pause').classList.remove('hidden');canvas.focus();music.start(run.challenge?2:0);startAudio();processEvents();updateMasthead();
   }
   function updateMasthead(){
@@ -1074,8 +1074,8 @@ function initializeGame(){
   }
   function returnTitle(){
     clearTimeout(finish.cgTimer);
-    mode='title';keys={};pressed={};rig.clear();
-    for(const id of ['pause-screen','end-screen','upgrade-screen','codex-screen','pause'])$(id).classList.add('hidden');
+    mode='title';keys={};pressed={};reviveCinematic=null;defeatElapsed=0;canvas.style.removeProperty('filter');rig.clear();
+    for(const id of ['pause-screen','end-screen','upgrade-screen','codex-screen','manual-screen','pause'])$(id).classList.add('hidden');
     $('end-screen').classList.remove('end-screen-cg','cg-finished','cg-skipped');$('victory-cg').classList.add('hidden');$('title-screen').classList.remove('hidden');updateMasthead();
   }
   function drawVictoryCG(rush=false){
@@ -1146,6 +1146,8 @@ function initializeGame(){
     else {mode='playing';$('upgrade-screen').classList.add('hidden');$('pause').classList.remove('hidden');canvas.focus();}
   }
   function toggleCodex(){
+    if(mode==='dying')return;
+    if(mode==='help')toggleManual();
     if(mode==='codex'){$('codex-tooltip')?.classList.add('hidden');$('codex-screen').classList.add('hidden');mode=codexReturn;if(mode==='playing')canvas.focus();return;}
     codexReturn=mode;mode='codex';keys={};pressed={};
     const owned=AshAscensions.ASCENSIONS.filter(a=>(run?.upgrades[a.id]||0)>0).map(a=>({...a,rank:run.upgrades[a.id]}));
@@ -1170,7 +1172,7 @@ function initializeGame(){
   $('sound').onclick=setSound;$('help-toggle').onclick=()=>{$('help').classList.toggle('hidden');$('help-toggle').lastElementChild.textContent=$('help').classList.contains('hidden')?'＋':'−';};
   let manualPrevious='title';
   const manualHTML=$('help').innerHTML;
-  function toggleManual(){const panel=$('manual-screen');if(!panel.classList.contains('hidden')){panel.classList.add('hidden');mode=manualPrevious;if(mode==='playing')canvas.focus();return;}manualPrevious=mode;if(mode==='playing'){keys={};pressed={};}mode='help';$('manual-content').innerHTML=manualHTML;panel.classList.remove('hidden');}
+  function toggleManual(){if(mode==='dying')return;if(mode==='codex')toggleCodex();const panel=$('manual-screen');if(!panel.classList.contains('hidden')){panel.classList.add('hidden');mode=manualPrevious;if(mode==='playing')canvas.focus();return;}manualPrevious=mode;if(mode==='playing'){keys={};pressed={};}mode='help';$('manual-content').innerHTML=manualHTML;panel.classList.remove('hidden');}
   $('manual-open').onclick=toggleManual;$('manual-close').onclick=toggleManual;
   $('back-title').onclick=returnTitle;
   document.querySelector('.brand').onclick=e=>{e.preventDefault();if(mode==='playing')pause();};
@@ -1520,7 +1522,7 @@ function initializeGame(){
       }
       if(e.type==='enrage'||e.type==='houndAnger'){const yellow=e.type==='houndAnger';dualFX.push({...e,kind:'bossEnrage',yellow,t:0,life:yellow?1.15:1.6,seed:Math.random()*TAU});shake=Math.max(shake,yellow?4:9);sound('heavy');}
       if(e.type==='recover')label(e.x,e.y-100,'架势恢复','#a6b0a5',13);
-      if(e.type==='defeat')setTimeout(()=>{if(game.status==='dead')finish(false);},650);
+      if(e.type==='defeat'&&!finished&&mode!=='dying'){mode='dying';defeatElapsed=0;reviveCinematic=null;keys={};pressed={};canvas.style.filter='grayscale(1)';$('pause').classList.add('hidden');}
       if(e.type==='finalArrival')shake=Math.max(shake,22);if(e.type==='sacrifice'){burst(e.x,e.y,8,'#bd79ed',160,40);}if(e.type==='victory')finish(true);
     }
   }
@@ -2762,7 +2764,7 @@ function initializeGame(){
 
 
 
-    text('冲刺',26,141,10,'#a3b2a6');const dashBase=game.dashCooldown(),dashPartial=p.dashCharges<p.dashMaxCharges?clamp(1-p.dashRegen/dashBase,0,1):0,dashRatio=clamp((p.dashCharges+dashPartial)/Math.max(1,p.dashMaxCharges),0,1);ctx.fillStyle='#293f40';ctx.fillRect(66,133,70,7);ctx.fillStyle=dashReady?'#bddccf':'#628b87';ctx.fillRect(66,133,70*dashRatio,7);ctx.strokeStyle='#58706d';ctx.strokeRect(66,133,70,7);text('␣ 跳跃',153,141,11,'#a3b2a6');for(let i=0;i<(p.jumpMax||2);i++)circle(222+i*15,137,3,i>=p.jumps?'#bddccf':'#354b4c');
+    text('冲刺',26,141,10,'#a3b2a6');const tempDashReady=dashReady&&game.hasTempDash(),dashBase=game.dashCooldown(),dashPartial=p.dashCharges<p.dashMaxCharges?clamp(1-p.dashRegen/dashBase,0,1):0,dashRatio=tempDashReady?1:clamp((p.dashCharges+dashPartial)/Math.max(1,p.dashMaxCharges),0,1);ctx.fillStyle='#293f40';ctx.fillRect(66,133,70,7);ctx.fillStyle=tempDashReady?'#f2ca68':dashReady?'#bddccf':'#628b87';ctx.fillRect(66,133,70*dashRatio,7);ctx.strokeStyle=tempDashReady?'#c99c42':'#58706d';ctx.strokeRect(66,133,70,7);text('␣ 跳跃',153,141,11,'#a3b2a6');for(let i=0;i<(p.jumpMax||2);i++)circle(222+i*15,137,3,i>=p.jumps?'#bddccf':'#354b4c');
     if(game.evasionChanceBase>0)text('闪避：'+Math.round(game.evasionChance*100)+'% / '+Math.round(game.evasionChanceBase*100)+'%',60,169,10,'#9fc5bf','left','mono');
     let cooldownY=game.evasionChanceBase>0?193:174;
     for(const row of cooldownRows){
@@ -3066,6 +3068,9 @@ function initializeGame(){
         }
         if(!reviveCinematic){const maxCamera=Math.max(0,game.bounds.right-W+80),target=run.loopWorld?game.p.x-620:clamp(game.p.x-620,0,maxCamera);camera+=(target-camera)*(1-Math.exp(-dt*5));updateFX(dt);}
       }
+    }else if(mode==='dying'){
+      accumulator=0;defeatElapsed+=dt;updateFX(dt);
+      if(defeatElapsed>=.65)finish(false);
     }else if(mode==='dead')updateFX(dt);
     else accumulator=0;
     updateBattleMusic(dt);
